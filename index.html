@@ -361,6 +361,55 @@ body::before{content:'';position:fixed;inset:0;
   .sb{width:30px;height:30px;font-size:1.1rem}
 }
 @media(max-width:380px){.mc-flag{display:none}}
+/* ══ SQUADS PAGE ══ */
+.sq-controls{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+.sq-team-scroll{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:none;flex:1}
+.sq-team-scroll::-webkit-scrollbar{display:none}
+.sq-team-btn{display:flex;align-items:center;gap:.4rem;font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:1px;padding:.32rem .75rem;background:var(--neon-glow2);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.sq-team-btn:hover{border-color:var(--border);color:var(--text)}
+.sq-team-btn.on{background:rgba(161,240,0,.15);border-color:var(--neon);color:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
+.sq-team-btn img{width:20px;height:15px;object-fit:cover;border-radius:2px}
+.sq-pos-btns{display:flex;gap:.3rem;flex-shrink:0}
+.sq-pos-btn{font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:1px;padding:.3rem .65rem;background:var(--neon-glow2);border:1px solid var(--border2);border-radius:5px;color:var(--gray);cursor:pointer;transition:all .2s}
+.sq-pos-btn.on{background:rgba(161,240,0,.15);border-color:var(--neon);color:var(--neon)}
+
+/* Squad header card */
+.sq-header{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;backdrop-filter:blur(8px)}
+.sq-header-flag{width:80px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 0 14px rgba(161,240,0,.12)}
+.sq-header-info{flex:1}
+.sq-header-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;color:var(--neon);text-shadow:0 0 12px var(--neon-glow)}
+.sq-header-sub{font-size:.75rem;color:var(--gray);margin-top:2px}
+.sq-header-coach{font-size:.8rem;color:var(--text2);margin-top:.4rem}
+.sq-header-stats{display:flex;gap:1rem;margin-top:.5rem}
+.sq-stat{text-align:center}
+.sq-stat-n{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--neon)}
+.sq-stat-l{font-size:.58rem;color:var(--gray);letter-spacing:.5px}
+
+/* Player grid */
+.sq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem}
+.sq-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;overflow:hidden;transition:all .2s;display:flex;align-items:stretch}
+.sq-card:hover{border-color:var(--neon);box-shadow:0 0 14px var(--neon-glow)}
+.sq-card.captain{border-color:rgba(161,240,0,.4)}
+.sq-no{width:38px;background:rgba(161,240,0,.07);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--neon);flex-shrink:0;border-right:1px solid var(--border2)}
+.sq-pos-badge{font-family:'Bebas Neue',sans-serif;font-size:.6rem;letter-spacing:1px;padding:.15rem .35rem;border-radius:3px}
+.sq-pos-badge.GK{background:rgba(255,170,0,.15);color:#ffaa00;border:1px solid rgba(255,170,0,.3)}
+.sq-pos-badge.DF{background:rgba(161,240,0,.12);color:var(--neon);border:1px solid var(--border2)}
+.sq-pos-badge.MF{background:rgba(0,170,255,.12);color:#00aaff;border:1px solid rgba(0,170,255,.25)}
+.sq-pos-badge.FW{background:rgba(255,77,77,.12);color:#ff4d4d;border:1px solid rgba(255,77,77,.25)}
+.sq-body{flex:1;padding:.55rem .7rem;min-width:0}
+.sq-name-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem}
+.sq-pname{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.5px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sq-cap-badge{font-size:.55rem;padding:.1rem .35rem;background:rgba(161,240,0,.18);border:1px solid var(--neon);border-radius:3px;color:var(--neon);flex-shrink:0}
+.sq-club{font-size:.68rem;color:var(--text2);display:flex;align-items:center;gap:.3rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sq-club img{width:16px;height:12px;object-fit:cover;border-radius:1px;flex-shrink:0}
+.sq-meta{display:flex;gap:.5rem;margin-top:.3rem;font-size:.62rem;color:var(--gray)}
+.sq-meta span{display:flex;align-items:center;gap:2px}
+
+/* Loading skeleton */
+.sq-loading{text-align:center;padding:3rem;color:var(--gray);font-size:.85rem}
+.sq-empty{text-align:center;padding:2rem;color:var(--gray);font-size:.8rem}
+@media(max-width:600px){.sq-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.sq-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -392,7 +441,8 @@ body::before{content:'';position:fixed;inset:0;
   <button class="nav-btn"     onclick="goTab('groups',this)">📊 Group Table</button>
   <button class="nav-btn"     onclick="goTab('knockout',this)">🏅 Knockout</button>
   <button class="nav-btn"     onclick="goTab('stats',this)">📈 Stats</button>
-  <button class="nav-btn"     onclick="goTab('thirdplace',this)">🥉 3rd Places From Groups</button>
+  <button class="nav-btn"     onclick="goTab('squads',this)">🧑‍⚽ Squads</button>
+  <button class="nav-btn"     onclick="goTab('thirdplace',this)">🥉 3rd Places</button>
 </nav>
 
 <main class="main">
@@ -437,6 +487,23 @@ body::before{content:'';position:fixed;inset:0;
     <div class="filters" id="statsGrpFilters"></div>
     <div class="filters" id="statsTeamFilters" style="margin-top:-.4rem"></div>
     <div class="stats-grid" id="statsGrid"></div>
+  </div>
+
+  <!-- SQUADS -->
+  <div id="p-squads" class="panel">
+    <div class="sec-title">🧑‍⚽ Squads</div>
+    <div class="sq-controls">
+      <div class="sq-team-scroll" id="sqTeamBtns"></div>
+      <div class="sq-pos-btns">
+        <button class="sq-pos-btn on" onclick="setSqPos('ALL',this)">সকল</button>
+        <button class="sq-pos-btn" onclick="setSqPos('GK',this)" style="color:#ffaa00">GK</button>
+        <button class="sq-pos-btn" onclick="setSqPos('DF',this)">DF</button>
+        <button class="sq-pos-btn" onclick="setSqPos('MF',this)" style="color:#00aaff">MF</button>
+        <button class="sq-pos-btn" onclick="setSqPos('FW',this)" style="color:#ff4d4d">FW</button>
+      </div>
+    </div>
+    <div id="sqHeader"></div>
+    <div class="sq-grid" id="sqGrid"></div>
   </div>
 
   <!-- THIRD PLACE -->
@@ -1218,7 +1285,175 @@ window.goTab=function(id,btn){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('p-'+id).classList.add('on');
   btn.classList.add('on');
+  if(id==='squads'&&!sqLoaded)loadSquads();
 };
+
+// ── SQUADS ──
+let sqData={};       // Firebase-এর raw data
+let sqLoaded=false;  // একবারই load হবে
+let sqTeam='';       // active team key
+let sqPos='ALL';     // active position filter
+
+// Country code map for flagcdn (English name → code)
+function getCountryCode(countryName){
+  const map={
+    'Afghanistan':'af','Albania':'al','Algeria':'dz','Andorra':'ad','Angola':'ao',
+    'Argentina':'ar','Armenia':'am','Australia':'au','Austria':'at','Azerbaijan':'az',
+    'Bahrain':'bh','Bangladesh':'bd','Belgium':'be','Bolivia':'bo',
+    'Bosnia and Herzegovina':'ba','Bosnia':'ba','Brazil':'br','Bulgaria':'bg',
+    'Cameroon':'cm','Canada':'ca','Chile':'cl','China':'cn','Colombia':'co',
+    'Costa Rica':'cr','Croatia':'hr','Cuba':'cu','Czech Republic':'cz',
+    'Czechia':'cz','Denmark':'dk','DR Congo':'cd','Ecuador':'ec','Egypt':'eg',
+    'England':'gb-eng','Estonia':'ee','Ethiopia':'et','Finland':'fi',
+    'France':'fr','Georgia':'ge','Germany':'de','Ghana':'gh','Greece':'gr',
+    'Guatemala':'gt','Guinea':'gn','Haiti':'ht','Honduras':'hn','Hungary':'hu',
+    'Iceland':'is','India':'in','Indonesia':'id','Iran':'ir','Iraq':'iq',
+    'Ireland':'ie','Israel':'il','Italy':'it','Jamaica':'jm','Japan':'jp',
+    'Jordan':'jo','Kazakhstan':'kz','Kenya':'ke','Kosovo':'xk','Kuwait':'kw',
+    'Kyrgyzstan':'kg','Latvia':'lv','Lebanon':'lb','Libya':'ly','Lithuania':'lt',
+    'Luxembourg':'lu','Malaysia':'my','Mali':'ml','Malta':'mt','Mexico':'mx',
+    'Moldova':'md','Montenegro':'me','Morocco':'ma','Mozambique':'mz',
+    'Netherlands':'nl','New Zealand':'nz','Nigeria':'ng','North Korea':'kp',
+    'North Macedonia':'mk','Norway':'no','Oman':'om','Panama':'pa','Paraguay':'py',
+    'Peru':'pe','Philippines':'ph','Poland':'pl','Portugal':'pt','Qatar':'qa',
+    'Romania':'ro','Russia':'ru','Saudi Arabia':'sa','Scotland':'gb-sct',
+    'Senegal':'sn','Serbia':'rs','Slovakia':'sk','Slovenia':'si',
+    'South Africa':'za','South Korea':'kr','Spain':'es','Sudan':'sd',
+    'Sweden':'se','Switzerland':'ch','Syria':'sy','Tanzania':'tz','Thailand':'th',
+    'Tunisia':'tn','Turkey':'tr','Turkmenistan':'tm','Uganda':'ug','Ukraine':'ua',
+    'United Arab Emirates':'ae','United States':'us','Uruguay':'uy',
+    "Côte d'Ivoire":'ci','Ivory Coast':'ci','Cape Verde':'cv',
+    'Uzbekistan':'uz','Venezuela':'ve','Vietnam':'vn','Wales':'gb-wls',
+    'Zambia':'zm','Zimbabwe':'zw','Curaçao':'cw','Albania':'al',
+    'El Salvador':'sv','Cuba':'cu','Trinidad and Tobago':'tt',
+    'Faroe Islands':'fo','Kosovo':'xk','Gibraltar':'gi','Myanmar':'mm',
+    'Taiwan':'tw','Hong Kong':'hk','Macau':'mo',
+  };
+  return map[countryName]||'';
+}
+
+function clubFlagHTML(clubCountry){
+  if(!clubCountry)return'';
+  const code=getCountryCode(clubCountry);
+  if(!code)return`<span style="font-size:.6rem;opacity:.5">${esc(clubCountry)}</span>`;
+  return`<img src="https://flagcdn.com/20x15/${code}.png" style="width:16px;height:12px;object-fit:cover;border-radius:1px" loading="lazy" title="${esc(clubCountry)}" onerror="this.style.display='none'">`;
+}
+
+function loadSquads(){
+  document.getElementById('sqGrid').innerHTML=`<div class="sq-loading" style="grid-column:1/-1">⏳ লোড হচ্ছে...</div>`;
+  onValue(ref(db,'squads'),snap=>{
+    sqData=snap.val()||{};
+    sqLoaded=true;
+    buildSqTeamBtns();
+    // Auto-select first team
+    const firstKey=Object.keys(sqData)[0];
+    if(firstKey){sqTeam=firstKey;renderSquad();}
+    else document.getElementById('sqGrid').innerHTML=`<div class="sq-empty" style="grid-column:1/-1">Firebase-এ squad data নেই</div>`;
+  },{onlyOnce:true});
+}
+
+function buildSqTeamBtns(){
+  // Sort teams by rank
+  const sorted=Object.keys(sqData).sort((a,b)=>{
+    const ra=parseInt(getRank(a))||999;
+    const rb=parseInt(getRank(b))||999;
+    return ra-rb;
+  });
+  const container=document.getElementById('sqTeamBtns');
+  container.innerHTML=sorted.map(key=>{
+    const t=TEAMS[key];
+    const code=t?.code||'';
+    const rank=getRank(key);
+    const en=t?.en||key;
+    const flagHtml=code?`<img src="https://flagcdn.com/20x15/${code}.png" loading="lazy" onerror="this.style.display='none'">`:'';
+    return`<button class="sq-team-btn ${sqTeam===key?'on':''}" onclick="setSqTeam('${key.replace(/'/g,"\\'")}')" data-key="${esc(key)}">
+      ${flagHtml}
+      <span style="font-size:.6rem;opacity:.55">${rank}</span>
+      ${esc(en)}
+    </button>`;
+  }).join('');
+}
+
+window.setSqTeam=function(key){
+  sqTeam=key;sqPos='ALL';
+  document.querySelectorAll('.sq-team-btn').forEach(b=>b.classList.toggle('on',b.dataset.key===key));
+  document.querySelectorAll('.sq-pos-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
+  renderSquad();
+};
+
+window.setSqPos=function(pos,btn){
+  sqPos=pos;
+  document.querySelectorAll('.sq-pos-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderSquad();
+};
+
+function renderSquad(){
+  if(!sqTeam||!sqData[sqTeam])return;
+  const data=sqData[sqTeam];
+  const t=TEAMS[sqTeam];
+  const code=t?.code||'';
+  const en=t?.en||sqTeam;
+  const rank=getRank(sqTeam);
+
+  // Header
+  const players=data.players||[];
+  const caps=players.reduce((s,p)=>s+(p.caps||0),0);
+  const intlGoals=players.reduce((s,p)=>s+(p.goals||0),0);
+  const avgAge=(players.reduce((s,p)=>s+(p.age||0),0)/players.length).toFixed(1);
+  const captain=players.find(p=>p.captain);
+
+  document.getElementById('sqHeader').innerHTML=`
+    <div class="sq-header">
+      ${code?`<img class="sq-header-flag" src="https://flagcdn.com/80x60/${code}.png" loading="lazy" onerror="this.style.display='none'">`:''}
+      <div class="sq-header-info">
+        <div class="sq-header-name">${rank?rank+'. ':''} ${esc(en)}</div>
+        <div class="sq-header-sub">Group ${data.group||'?'}</div>
+        <div class="sq-header-coach">👔 ${esc(data.coach||'')}</div>
+        <div class="sq-header-stats">
+          <div class="sq-stat"><div class="sq-stat-n">${players.length}</div><div class="sq-stat-l">খেলোয়াড়</div></div>
+          <div class="sq-stat"><div class="sq-stat-n">${caps}</div><div class="sq-stat-l">মোট Caps</div></div>
+          <div class="sq-stat"><div class="sq-stat-n">${intlGoals}</div><div class="sq-stat-l">মোট গোল</div></div>
+          <div class="sq-stat"><div class="sq-stat-n">${avgAge}</div><div class="sq-stat-l">গড় বয়স</div></div>
+          ${captain?`<div class="sq-stat"><div class="sq-stat-n" style="font-size:.75rem">©</div><div class="sq-stat-l">${esc(captain.name)}</div></div>`:''}
+        </div>
+      </div>
+    </div>`;
+
+  // Filter players
+  const filtered=sqPos==='ALL'?players:players.filter(p=>p.pos===sqPos);
+
+  if(filtered.length===0){
+    document.getElementById('sqGrid').innerHTML=`<div class="sq-empty" style="grid-column:1/-1">এই পজিশনে কোনো খেলোয়াড় নেই</div>`;
+    return;
+  }
+
+  document.getElementById('sqGrid').innerHTML=filtered.map(p=>`
+    <div class="sq-card ${p.captain?'captain':''}">
+      <div class="sq-no">
+        <div style="text-align:center">
+          <div>${p.no||'—'}</div>
+          <div class="sq-pos-badge ${p.pos||''}">${p.pos||''}</div>
+        </div>
+      </div>
+      <div class="sq-body">
+        <div class="sq-name-row">
+          <div class="sq-pname" title="${esc(p.name)}">${esc(p.name)}</div>
+          ${p.captain?'<span class="sq-cap-badge">C</span>':''}
+        </div>
+        <div class="sq-club">
+          ${clubFlagHTML(p.clubCountry)}
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.club||'')}</span>
+        </div>
+        <div class="sq-meta">
+          <span title="বয়স">🎂 ${p.age||'?'}</span>
+          <span title="Caps">🏆 ${p.caps||0}</span>
+          <span title="আন্তর্জাতিক গোল">⚽ ${p.goals||0}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
 
 // Theme
 window.toggleTheme=function(){
