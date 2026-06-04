@@ -340,7 +340,7 @@ function renderTable(grp){
     const isPending=pendingChanges.has(m.id);
     return`<div class="amc ${isPending?'changed-card':''}" id="tr-${m.id}">
       <div class="amc-hdr">
-        <span class="amc-grp">Group ${m.grp} · MD${m.md||1}${isPending?'<span class="changed-dot"></span>':''}</span>
+        <span class="amc-grp">Match #${m.id} · Group ${m.grp} · MD${m.md||1}${isPending?'<span class="changed-dot"></span>':''}</span>
         <span class="amc-meta">⏰ ${fT(m.time)}</span>
       </div>
       <div class="amc-body">
@@ -570,7 +570,7 @@ function renderKO(){
     const hasET=sc.et1!==undefined, hasPen=sc.pen1!==undefined;
 
     return`<div class="ko-card">
-      <div class="ko-hd"><span class="ko-rname">${m.roundName}</span><span class="ko-mid">${m.id}</span></div>
+      <div class="ko-hd"><span class="ko-rname">${m.roundName}</span><span class="ko-mid">Match #${m.num||''} · ${m.id}</span></div>
       <div class="ko-body">
         <div class="ko-date">📅 ${fD(m.date)} · ⏰ ${fT(m.time)}</div>
         <div class="ko-tr">
