@@ -452,6 +452,9 @@ function buildB3MapAdmin(grps){
   return map;
 }
 
+function normalizeWinKey(raw){
+  return raw.trim().toLowerCase().replace(/\s+/g,'').replace(/-/g,'_');
+}
 function buildWinnerMapAdmin(grps,b3map){
   const winners={};
   const allMatches=KO_ROUNDS.flatMap(r=>r.matches);
@@ -459,8 +462,22 @@ function buildWinnerMapAdmin(grps,b3map){
     const sc=dbSc[m.id]||{};
     if(sc.s1===undefined||sc.s1===null)continue;
     let t1=sc.t1||'';let t2=sc.t2||'';
-    if(!t1){if(m.s1?.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||'';else t1=resolveSlotAdmin(m.s1,grps)||'';}
-    if(!t2){if(m.s2?.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||'';else t2=resolveWinSlot(m.s2,winners)||'';}
+    if(!t1){
+      if(m.s1?.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||'';
+      else{
+        const rs=resolveSlotAdmin(m.s1,grps);
+        if(rs)t1=rs;
+        else{const wm=m.s1?.match(/^W\s+(.+)$/i);if(wm)t1=winners[normalizeWinKey(wm[1])]||'';}
+      }
+    }
+    if(!t2){
+      if(m.s2?.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||'';
+      else{
+        const rs=resolveSlotAdmin(m.s2,grps);
+        if(rs)t2=rs;
+        else{const wm=m.s2?.match(/^W\s+(.+)$/i);if(wm)t2=winners[normalizeWinKey(wm[1])]||'';}
+      }
+    }
     const s1=Number(sc.s1),s2=Number(sc.s2);
     const pen1=sc.pen1!==undefined?Number(sc.pen1):null,pen2=sc.pen2!==undefined?Number(sc.pen2):null;
     const et1=sc.et1!==undefined?Number(sc.et1):null,et2=sc.et2!==undefined?Number(sc.et2):null;
@@ -474,8 +491,8 @@ function buildWinnerMapAdmin(grps,b3map){
 }
 function resolveWinSlot(slot,winnerMap){
   if(!slot)return'';
-  const wm=slot.match(/^W ([\w-]+)$/i);
-  if(wm){const mid=wm[1].toLowerCase().replace('-','_');return winnerMap[mid]||'';}
+  const wm=slot.match(/^W\s+(.+)$/i);
+  if(wm)return winnerMap[normalizeWinKey(wm[1])]||'';
   return'';
 }
 

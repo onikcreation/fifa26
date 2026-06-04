@@ -481,57 +481,53 @@ function resolveSlot(slot,grps){
   return slot;
 }
 
-// Build winner map: matchId → winner team name (from Firebase scores)
-function buildWinnerMap(grps,b3map){
-  const winners={}; // matchId → winner name
-  const allMatches=KO_ROUNDS.flatMap(r=>r.matches);
+function normalizeWinKey(raw){
+  // "R32-1"→"r32_1", "R16-2"→"r16_2", "QF-1"→"qf_1"
+  return raw.trim().toLowerCase().replace(/\s+/g,'').replace(/-/g,'_');
+}
 
+function buildWinnerMap(grps,b3map){
+  const winners={};
+  const allMatches=KO_ROUNDS.flatMap(r=>r.matches);
   for(const m of allMatches){
     const sc=scores[m.id]||{};
     if(sc.s1===undefined||sc.s1===null)continue;
-    // Get t1, t2 names
-    let t1=sc.t1||'';
-    let t2=sc.t2||'';
+    let t1=sc.t1||'';let t2=sc.t2||'';
     if(!t1){
-      if(m.s1&&m.s1.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||'';
-      else t1=resolveSlot(m.s1,grps)||'';
-      // Check if t1 is winner from previous match
-      if(!t1&&winners[m.s1?.replace('W ','').toLowerCase().replace(/[^a-z0-9_]/g,'')])
-        t1=winners[m.id+'_auto_t1']||'';
+      if(m.s1?.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||'';
+      else{
+        const rs=resolveSlot(m.s1,grps);
+        if(rs!==m.s1)t1=rs;
+        else{const wm=m.s1?.match(/^W\s+(.+)$/i);if(wm)t1=winners[normalizeWinKey(wm[1])]||'';}
+      }
     }
     if(!t2){
-      if(m.s2&&m.s2.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||'';
-      else t2=resolveSlot(m.s2,grps)||'';
+      if(m.s2?.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||'';
+      else{
+        const rs=resolveSlot(m.s2,grps);
+        if(rs!==m.s2)t2=rs;
+        else{const wm=m.s2?.match(/^W\s+(.+)$/i);if(wm)t2=winners[normalizeWinKey(wm[1])]||'';}
+      }
     }
-    // Determine winner (90 min or ET or penalties)
     const s1=Number(sc.s1),s2=Number(sc.s2);
-    const et1=sc.et1!==undefined?Number(sc.et1):null;
-    const et2=sc.et2!==undefined?Number(sc.et2):null;
-    const pen1=sc.pen1!==undefined?Number(sc.pen1):null;
-    const pen2=sc.pen2!==undefined?Number(sc.pen2):null;
+    const et1=sc.et1!==undefined?Number(sc.et1):null,et2=sc.et2!==undefined?Number(sc.et2):null;
+    const pen1=sc.pen1!==undefined?Number(sc.pen1):null,pen2=sc.pen2!==undefined?Number(sc.pen2):null;
     let winner='';
     if(pen1!==null&&pen2!==null){winner=pen1>pen2?t1:t2;}
-    else if(et1!==null&&et2!==null){const tot1=s1+et1,tot2=s2+et2;winner=tot1>tot2?t1:t2;}
+    else if(et1!==null&&et2!==null){winner=(s1+et1)>(s2+et2)?t1:t2;}
     else{winner=s1>s2?t1:s2>s1?t2:'';}
     if(winner)winners[m.id]=winner;
   }
   return winners;
 }
 
-// Resolve team name for a KO slot considering winner tracking
 function resolveKOSlot(slot,grps,b3map,winnerMap){
   if(!slot)return'TBD';
   if(TEAMS[slot])return slot;
   if(slot.match(/^([12])([A-L])$/))return resolveSlot(slot,grps);
   if(slot.startsWith('3rd '))return'3rd';
-  // "W R32-1" → find match id r32_1, get its winner
-  const wMatch=slot.match(/^W (r\d+_\d+|r16_\d+|qf_\d+|sf_\d+|final|third)$/i);
-  if(wMatch){
-    const mid=wMatch[1].toLowerCase().replace(' ','_').replace('-','_');
-    // map "R32-1" → "r32_1"
-    const mapped=mid.replace(/^r(\d+)-(\d+)$/,'r$1_$2');
-    return winnerMap[mapped]||slot;
-  }
+  const wm=slot.match(/^W\s+(.+)$/i);
+  if(wm){return winnerMap[normalizeWinKey(wm[1])]||slot;}
   return slot;
 }
 
