@@ -111,40 +111,86 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .row-q{background:rgba(39,174,96,.07)!important}.row-q td:first-child{border-left:3px solid var(--green)}
 .row-3{background:rgba(243,156,18,.05)!important}.row-3 td:first-child{border-left:3px solid var(--orange)}
 
-/* ══ KNOCKOUT BRACKET ══ */
-/* Desktop: full horizontal bracket */
+/* ══ KNOCKOUT BRACKET — SYMMETRIC ══ */
 .bracket-desktop{display:none}
 .bracket-mobile{display:none}
-@media(min-width:900px){.bracket-desktop{display:block}.bracket-mobile{display:none}}
-@media(max-width:899px){.bracket-desktop{display:none}.bracket-mobile{display:block}}
+@media(min-width:860px){.bracket-desktop{display:block}.bracket-mobile{display:none}}
+@media(max-width:859px){.bracket-desktop{display:none}.bracket-mobile{display:block}}
 
-.bk-wrap{overflow-x:auto;padding-bottom:1rem;-webkit-overflow-scrolling:touch}
-.bk-table{display:flex;align-items:flex-start;gap:0;min-width:1200px}
+/* Desktop grid: R32|R16|QF|SF | CENTER | SF|QF|R16|R32 */
+.sym-bracket{
+  display:grid;
+  grid-template-columns:repeat(4,1fr) 190px repeat(4,1fr);
+  gap:0;
+  min-width:1100px;
+  overflow-x:auto;
+  padding-bottom:.5rem;
+}
+.sym-col{display:flex;flex-direction:column;padding:0 2px}
+.sym-col-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:.7rem;letter-spacing:1.5px;
+  color:var(--gold);text-align:center;
+  padding:.4rem 0 .7rem;text-transform:uppercase
+}
+.sym-spacer{flex:1}
 
-/* Round column */
-.bk-col{display:flex;flex-direction:column;flex:1;position:relative}
-.bk-col-hd{font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:1.5px;color:var(--gold);text-align:center;padding:.45rem .3rem;background:rgba(0,61,122,.3);border:1px solid var(--border);border-radius:5px 5px 0 0;margin:0 3px .3rem}
-.bk-slots{display:flex;flex-direction:column;padding:0 3px;gap:0}
+/* Match card */
+.sym-match{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:7px;overflow:hidden;
+  margin:2px 0;transition:border .15s;
+}
+.sym-match:hover{border-color:rgba(201,168,76,.45)}
+.sym-match.has-result{border-color:rgba(201,168,76,.22)}
+.sym-team{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 7px;border-bottom:1px solid var(--border2);
+  min-height:28px;font-size:.72rem;
+}
+.sym-team:last-of-type{border-bottom:none}
+.sym-flag{width:20px;height:15px;object-fit:cover;border-radius:2px;flex-shrink:0}
+.sym-tname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.sym-tname.tbd{color:var(--gray);font-style:italic;font-size:.68rem}
+.sym-score{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--gold-l);min-width:16px;text-align:right}
+.sym-team.win{background:rgba(39,174,96,.1)}
+.sym-team.win .sym-tname{font-weight:700}
+.sym-team.win .sym-score{color:#2ecc71}
+.sym-extra{text-align:center;font-size:.58rem;color:var(--orange);padding:2px;border-top:1px solid var(--border2)}
+.sym-date{text-align:center;font-size:.55rem;color:var(--gray);padding:2px;background:rgba(0,0,0,.12)}
 
-/* Match slot */
-.bk-match{background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:.5rem;transition:border .2s;cursor:default;position:relative}
-.bk-match:hover{border-color:var(--gold)}
-.bk-team{display:flex;align-items:center;gap:.35rem;padding:.32rem .45rem;border-bottom:1px solid var(--border2);font-size:.7rem;min-height:26px}
-.bk-team:last-of-type{border-bottom:none}
-.bk-flag{width:18px;height:13px;object-fit:cover;border-radius:2px;flex-shrink:0}
-.bk-tname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
-.bk-sc{font-family:'Bebas Neue',sans-serif;font-size:.88rem;color:var(--gold-l);min-width:16px;text-align:right}
-.bk-date{text-align:center;font-size:.55rem;color:var(--gray);padding:2px;background:rgba(0,0,0,.15)}
-.bk-win{background:rgba(39,174,96,.12)!important;font-weight:700}
+/* Center column */
+.sym-center{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:0 4px;gap:8px;
+}
+.sym-final-label{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:.75rem;letter-spacing:2px;
+  color:var(--gold);text-align:center;
+}
+.sym-champion{
+  border:1px solid rgba(201,168,76,.5);
+  border-radius:10px;
+  background:rgba(201,168,76,.07);
+  padding:10px 8px;text-align:center;width:100%;
+}
+.sym-champ-flag{
+  width:48px;height:36px;object-fit:cover;
+  border-radius:4px;margin:0 auto 5px;display:block;
+}
+.sym-champ-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;letter-spacing:1px;color:var(--gold-l);
+}
+.sym-3rd-label{
+  font-size:.62rem;letter-spacing:1px;
+  color:var(--gray);text-align:center;
+}
 
-/* Spacer between matches for bracket alignment */
-.bk-spacer{flex:1}
-
-/* Final column special */
-.bk-final-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:0 3px}
-.trophy-badge{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.05));border:1px solid var(--gold);border-radius:8px;padding:.6rem 1rem;text-align:center;font-size:.7rem;color:var(--gold-l);letter-spacing:1px;font-family:'Bebas Neue',sans-serif}
-
-/* Mobile bracket tabs */
+/* Mobile tabs */
 .bk-round-tabs{display:flex;gap:.3rem;flex-wrap:nowrap;overflow-x:auto;margin-bottom:.8rem;padding-bottom:.3rem;scrollbar-width:none}
 .bk-round-tabs::-webkit-scrollbar{display:none}
 .bk-rtab{font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:1px;padding:.35rem .8rem;background:var(--card);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}
@@ -268,15 +314,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <!-- KNOCKOUT -->
   <div id="p-knockout" class="panel">
     <div class="sec-title">🏅 Knockout Bracket</div>
-
-    <!-- Desktop full bracket -->
+    <!-- Desktop symmetric bracket -->
     <div class="bracket-desktop">
-      <div class="bk-wrap">
-        <div class="bk-table" id="bkDesktop"></div>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:.5rem">
+        <div class="sym-bracket" id="symDesktop"></div>
       </div>
     </div>
-
-    <!-- Mobile tab bracket -->
+    <!-- Mobile tabs -->
     <div class="bracket-mobile">
       <div class="bk-round-tabs" id="bkTabs"></div>
       <div id="bkMobile"></div>
@@ -588,28 +632,123 @@ function renderBracket(grps={}){
   const b3map=buildBest3rdMap(grps);
   const winnerMap=buildWinnerMap(grps,b3map);
 
-  // Desktop full bracket
-  const desktopHTML=KO_ROUNDS.map(round=>{
-    const isFinal=round.short==='F'||round.short==='3PL';
-    return`<div class="bk-col">
-      <div class="bk-col-hd">${round.name}</div>
-      <div class="bk-slots">
-        ${isFinal
-          ?`<div class="bk-final-wrap">${round.short==='F'?'<div style="font-size:1.8rem;text-align:center;margin:.4rem 0">🏆</div>':''}${round.matches.map(m=>buildMatch(m,grps,b3map,winnerMap)).join('')}</div>`
-          :round.matches.map(m=>buildMatch(m,grps,b3map,winnerMap)).join('')
-        }
-      </div>
-    </div>`;
-  }).join('');
-  document.getElementById('bkDesktop').innerHTML=desktopHTML;
+  // ── helpers ──
+  function getTeam(m,side){
+    const sc=scores[m.id]||{};
+    let t=sc[side==='s1'?'t1':'t2']||'';
+    if(!t){
+      const slot=m[side];
+      if(slot?.startsWith('3rd '))t=b3map[`${m.id}_${side}`]||slot;
+      else t=resolveKOSlot(slot,grps,b3map,winnerMap)||slot||'TBD';
+    }
+    return t;
+  }
+  function getWinner(m){
+    const sc=scores[m.id]||{};
+    if(sc.s1===undefined||sc.s1===null)return'';
+    const t1=getTeam(m,'s1'),t2=getTeam(m,'s2');
+    const s1=Number(sc.s1),s2=Number(sc.s2);
+    const pen1=sc.pen1!==undefined?Number(sc.pen1):null,pen2=sc.pen2!==undefined?Number(sc.pen2):null;
+    const et1=sc.et1!==undefined?Number(sc.et1):null,et2=sc.et2!==undefined?Number(sc.et2):null;
+    if(pen1!==null&&pen2!==null)return pen1>pen2?t1:t2;
+    if(et1!==null&&et2!==null)return(s1+et1)>(s2+et2)?t1:t2;
+    return s1>s2?t1:s2>s1?t2:'';
+  }
 
-  // Mobile tabs
-  document.getElementById('bkTabs').innerHTML=KO_ROUNDS.map((r,i)=>
+  function symFlag(name){
+    const t=TEAMS[name];
+    if(!t)return'';
+    return`<img class="sym-flag" src="https://flagcdn.com/24x18/${t.code}.png" loading="lazy" onerror="this.style.display='none'">`;
+  }
+
+  function symMatch(m,compact=false){
+    if(!m)return'';
+    const sc=scores[m.id]||{};
+    const done=sc.s1!==undefined&&sc.s1!==null;
+    const t1=getTeam(m,'s1'),t2=getTeam(m,'s2');
+    const w=done?getWinner(m):'';
+    const s1=done?sc.s1:'',s2=done?sc.s2:'';
+    const hasET=sc.et1!==undefined,hasPen=sc.pen1!==undefined;
+    const auto1=!((scores[m.id]||{}).t1)&&TEAMS[t1];
+    const auto2=!((scores[m.id]||{}).t2)&&TEAMS[t2];
+    return`<div class="sym-match ${done?'has-result':''}">
+      <div class="sym-team ${w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
+        ${symFlag(t1)}<span class="sym-tname ${t1==='TBD'||t1.startsWith('W ')||t1.startsWith('3rd')?'tbd':''}">${t1}</span>
+        <span class="sym-score">${s1}</span>
+      </div>
+      <div class="sym-team ${w===t2?'win':''}" style="${auto2?'opacity:.82':''}">
+        ${symFlag(t2)}<span class="sym-tname ${t2==='TBD'||t2.startsWith('W ')||t2.startsWith('3rd')?'tbd':''}">${t2}</span>
+        <span class="sym-score">${s2}</span>
+      </div>
+      ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:hasET?`<div class="sym-extra">ET: ${sc.et1}–${sc.et2}</div>`:''}
+      ${!compact?`<div class="sym-date">${fD(m.date)} · ${fT(m.time)}</div>`:''}
+    </div>`;
+  }
+
+  function symCol(title,matches,spacerTopFlex=0,spacerMidFlex=0){
+    let h=`<div class="sym-col"><div class="sym-col-title">${title}</div>`;
+    if(spacerTopFlex)h+=`<div class="sym-spacer" style="flex:${spacerTopFlex}"></div>`;
+    for(let i=0;i<matches.length;i++){
+      h+=symMatch(matches[i]);
+      if(i<matches.length-1&&spacerMidFlex)h+=`<div class="sym-spacer" style="flex:${spacerMidFlex}"></div>`;
+    }
+    h+=`</div>`;return h;
+  }
+
+  // ── Build match objects for each round ──
+  const R32=KO_ROUNDS[0].matches; // 16 matches
+  const R16=KO_ROUNDS[1].matches; // 8
+  const QF=KO_ROUNDS[2].matches;  // 4
+  const SF=KO_ROUNDS[3].matches;  // 2
+  const THIRD=KO_ROUNDS[4].matches[0];
+  const FINAL=KO_ROUNDS[5].matches[0];
+
+  // Champion
+  const champion=getWinner(FINAL)||'';
+  const champCode=TEAMS[champion]?.code||'';
+  const champFlagURL=champCode?`https://flagcdn.com/48x36/${champCode}.png`:'';
+
+  // ── Desktop symmetric bracket ──
+  let html='';
+  html+=symCol('শেষ বত্রিশ',R32.slice(0,8),0,1);
+  html+=symCol('শেষ ষোলো',R16.slice(0,4),1,3);
+  html+=symCol('কোয়ার্টার',QF.slice(0,2),3,7);
+  html+=symCol('সেমি ফাইনাল',[SF[0]],7,0);
+
+  // Center
+  html+=`<div class="sym-center">
+    <div class="sym-final-label">🏆 ফাইনাল</div>
+    <div class="sym-champion">
+      ${champFlagURL?`<img class="sym-champ-flag" src="${champFlagURL}" loading="lazy" onerror="this.style.display='none'">`
+        :`<div style="width:48px;height:36px;background:rgba(201,168,76,.15);border-radius:4px;margin:0 auto 5px"></div>`}
+      <div class="sym-champ-name">${champion||'Champion'}</div>
+    </div>
+    <div style="width:100%">${symMatch(FINAL,true)}</div>
+    <div class="sym-3rd-label">🥉 তৃতীয় স্থান</div>
+    <div style="width:100%">${symMatch(THIRD,true)}</div>
+  </div>`;
+
+  html+=symCol('সেমি ফাইনাল',[SF[1]],7,0);
+  html+=symCol('কোয়ার্টার',QF.slice(2,4),3,7);
+  html+=symCol('শেষ ষোলো',R16.slice(4,8),1,3);
+  html+=symCol('শেষ বত্রিশ',R32.slice(8,16),0,1);
+
+  document.getElementById('symDesktop').innerHTML=html;
+
+  // ── Mobile tabs ──
+  const mobileRounds=[
+    {name:'শেষ বত্রিশ',matches:R32},
+    {name:'শেষ ষোলো',matches:R16},
+    {name:'কোয়ার্টার',matches:QF},
+    {name:'সেমি',matches:SF},
+    {name:'ফাইনাল',matches:[FINAL,THIRD]},
+  ];
+  document.getElementById('bkTabs').innerHTML=mobileRounds.map((r,i)=>
     `<button class="bk-rtab ${i===activeBkTab?'on':''}" onclick="window._bktab(${i})">${r.name}</button>`
   ).join('');
-  document.getElementById('bkMobile').innerHTML=KO_ROUNDS.map((round,i)=>
+  document.getElementById('bkMobile').innerHTML=mobileRounds.map((round,i)=>
     `<div class="bk-round-panel ${i===activeBkTab?'on':''}">
-      ${round.matches.map(m=>buildMatch(m,grps,b3map,winnerMap)).join('')}
+      ${round.matches.map(m=>symMatch(m)).join('')}
     </div>`
   ).join('');
 }
