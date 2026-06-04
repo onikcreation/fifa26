@@ -61,43 +61,55 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .fb{font-size:.72rem;letter-spacing:.5px;padding:.3rem .75rem;background:var(--card);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;transition:all .2s;white-space:nowrap}
 .fb:hover,.fb.on{background:var(--blue);border-color:var(--gold);color:#fff}
 
-/* ══ MATCH CARD — NEW STYLE ══ */
-.match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-.mc{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
-.mc:hover{border-color:rgba(201,168,76,.4);box-shadow:0 6px 24px var(--shadow);transform:translateY(-1px)}
+/* ══ MATCH CARD — CARD STYLE ══ */
+.match-sections{display:flex;flex-direction:column;gap:1.8rem}
+.date-section{}
+.date-section-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1rem;letter-spacing:2px;color:var(--gold-l);
+  margin-bottom:.8rem;
+  display:flex;align-items:center;gap:.6rem;
+  padding:.5rem .8rem;
+  background:rgba(0,61,122,.2);
+  border-left:3px solid var(--gold);
+  border-radius:0 6px 6px 0;
+}
+.match-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
+.mc:hover{border-color:rgba(201,168,76,.45);box-shadow:0 8px 28px var(--shadow);transform:translateY(-2px)}
 /* Card header */
-.mc-hdr{display:flex;align-items:center;justify-content:space-between;padding:.55rem .85rem;border-bottom:1px solid var(--border2)}
-.mc-grp-badge{font-size:.6rem;font-weight:700;letter-spacing:1px;padding:.2rem .55rem;border-radius:20px;background:rgba(201,168,76,.18);color:var(--gold-l);border:1px solid rgba(201,168,76,.3)}
+.mc-hdr{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;border-bottom:1px solid var(--border2)}
+.mc-grp-badge{font-size:.62rem;font-weight:700;letter-spacing:1px;padding:.22rem .6rem;border-radius:20px;background:rgba(201,168,76,.18);color:var(--gold-l);border:1px solid rgba(201,168,76,.3)}
 .mc-matchday{font-size:.62rem;color:var(--gray);letter-spacing:.5px}
 /* Card body — teams */
-.mc-body{display:flex;align-items:center;justify-content:space-between;padding:.9rem .85rem .5rem;gap:.5rem}
-.mc-team{display:flex;flex-direction:column;align-items:center;gap:.45rem;flex:1;min-width:0}
-.mc-flag-big{width:64px;height:48px;object-fit:cover;border-radius:6px;box-shadow:0 2px 8px var(--shadow)}
-.mc-flag-ph{width:64px;height:48px;background:var(--bg3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--gray)}
-.mc-tname{font-size:.8rem;font-weight:700;color:var(--text);text-align:center;line-height:1.2;max-width:90px}
+.mc-body{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1rem .7rem;gap:.5rem}
+.mc-team{display:flex;flex-direction:column;align-items:center;gap:.55rem;flex:1;min-width:0}
+.mc-flag-big{width:80px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 3px 10px var(--shadow)}
+.mc-flag-ph{width:80px;height:60px;background:var(--bg3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--gray)}
+.mc-tname{font-size:.88rem;font-weight:700;color:var(--text);text-align:center;line-height:1.25;max-width:105px}
 /* Score center */
-.mc-score-center{display:flex;align-items:center;gap:.5rem;flex-shrink:0;padding:0 .3rem}
-.mc-vs{font-size:.85rem;font-weight:700;color:var(--gray);letter-spacing:1px}
-.mc-sc{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold-l);line-height:1;min-width:22px;text-align:center}
-.mc-sc-sep{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);margin:0 .1rem}
-.mc-score-done .mc-sc{color:var(--gold-l)}
+.mc-score-center{display:flex;align-items:center;gap:.5rem;flex-shrink:0;padding:0 .4rem}
+.mc-vs{font-size:1rem;font-weight:700;color:var(--gray);letter-spacing:2px}
+.mc-sc{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--gold-l);line-height:1;min-width:24px;text-align:center}
+.mc-sc-sep{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);margin:0 .1rem}
 /* Card footer */
-.mc-footer{display:flex;align-items:center;justify-content:space-between;padding:.5rem .85rem;border-top:1px solid var(--border2);font-size:.65rem;color:var(--gray);margin-top:auto}
-.mc-footer-date{display:flex;align-items:center;gap:.3rem}
-.mc-footer-stadium{display:flex;align-items:center;gap:.3rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+.mc-footer{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;border-top:1px solid var(--border2);font-size:.67rem;color:var(--gray);margin-top:auto}
+.mc-footer-date{display:flex;align-items:center;gap:.3rem;flex-shrink:0}
+.mc-footer-stadium{display:flex;align-items:center;gap:.3rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58%;text-align:right}
 /* Goals */
-.mc-goals{padding:.4rem .85rem;display:flex;gap:1.5rem;border-top:1px solid var(--border2);background:rgba(0,0,0,.08)}
+.mc-goals{padding:.5rem 1rem;display:flex;gap:1.5rem;border-top:1px solid var(--border2);background:rgba(0,0,0,.08)}
 .mc-goals-side{flex:1}
 .mc-goals-side.right{text-align:right}
-.goal-item{font-size:.68rem;color:var(--text2);padding:1px 0}
+.goal-item{font-size:.7rem;color:var(--text2);padding:1px 0}
 .goal-item .gmin{color:var(--gold);font-weight:700}
-.goal-item .gpen{color:var(--orange);font-size:.6rem}
+.goal-item .gpen{color:var(--orange);font-size:.62rem}
 
-@media(max-width:600px){
+@media(max-width:900px){.match-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){
   .match-grid{grid-template-columns:1fr}
-  .mc-flag-big{width:52px;height:39px}
-  .mc-tname{font-size:.72rem;max-width:75px}
-  .mc-sc{font-size:1.7rem}
+  .mc-flag-big{width:64px;height:48px}
+  .mc-tname{font-size:.8rem;max-width:85px}
+  .mc-sc{font-size:2rem}
 }
 
 /* GROUP */
@@ -303,7 +315,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="stats-strip" id="statStrip"></div>
     <div class="sec-title">ম্যাচ সূচি</div>
     <div class="filters" id="schedFilters"></div>
-    <div class="match-grid" id="matchList"></div>
+    <div class="match-sections" id="matchList"></div>
   </div>
 
   <!-- GROUPS -->
@@ -441,16 +453,14 @@ function renderMatches(grp){
   function bigFlag(name){
     const t=TEAMS[name];
     if(!t)return`<div class="mc-flag-ph">?</div>`;
-    return`<img class="mc-flag-big" src="https://flagcdn.com/64x48/${t.code}.png" loading="lazy" onerror="this.style.display='none'" alt="${t.en}">`;
+    return`<img class="mc-flag-big" src="https://flagcdn.com/80x60/${t.code}.png" loading="lazy" onerror="this.style.display='none'" alt="${t.en}">`;
   }
-  document.getElementById('matchList').innerHTML=list.map(m=>{
+  function cardHTML(m){
     const sc=scores[m.id]||{};
     const done=sc.s1!==undefined&&sc.s1!==null;
     const g1=sc.goals1||[],g2=sc.goals2||[];
     const hasGoals=g1.length>0||g2.length>0;
-    // Format date as MM/DD/YYYY HH:MM
     const [yr,mo,dy]=m.date.split('-');
-    const dateStr=`${mo}/${dy}/${yr} ${m.time}`;
     return`<div class="mc">
       <div class="mc-hdr">
         <span class="mc-grp-badge">Group ${m.grp}</span>
@@ -477,11 +487,32 @@ function renderMatches(grp){
         <div class="mc-goals-side right">${g2.map(g=>`<div class="goal-item">${g.pen?`<span class="gpen">(P) </span>`:''}<span class="gmin">${g.min}'</span> ${g.name} ⚽</div>`).join('')}</div>
       </div>`:''}
       <div class="mc-footer">
-        <span class="mc-footer-date">📅 ${dateStr}</span>
+        <span class="mc-footer-date">⏰ ${mo}/${dy}/${yr} ${m.time}</span>
         <span class="mc-footer-stadium">🏟 ${m.stadium||''}</span>
       </div>
     </div>`;
-  }).join('');
+  }
+
+  // Group by date
+  const byDate={};
+  for(const m of list){
+    if(!byDate[m.date])byDate[m.date]=[];
+    byDate[m.date].push(m);
+  }
+  const sortedDates=Object.keys(byDate).sort();
+  const DAYS=['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'];
+  const MON_BN=['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'];
+  function dateTitle(d){
+    const dt=new Date(d+'T00:00:00');
+    return`${DAYS[dt.getDay()]}, ${dt.getDate()} ${MON_BN[dt.getMonth()]} ${dt.getFullYear()}`;
+  }
+
+  document.getElementById('matchList').innerHTML=sortedDates.map(date=>`
+    <div class="date-section">
+      <div class="date-section-title">📅 ${dateTitle(date)}</div>
+      <div class="match-grid">${byDate[date].map(m=>cardHTML(m)).join('')}</div>
+    </div>
+  `).join('');
 }
 
 // Groups

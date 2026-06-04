@@ -75,7 +75,17 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .save-progress{font-size:.72rem;color:var(--gray);min-width:120px}
 
 /* ══ ADMIN MATCH CARDS ══ */
-.adm-match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.8rem;margin-bottom:1.2rem}
+.adm-match-sections{display:flex;flex-direction:column;gap:1.5rem;margin-bottom:1.2rem}
+.adm-date-title{
+  font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:2px;
+  color:var(--gold-l);margin-bottom:.7rem;
+  display:flex;align-items:center;gap:.5rem;
+  padding:.4rem .75rem;background:rgba(0,61,122,.2);
+  border-left:3px solid var(--gold);border-radius:0 5px 5px 0;
+}
+.adm-match-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+@media(max-width:900px){.adm-match-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.adm-match-grid{grid-template-columns:1fr}}
 .amc{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border .15s}
 .amc:hover{border-color:rgba(201,168,76,.35)}
 .amc.changed-card{border-color:rgba(243,156,18,.5)!important}
@@ -194,7 +204,7 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 
       <div class="sec-title">গ্রুপ পর্যায় স্কোর</div>
       <div class="filters" id="gFilters"></div>
-      <div class="adm-match-grid" id="mTbody"></div>
+      <div class="adm-match-sections" id="mTbody"></div>
     </div>
 
     <!-- KNOCKOUT PANEL -->
@@ -318,17 +328,20 @@ function markChanged(id){
 
 function renderTable(grp){
   const list=grp==='ALL'?MATCHES:MATCHES.filter(m=>m.grp===grp);
-  document.getElementById('mTbody').innerHTML=list.map(m=>{
+  const DAYS=['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'];
+  const MON=['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'];
+  function dtitle(d){const dt=new Date(d+'T00:00:00');return`${DAYS[dt.getDay()]}, ${dt.getDate()} ${MON[dt.getMonth()]}`;}
+
+  function cardHTML(m){
     const sc=dbSc[m.id]||{};
     const s1=sc.s1!==undefined?sc.s1:'';
     const s2=sc.s2!==undefined?sc.s2:'';
     const hg=(sc.goals1?.length||0)+(sc.goals2?.length||0);
     const isPending=pendingChanges.has(m.id);
-    const [yr,mo,dy]=m.date.split('-');
     return`<div class="amc ${isPending?'changed-card':''}" id="tr-${m.id}">
       <div class="amc-hdr">
         <span class="amc-grp">Group ${m.grp} · MD${m.md||1}${isPending?'<span class="changed-dot"></span>':''}</span>
-        <span class="amc-meta">${mo}/${dy} · ${fT(m.time)}</span>
+        <span class="amc-meta">⏰ ${fT(m.time)}</span>
       </div>
       <div class="amc-body">
         <div class="amc-teams">
@@ -360,7 +373,19 @@ function renderTable(grp){
         </div>
       </div>
     </div>`;
-  }).join('');
+  }
+
+  // Group by date
+  const byDate={};
+  for(const m of list){if(!byDate[m.date])byDate[m.date]=[];byDate[m.date].push(m);}
+  const sortedDates=Object.keys(byDate).sort();
+
+  document.getElementById('mTbody').innerHTML=sortedDates.map(date=>`
+    <div>
+      <div class="adm-date-title">📅 ${dtitle(date)}</div>
+      <div class="adm-match-grid">${byDate[date].map(m=>cardHTML(m)).join('')}</div>
+    </div>
+  `).join('');
 }
 
 // ── BATCH SAVE (fixes the main bug) ──
