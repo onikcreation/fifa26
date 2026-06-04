@@ -156,8 +156,9 @@ body::before{content:'';position:fixed;inset:0;
 .settings-body{padding:1rem}
 .s-label{font-size:.72rem;color:var(--text2);display:block;margin-bottom:.5rem;letter-spacing:.5px}
 .s-hint{font-size:.62rem;color:var(--gray);margin-top:.5rem}
-.s-select{width:100%;background:var(--inp);border:1px solid var(--border2);border-radius:7px;padding:.5rem .7rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;outline:none;cursor:pointer;transition:border .2s}
-.s-select:focus{border-color:var(--neon)}
+.s-select{width:100%;background:#071517;border:1px solid var(--border2);border-radius:7px;padding:.5rem .7rem;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;outline:none;cursor:pointer;transition:border .2s;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A1F000' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;padding-right:2rem}
+.s-select:focus{border-color:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
+.s-select option{background:#071517;color:#ffffff}
 .s-toggle-group{display:flex;gap:.4rem}
 .s-toggle{flex:1;padding:.5rem;background:rgba(161,240,0,.05);border:1px solid var(--border2);border-radius:7px;color:var(--gray);font-size:.8rem;cursor:pointer;transition:all .2s;text-align:center}
 .s-toggle.on{background:rgba(161,240,0,.15);border-color:var(--neon);color:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
@@ -258,8 +259,7 @@ body::before{content:'';position:fixed;inset:0;
       </div>
       <div class="hdr-right">
         <span id="fbSt" style="font-size:.6rem;color:var(--gray)">Firebase...</span>
-        <button class="icon-btn" onclick="location.reload()" title="রিফ্রেশ" style="font-size:.75rem;padding:.3rem .55rem">🔄</button>
-        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Dark/Light">🌙</button>
+        <button class="icon-btn" onclick="location.reload()" title="রিফ্রেশ" style="font-size:.75rem;padding:.28rem .5rem">🔄</button>
         <a href="index.html" class="nav-link">🏠 সাইট</a>
         <button class="nav-link danger" onclick="window.doLogout()">🚪 Logout</button>
       </div>
@@ -418,6 +418,9 @@ body::before{content:'';position:fixed;inset:0;
         <button class="bbtn bbtn-clear" onclick="resetSettings()" style="padding:.55rem 1.2rem">↺ Reset Default</button>
         <span id="settingSt" style="font-size:.75rem;color:var(--gray)"></span>
       </div>
+      <div style="margin-top:.8rem;padding:.6rem .9rem;background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.2);border-radius:7px;font-size:.68rem;color:rgba(255,170,0,.8)">
+        ⚠️ <strong>Firebase Rules:</strong> Settings Firebase-এ save করতে হলে Console → Realtime Database → Rules-এ <code style="background:rgba(0,0,0,.3);padding:1px 4px;border-radius:3px">"settings": {".read": true, ".write": true}</code> যোগ করতে হবে। না হলে শুধু LocalStorage-এ save হবে।
+      </div>
     </div>
   </div>
 </div>
@@ -454,6 +457,7 @@ function flag(name){const t=TEAMS[name];if(!t)return'';return`<img class="flag-s
 
 let dbSc={};
 let activeGrp='ALL';
+window._activeGrp='ALL';
 let modalMatchId=null;
 let modalIsKO=false;
 // Track changed rows
@@ -519,7 +523,7 @@ function renderGFilters(){
     `<button class="fb ${activeGrp===g?'on':''}" onclick="window._afg('${g}')">${g==='ALL'?'সকল':'Group '+g}</button>`
   ).join('');
 }
-window._afg=function(g){activeGrp=g;renderGFilters();renderTable(g);};
+window._afg=function(g){activeGrp=g;window._activeGrp=g;renderGFilters();renderTable(g);};
 
 function updateChangedCount(){
   const n=pendingChanges.size;
@@ -950,13 +954,25 @@ let currentSettings = {...DEFAULT_SETTINGS, colors:{...DEFAULT_SETTINGS.colors}}
 
 // Load settings from Firebase on init
 async function loadSettings(){
+  // Check localStorage first (faster, works offline)
+  const local = localStorage.getItem('siteSettings');
+  if(local){
+    try{
+      const s=JSON.parse(local);
+      currentSettings={...DEFAULT_SETTINGS,...s,colors:{...DEFAULT_SETTINGS.colors,...s.colors}};
+      applySettings(currentSettings,false);
+      populateSettingsUI(currentSettings);
+    }catch(e){}
+  }
+  // Also try Firebase (may override local if newer)
   onValue(ref(db,'settings'),snap=>{
     const s=snap.val();
     if(s){
       currentSettings={...DEFAULT_SETTINGS,...s,colors:{...DEFAULT_SETTINGS.colors,...s.colors}};
+      localStorage.setItem('siteSettings',JSON.stringify(currentSettings));
+      applySettings(currentSettings,false);
+      populateSettingsUI(currentSettings);
     }
-    applySettings(currentSettings, false);
-    populateSettingsUI(currentSettings);
   },{onlyOnce:true});
 }
 
@@ -1036,15 +1052,28 @@ function applyLang(lang){
   const L=LABELS[lang]||LABELS.bn;
   window._lang=lang;
   window._L=L;
-  // Update nav tabs
+  // Admin nav tabs
   const tabs=document.querySelectorAll('.admin-tab');
   const keys=['groupStage','koRound','settings'];
   tabs.forEach((t,i)=>{if(keys[i])t.textContent=L[keys[i]]||t.textContent;});
-  // Update bulk save
+  // Bulk save buttons
   const bsBtn=document.getElementById('bulkSaveBtn');
-  if(bsBtn)bsBtn.textContent=L.saveAll;
+  if(bsBtn)bsBtn.innerHTML=L.saveAll;
   const bcBtn=document.querySelector('.bbtn-clear');
-  if(bcBtn)bcBtn.textContent=L.clearAll;
+  if(bcBtn)bcBtn.innerHTML=L.clearAll;
+  // Bulk info text
+  const bulkInfo=document.querySelector('.bulk-info');
+  if(bulkInfo){
+    const n=document.getElementById('changedCount')?.textContent||'0';
+    if(lang==='en') bulkInfo.innerHTML=`${L.changed} <span id="changedCount">${n}</span> ${L.matches}. Click "Save All" to save together.`;
+    else bulkInfo.innerHTML=`${L.changed} <span id="changedCount">${n}</span>${L.matches}। একসাথে সব সেভ করতে "সব Save করো" চাপো।`;
+  }
+  // Sec title
+  const secTitles=document.querySelectorAll('.sec-title');
+  if(secTitles[0]) secTitles[0].innerHTML=lang==='en'?'Group Stage Scores':'গ্রুপ পর্যায় স্কোর';
+  if(secTitles[1]) secTitles[1].innerHTML=lang==='en'?'Knockout Round Scores':'Knockout Round স্কোর';
+  // Re-render tables to update date section titles etc.
+  renderTable(window._activeGrp||'ALL');
 }
 
 // Populate settings UI from saved data
@@ -1157,26 +1186,34 @@ window.saveSettings=async function(){
       text: document.getElementById('cp-text')?.value||'#ffffff',
     }
   };
+  // Always save to localStorage (instant, no auth needed)
+  localStorage.setItem('siteSettings', JSON.stringify(s));
+  currentSettings={...s,colors:{...s.colors}};
+  applySettings(currentSettings);
+  const st=document.getElementById('settingSt');
+
+  // Try Firebase too
   try{
     await set(ref(db,'settings'),s);
-    currentSettings={...s,colors:{...s.colors}};
-    applySettings(currentSettings);
-    document.getElementById('settingSt').innerHTML='<span style="color:var(--neon)">✓ Settings সেভ হয়েছে</span>';
-    setTimeout(()=>document.getElementById('settingSt').textContent='', 3000);
+    st.innerHTML='<span style="color:var(--neon)">✓ Firebase + Local সেভ হয়েছে</span>';
     toast('Settings সেভ হয়েছে ✓','ok');
-  }catch(e){toast('Settings সেভ ব্যর্থ!','err');}
+  }catch(e){
+    // Firebase failed (likely rules) but localStorage worked
+    st.innerHTML='<span style="color:var(--orange)">⚠ Local সেভ হয়েছে (Firebase rules update করুন)</span>';
+    toast('Local সেভ ✓ — Firebase rules দেখুন','ok');
+  }
+  setTimeout(()=>st.textContent='',4000);
 };
 
 // Reset to default
 window.resetSettings=async function(){
   if(!confirm('সব settings default-এ ফিরিয়ে দেবেন?'))return;
-  try{
-    await set(ref(db,'settings'),DEFAULT_SETTINGS);
-    currentSettings={...DEFAULT_SETTINGS,colors:{...DEFAULT_SETTINGS.colors}};
-    applySettings(currentSettings);
-    populateSettingsUI(currentSettings);
-    toast('Default settings restore হয়েছে','ok');
-  }catch(e){toast('Reset ব্যর্থ!','err');}
+  localStorage.removeItem('siteSettings');
+  currentSettings={...DEFAULT_SETTINGS,colors:{...DEFAULT_SETTINGS.colors}};
+  applySettings(currentSettings);
+  populateSettingsUI(currentSettings);
+  try{await set(ref(db,'settings'),DEFAULT_SETTINGS);}catch(e){}
+  toast('Default settings restore হয়েছে','ok');
 };
 
 // ── THEME ──

@@ -425,12 +425,18 @@ function lightenHex(hex,pct){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.sl
 const FONT_MAP_PUB={barlow:"'Barlow Condensed',sans-serif",hind:"'Hind Siliguri',sans-serif",roboto:"'Roboto Condensed',sans-serif",oswald:"'Oswald',sans-serif",exo:"'Exo 2',sans-serif"};
 const FONT_URLS_PUB={roboto:'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;600;700&display=swap',oswald:'https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap',exo:'https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&display=swap'};
 
+// Main site nav labels
+const NAV_LABELS={
+  bn:{schedule:'📅 ম্যাচ সূচি',groups:'📊 Group Table',knockout:'🏅 Knockout',stats:'📈 Stats',thirdplace:'🥉 3rd Places From Groups'},
+  en:{schedule:'📅 Schedule',groups:'📊 Groups',knockout:'🏅 Knockout',stats:'📈 Stats',thirdplace:'🥉 3rd Places From Groups'}
+};
+
 function applySettingsPub(s){
   if(!s)return;
   const r=document.documentElement.style;
   if(s.colors){
     const{bg,accent,text}=s.colors;
-    if(bg)r.setProperty('--bg',bg);
+    if(bg){r.setProperty('--bg',bg);r.setProperty('--bg2',lightenHex(bg,3));r.setProperty('--bg3',lightenHex(bg,7));}
     if(accent){
       r.setProperty('--neon',accent);
       r.setProperty('--neon-l',lightenHex(accent,15));
@@ -450,10 +456,25 @@ function applySettingsPub(s){
     document.body.style.fontFamily=FONT_MAP_PUB[s.font]||FONT_MAP_PUB.barlow;
   }
   if(s.tz)window._siteTZ=parseFloat(s.tz)||6;
+  // Language
+  if(s.lang){
+    window._siteLang=s.lang;
+    const L=NAV_LABELS[s.lang]||NAV_LABELS.bn;
+    const navBtns=document.querySelectorAll('.nav-btn');
+    const keys=['schedule','groups','knockout','stats','thirdplace'];
+    navBtns.forEach((b,i)=>{if(keys[i]&&L[keys[i]])b.textContent=L[keys[i]];});
+  }
 }
 
-// Load settings from Firebase (read-only on public site)
-onValue(ref(db,'settings'),snap=>{applySettingsPub(snap.val());},{onlyOnce:true});
+// Load settings: localStorage first, then Firebase
+(function(){
+  const local=localStorage.getItem('siteSettings');
+  if(local){try{applySettingsPub(JSON.parse(local));}catch(e){}}
+})();
+onValue(ref(db,'settings'),snap=>{
+  const s=snap.val();
+  if(s){applySettingsPub(s);localStorage.setItem('siteSettings',JSON.stringify(s));}
+},{onlyOnce:true});
 
 // Firebase scores
 onValue(ref(db,'scores'),snap=>{
