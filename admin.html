@@ -11,6 +11,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh}
 
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 40% at 10% 0%,rgba(0,61,122,0.2) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 90% 100%,rgba(201,168,76,0.06) 0%,transparent 60%);pointer-events:none;z-index:0}
+[data-theme="light"] body::before{background:radial-gradient(ellipse 80% 40% at 10% 0%,rgba(0,61,122,0.05) 0%,transparent 60%)}
+
 .login-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;background:var(--bg)}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2.5rem;width:min(340px,90vw);text-align:center;box-shadow:0 20px 60px var(--shadow)}
 .login-ic{font-size:3rem;margin-bottom:.8rem}
@@ -22,49 +25,40 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .login-err{color:var(--red);font-size:.75rem;margin-top:.6rem;display:none}
 .login-err.show{display:block}
 
-.admin-wrap{display:none}.admin-wrap.show{display:block}
-.hdr{background:linear-gradient(180deg,rgba(0,10,30,.98),rgba(0,10,30,.7));border-bottom:1px solid var(--border);padding:0 1rem}
-.hdr-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;padding:.75rem 0}
-.hdr-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold-l)}
-.hdr-sub{font-size:.62rem;color:var(--gray);letter-spacing:1px;margin-top:1px}
-.hdr-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+/* ── HEADER (same as main) ── */
+.admin-wrap{display:none;position:relative;z-index:1}.admin-wrap.show{display:block}
+.hdr{position:relative;z-index:50;background:rgba(0,10,30,0.97);border-bottom:2px solid var(--border);padding:0 1rem}
+.hdr-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:1rem;padding:.8rem 0}
+.hdr-logo{font-size:2rem;filter:drop-shadow(0 0 10px rgba(201,168,76,.5));flex-shrink:0}
+.hdr-text{flex:1;min-width:0}
+.hdr-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,3vw,2rem);letter-spacing:2px;color:var(--gold-l);line-height:1}
+.hdr-sub{font-size:.68rem;color:var(--gray);letter-spacing:1px;margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.live-pill{display:flex;align-items:center;gap:4px;background:rgba(0,61,122,.4);border:1px solid var(--border);border-radius:20px;padding:.25rem .6rem;font-size:.62rem;letter-spacing:1px;color:var(--gold)}
 .fb-badge{padding:.22rem .6rem;border-radius:5px;font-size:.6rem;letter-spacing:1px}
-.btn-sm{font-size:.66rem;letter-spacing:1px;padding:.28rem .65rem;border-radius:5px;cursor:pointer;transition:all .2s;border:1px solid var(--border2)}
-.btn-view{background:rgba(201,168,76,.1);color:var(--gold);text-decoration:none}
-.btn-logout{background:rgba(231,76,60,.1);color:var(--red)}
-.btn-theme{background:none;color:var(--text);cursor:pointer}
+.icon-btn{background:none;border:1px solid var(--border2);border-radius:8px;padding:.3rem .5rem;cursor:pointer;font-size:1rem;color:var(--text);transition:all .2s}
+.icon-btn:hover{border-color:var(--gold);background:rgba(201,168,76,.1)}
+.nav-link{font-size:.65rem;letter-spacing:1px;padding:.3rem .7rem;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:6px;color:var(--gray);text-decoration:none;transition:all .2s;white-space:nowrap}
+.nav-link:hover{border-color:var(--gold);color:var(--gold)}
+.nav-link.danger{background:rgba(231,76,60,.08);border-color:rgba(231,76,60,.25);color:var(--red)}
+.nav-link.danger:hover{background:rgba(231,76,60,.18)}
 
-.main{max-width:1200px;margin:0 auto;padding:1rem}
-
-/* TABS */
-.admin-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem}
-.admin-tab{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:2px;padding:.7rem 1.2rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--gray);cursor:pointer;margin-bottom:-2px;transition:all .2s}
+/* ── NAV TABS (same style as main nav) ── */
+.admin-nav{position:sticky;top:0;z-index:100;background:rgba(8,13,24,0.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);display:flex;overflow-x:auto;padding:0 1rem;scrollbar-width:none}
+[data-theme="light"] .admin-nav{background:rgba(240,244,248,0.97)}
+.admin-nav::-webkit-scrollbar{display:none}
+.admin-tab{font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:2px;color:var(--gray);background:none;border:none;border-bottom:3px solid transparent;padding:.85rem 1.1rem;cursor:pointer;white-space:nowrap;transition:all .2s;margin-bottom:-2px;flex-shrink:0}
+.admin-tab:hover{color:var(--text)}
 .admin-tab.on{color:var(--gold-l);border-bottom-color:var(--gold)}
 .admin-panel{display:none}.admin-panel.on{display:block}
 
-/* TOAST */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.65rem 1.1rem;border-radius:8px;font-size:.8rem;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;max-width:320px}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.ok{background:rgba(39,174,96,.92);border:1px solid var(--green);color:#fff}
-.toast.err{background:rgba(231,76,60,.92);border:1px solid var(--red);color:#fff}
+/* ── MAIN ── */
+.main{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:1.2rem 1rem}
 
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.55rem;margin-bottom:1rem}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:.65rem;text-align:center}
-.sc-n{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold-l);line-height:1}
-.sc-l{font-size:.57rem;letter-spacing:1px;color:var(--gray);margin-top:2px}
-
-/* SEC */
-.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:var(--gold-l);margin-bottom:.8rem;display:flex;align-items:center;gap:.6rem}
-.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
-
-/* FILTERS */
-.filters{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.7rem}
-.fb{font-size:.68rem;letter-spacing:.5px;padding:.25rem .65rem;background:var(--card);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;transition:all .2s}
-.fb:hover,.fb.on{background:var(--blue);border-color:var(--gold);color:#fff}
-
-/* BULK SAVE */
-.bulk{display:flex;gap:.6rem;margin-bottom:.8rem;align-items:center;flex-wrap:wrap;background:rgba(39,174,96,.07);border:1px solid rgba(39,174,96,.2);border-radius:8px;padding:.7rem 1rem}
+/* ── INFO / BULK BAR ── */
+.info-bar{background:rgba(17,31,53,0.9);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem;font-size:.75rem;color:var(--gray);flex-wrap:wrap}
+[data-theme="light"] .info-bar{background:rgba(240,244,248,0.9)}
+.bulk{display:flex;gap:.6rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap;background:rgba(39,174,96,.07);border:1px solid rgba(39,174,96,.2);border-radius:8px;padding:.7rem 1rem}
 .bulk-info{font-size:.75rem;color:var(--text2);flex:1}
 .bulk-info span{color:var(--gold-l);font-weight:700}
 .bbtn{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:1px;padding:.45rem 1.1rem;border-radius:7px;cursor:pointer;transition:all .2s}
@@ -73,6 +67,27 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 .bbtn-save:disabled{opacity:.5;pointer-events:none}
 .bbtn-clear{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.4);color:var(--red)}
 .save-progress{font-size:.72rem;color:var(--gray);min-width:120px}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:.65rem 1.1rem;border-radius:8px;font-size:.8rem;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{background:rgba(39,174,96,.92);border:1px solid var(--green);color:#fff}
+.toast.err{background:rgba(231,76,60,.92);border:1px solid var(--red);color:#fff}
+
+/* STATS (same as main) */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.7rem;margin-bottom:1.2rem}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.75rem .5rem;text-align:center}
+.sc-n{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--gold-l);line-height:1}
+.sc-l{font-size:.6rem;letter-spacing:1px;color:var(--gray);margin-top:2px}
+
+/* SEC TITLE */
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:var(--gold-l);margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+
+/* FILTERS */
+.filters{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem}
+.fb{font-size:.72rem;letter-spacing:.5px;padding:.3rem .75rem;background:var(--card);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;transition:all .2s;white-space:nowrap}
+.fb:hover,.fb.on{background:var(--blue);border-color:var(--gold);color:#fff}
 
 /* ══ ADMIN MATCH CARDS ══ */
 .adm-match-sections{display:flex;flex-direction:column;gap:1.5rem;margin-bottom:1.2rem}
@@ -171,37 +186,45 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-
 </div>
 
 <div class="admin-wrap" id="adminWrap">
-  <div class="hdr">
+  <header class="hdr">
     <div class="hdr-in">
-      <div><div class="hdr-title">⚙️ ADMIN PANEL</div><div class="hdr-sub">FIFA World Cup 2026 Score Manager</div></div>
+      <div class="hdr-logo">🏆</div>
+      <div class="hdr-text">
+        <div class="hdr-title">FIFA WORLD CUP 2026</div>
+        <div class="hdr-sub">⚙️ Admin Panel · Al Amin Onik</div>
+      </div>
       <div class="hdr-right">
         <span class="fb-badge" id="fbSt" style="background:rgba(0,61,122,.3);border:1px solid var(--border);color:var(--gray)">Firebase...</span>
-        <button class="btn-sm btn-theme" onclick="toggleTheme()">🌙</button>
-        <a href="index.html" class="btn-sm btn-view">🏠 সাইট</a>
-        <button class="btn-sm btn-logout" onclick="window.doLogout()">🚪 Logout</button>
+        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Dark/Light">🌙</button>
+        <a href="index.html" class="nav-link">🏠 সাইট</a>
+        <button class="nav-link danger" onclick="window.doLogout()">🚪 Logout</button>
       </div>
     </div>
-  </div>
+  </header>
+
+  <nav class="admin-nav">
+    <button class="admin-tab on" onclick="switchAdminTab('group',this)">📊 Group Stage</button>
+    <button class="admin-tab" onclick="switchAdminTab('knockout',this)">🏅 Knockout</button>
+  </nav>
 
   <div class="main">
-    <div class="stats-row" id="statsRow"></div>
-
-    <!-- ADMIN TABS -->
-    <div class="admin-tabs">
-      <button class="admin-tab on" onclick="switchAdminTab('group',this)">📊 Group Stage</button>
-      <button class="admin-tab" onclick="switchAdminTab('knockout',this)">🏅 Knockout</button>
+    <!-- Info bar -->
+    <div class="info-bar">
+      <span>🔥 Firebase</span>
+      <strong id="fbStatus">সংযোগ হচ্ছে...</strong>
+      <span id="fbTime" style="font-size:.68rem"></span>
     </div>
+
+    <div class="stats-row" id="statsRow"></div>
 
     <!-- GROUP STAGE PANEL -->
     <div id="ap-group" class="admin-panel on">
-      <!-- BULK SAVE -->
       <div class="bulk">
         <div class="bulk-info">পরিবর্তিত: <span id="changedCount">0</span>টি ম্যাচ। একসাথে সব সেভ করতে "সব Save করো" চাপো।</div>
         <span class="save-progress" id="saveProgress"></span>
         <button class="bbtn bbtn-clear" onclick="window.confirmClear()">🗑️ Clear All</button>
         <button class="bbtn bbtn-save" id="bulkSaveBtn" onclick="window.batchSave()" disabled>💾 সব Save করো</button>
       </div>
-
       <div class="sec-title">গ্রুপ পর্যায় স্কোর</div>
       <div class="filters" id="gFilters"></div>
       <div class="adm-match-sections" id="mTbody"></div>
@@ -276,6 +299,8 @@ function initAdmin(){
     dbSc=snap.val()||{};
     document.getElementById('fbSt').innerHTML='✓ Firebase';
     document.getElementById('fbSt').style.cssText='background:rgba(39,174,96,.15);border:1px solid var(--green);color:var(--green);padding:.22rem .6rem;border-radius:5px;font-size:.6rem;letter-spacing:1px';
+    document.getElementById('fbStatus').innerHTML='<span style="color:var(--green)">✓ Firebase Connected</span>';
+    document.getElementById('fbTime').textContent='Updated: '+new Date().toLocaleTimeString('bn-BD');
     renderStats();
     renderTable(activeGrp);
     renderKO();
@@ -285,13 +310,18 @@ function initAdmin(){
 }
 
 function renderStats(){
-  const pl=MATCHES.filter(m=>dbSc[m.id]?.s1!==undefined).length;
-  const gl=MATCHES.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0);
+  const koMatches=KO_ROUNDS.flatMap(r=>r.matches);
+  const grpDone=MATCHES.filter(m=>dbSc[m.id]?.s1!==undefined).length;
+  const koDone=koMatches.filter(m=>dbSc[m.id]?.s1!==undefined).length;
+  const pl=grpDone+koDone;
+  const total=MATCHES.length+koMatches.length;
+  const gl=MATCHES.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0)
+          +koMatches.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0);
   document.getElementById('statsRow').innerHTML=
     `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">স্কোর দেওয়া</div></div>
-     <div class="sc"><div class="sc-n">${72-pl}</div><div class="sc-l">বাকি</div></div>
+     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">বাকি</div></div>
      <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">মোট গোল</div></div>
-     <div class="sc"><div class="sc-n">72</div><div class="sc-l">মোট ম্যাচ</div></div>`;
+     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">মোট ম্যাচ</div></div>`;
 }
 
 window.switchAdminTab=function(id,btn){
@@ -717,9 +747,15 @@ window.toggleTheme=function(){
   const html=document.documentElement;
   const dark=html.getAttribute('data-theme')==='dark';
   html.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('themeBtn').textContent=dark?'☀️':'🌙';
   localStorage.setItem('theme',dark?'light':'dark');
 };
-(function(){const t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+(function(){
+  const t=localStorage.getItem('theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=document.getElementById('themeBtn');
+  if(btn)btn.textContent=t==='dark'?'🌙':'☀️';
+})();
 
 function toast(msg,type){
   const t=document.getElementById('toast');

@@ -428,14 +428,19 @@ function renderAll(){
 
 // Strip
 function renderStrip(){
-  const pl=MATCHES.filter(m=>scores[m.id]?.s1!==undefined).length;
-  const gl=MATCHES.reduce((s,m)=>s+(scores[m.id]?Number(scores[m.id].s1||0)+Number(scores[m.id].s2||0):0),0);
+  const koMatches=KO_ROUNDS.flatMap(r=>r.matches);
+  const grpDone=MATCHES.filter(m=>scores[m.id]?.s1!==undefined).length;
+  const koDone=koMatches.filter(m=>scores[m.id]?.s1!==undefined).length;
+  const pl=grpDone+koDone;
+  const total=MATCHES.length+koMatches.length; // 72+32=104
+  const gl=MATCHES.reduce((s,m)=>s+(scores[m.id]?Number(scores[m.id].s1||0)+Number(scores[m.id].s2||0):0),0)
+          +koMatches.reduce((s,m)=>s+(scores[m.id]?Number(scores[m.id].s1||0)+Number(scores[m.id].s2||0):0),0);
   document.getElementById('statStrip').innerHTML=
     `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">খেলা হয়েছে</div></div>
-     <div class="sc"><div class="sc-n">${72-pl}</div><div class="sc-l">বাকি ম্যাচ</div></div>
+     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">বাকি ম্যাচ</div></div>
+     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">মোট ম্যাচ</div></div>
      <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">মোট গোল</div></div>
      <div class="sc"><div class="sc-n">${pl?(gl/pl).toFixed(1):'0.0'}</div><div class="sc-l">গড় গোল</div></div>
-     <div class="sc"><div class="sc-n">12</div><div class="sc-l">গ্রুপ</div></div>
      <div class="sc"><div class="sc-n">48</div><div class="sc-l">দেশ</div></div>`;
 }
 
@@ -464,7 +469,7 @@ function renderMatches(grp){
     return`<div class="mc">
       <div class="mc-hdr">
         <span class="mc-grp-badge">Group ${m.grp}</span>
-        <span class="mc-matchday">Matchday ${m.md||1}</span>
+        <span class="mc-matchday">Match #${m.id} · Matchday ${m.md||1}</span>
       </div>
       <div class="mc-body">
         <div class="mc-team">
@@ -748,7 +753,7 @@ function renderBracket(grps={}){
         <span class="sym-score">${s2}</span>
       </div>
       ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:hasET?`<div class="sym-extra">ET: ${sc.et1}–${sc.et2}</div>`:''}
-      ${!compact?`<div class="sym-date">${fD(m.date)} · ${fT(m.time)}</div>`:''}
+      ${!compact?`<div class="sym-date">#${m.num||''} · ${fD(m.date)} · ${fT(m.time)}</div>`:''}
     </div>`;
   }
   // Column builder — evenly distribute spacers
