@@ -49,11 +49,7 @@ export const TEAMS = {
   "৭৪. ঘানা":{"en":"Ghana","code":"gh","short":"GHA"}
 };
 
-export const FLAG = (name) => {
-  const t = TEAMS[name];
-  if(!t) return '';
-  return `https://flagcdn.com/40x30/${t.code}.png`;
-};
+export const FLAG=(name)=>{const t=TEAMS[name];if(!t)return'';return`https://flagcdn.com/40x30/${t.code}.png`;};
 
 export const GROUPS = {
   A:["১৫. মেক্সিকো","২৫. কোরিয়া প্রজাতন্ত্র","৪১. চেক প্রজাতন্ত্র","৬০. দক্ষিণ আফ্রিকা"],
@@ -145,47 +141,49 @@ export const MATCHES = [
   {id:72,date:"2026-06-28",time:"05:30",t1:"৪৬. ডিআর কঙ্গো",t2:"৫০. উজবেকিস্তান",grp:"K"}
 ];
 
+// KO_ROUNDS: winner field tracks which R32 match feeds into which R16 match
+// win1/win2 = which KO match id the winner of THIS match goes to (as t1 or t2)
 export const KO_ROUNDS = [
   {name:"শেষ বত্রিশ",short:"R32",matches:[
-    {id:"r32_1",date:"2026-06-29",time:"01:00",s1:"2A",s2:"2B"},
-    {id:"r32_2",date:"2026-06-29",time:"23:00",s1:"1C",s2:"2F"},
-    {id:"r32_3",date:"2026-06-30",time:"02:30",s1:"1E",s2:"3rd ABCDF"},
-    {id:"r32_4",date:"2026-06-30",time:"07:00",s1:"1F",s2:"2C"},
-    {id:"r32_5",date:"2026-06-30",time:"23:00",s1:"2E",s2:"2I"},
-    {id:"r32_6",date:"2026-07-01",time:"03:00",s1:"1I",s2:"3rd CDFGH"},
-    {id:"r32_7",date:"2026-07-01",time:"07:00",s1:"1A",s2:"3rd CEFHI"},
-    {id:"r32_8",date:"2026-07-01",time:"22:00",s1:"1L",s2:"3rd EHIJK"},
-    {id:"r32_9",date:"2026-07-02",time:"02:00",s1:"1G",s2:"3rd AEHIJ"},
-    {id:"r32_10",date:"2026-07-02",time:"06:00",s1:"1D",s2:"3rd BEFIJ"},
-    {id:"r32_11",date:"2026-07-03",time:"01:00",s1:"1H",s2:"2J"},
-    {id:"r32_12",date:"2026-07-03",time:"05:00",s1:"2K",s2:"2L"},
-    {id:"r32_13",date:"2026-07-03",time:"09:00",s1:"1B",s2:"3rd EFGIJ"},
-    {id:"r32_14",date:"2026-07-04",time:"00:00",s1:"2D",s2:"2G"},
-    {id:"r32_15",date:"2026-07-04",time:"04:00",s1:"1J",s2:"2H"},
-    {id:"r32_16",date:"2026-07-04",time:"07:30",s1:"1K",s2:"3rd DEIJL"},
+    {id:"r32_1",date:"2026-06-29",time:"01:00",s1:"2A",s2:"2B",next:"r16_1",nextSlot:"s1"},
+    {id:"r32_2",date:"2026-06-29",time:"23:00",s1:"1C",s2:"2F",next:"r16_1",nextSlot:"s2"},
+    {id:"r32_3",date:"2026-06-30",time:"02:30",s1:"1E",s2:"3rd ABCDF",next:"r16_2",nextSlot:"s1"},
+    {id:"r32_4",date:"2026-06-30",time:"07:00",s1:"1F",s2:"2C",next:"r16_2",nextSlot:"s2"},
+    {id:"r32_5",date:"2026-06-30",time:"23:00",s1:"2E",s2:"2I",next:"r16_3",nextSlot:"s1"},
+    {id:"r32_6",date:"2026-07-01",time:"03:00",s1:"1I",s2:"3rd CDFGH",next:"r16_3",nextSlot:"s2"},
+    {id:"r32_7",date:"2026-07-01",time:"07:00",s1:"1A",s2:"3rd CEFHI",next:"r16_4",nextSlot:"s1"},
+    {id:"r32_8",date:"2026-07-01",time:"22:00",s1:"1L",s2:"3rd EHIJK",next:"r16_4",nextSlot:"s2"},
+    {id:"r32_9",date:"2026-07-02",time:"02:00",s1:"1G",s2:"3rd AEHIJ",next:"r16_5",nextSlot:"s1"},
+    {id:"r32_10",date:"2026-07-02",time:"06:00",s1:"1D",s2:"3rd BEFIJ",next:"r16_5",nextSlot:"s2"},
+    {id:"r32_11",date:"2026-07-03",time:"01:00",s1:"1H",s2:"2J",next:"r16_6",nextSlot:"s1"},
+    {id:"r32_12",date:"2026-07-03",time:"05:00",s1:"2K",s2:"2L",next:"r16_6",nextSlot:"s2"},
+    {id:"r32_13",date:"2026-07-03",time:"09:00",s1:"1B",s2:"3rd EFGIJ",next:"r16_7",nextSlot:"s1"},
+    {id:"r32_14",date:"2026-07-04",time:"00:00",s1:"2D",s2:"2G",next:"r16_7",nextSlot:"s2"},
+    {id:"r32_15",date:"2026-07-04",time:"04:00",s1:"1J",s2:"2H",next:"r16_8",nextSlot:"s1"},
+    {id:"r32_16",date:"2026-07-04",time:"07:30",s1:"1K",s2:"3rd DEIJL",next:"r16_8",nextSlot:"s2"},
   ]},
   {name:"শেষ ষোলো",short:"R16",matches:[
-    {id:"r16_1",date:"2026-07-05",time:"03:00",s1:"W R32-1",s2:"W R32-2"},
-    {id:"r16_2",date:"2026-07-04",time:"23:00",s1:"W R32-3",s2:"W R32-4"},
-    {id:"r16_3",date:"2026-07-06",time:"02:00",s1:"W R32-5",s2:"W R32-6"},
-    {id:"r16_4",date:"2026-07-06",time:"06:00",s1:"W R32-7",s2:"W R32-8"},
-    {id:"r16_5",date:"2026-07-07",time:"01:00",s1:"W R32-9",s2:"W R32-10"},
-    {id:"r16_6",date:"2026-07-07",time:"06:00",s1:"W R32-11",s2:"W R32-12"},
-    {id:"r16_7",date:"2026-07-07",time:"22:00",s1:"W R32-13",s2:"W R32-14"},
-    {id:"r16_8",date:"2026-07-08",time:"02:00",s1:"W R32-15",s2:"W R32-16"},
+    {id:"r16_1",date:"2026-07-05",time:"03:00",s1:"W R32-1",s2:"W R32-2",next:"qf_1",nextSlot:"s1"},
+    {id:"r16_2",date:"2026-07-04",time:"23:00",s1:"W R32-3",s2:"W R32-4",next:"qf_1",nextSlot:"s2"},
+    {id:"r16_3",date:"2026-07-06",time:"02:00",s1:"W R32-5",s2:"W R32-6",next:"qf_2",nextSlot:"s1"},
+    {id:"r16_4",date:"2026-07-06",time:"06:00",s1:"W R32-7",s2:"W R32-8",next:"qf_2",nextSlot:"s2"},
+    {id:"r16_5",date:"2026-07-07",time:"01:00",s1:"W R32-9",s2:"W R32-10",next:"qf_3",nextSlot:"s1"},
+    {id:"r16_6",date:"2026-07-07",time:"06:00",s1:"W R32-11",s2:"W R32-12",next:"qf_3",nextSlot:"s2"},
+    {id:"r16_7",date:"2026-07-07",time:"22:00",s1:"W R32-13",s2:"W R32-14",next:"qf_4",nextSlot:"s1"},
+    {id:"r16_8",date:"2026-07-08",time:"02:00",s1:"W R32-15",s2:"W R32-16",next:"qf_4",nextSlot:"s2"},
   ]},
   {name:"কোয়ার্টার ফাইনাল",short:"QF",matches:[
-    {id:"qf_1",date:"2026-07-10",time:"02:00",s1:"W R16-1",s2:"W R16-2"},
-    {id:"qf_2",date:"2026-07-11",time:"01:00",s1:"W R16-3",s2:"W R16-4"},
-    {id:"qf_3",date:"2026-07-12",time:"03:00",s1:"W R16-5",s2:"W R16-6"},
-    {id:"qf_4",date:"2026-07-12",time:"07:00",s1:"W R16-7",s2:"W R16-8"},
+    {id:"qf_1",date:"2026-07-10",time:"02:00",s1:"W R16-1",s2:"W R16-2",next:"sf_1",nextSlot:"s1"},
+    {id:"qf_2",date:"2026-07-11",time:"01:00",s1:"W R16-3",s2:"W R16-4",next:"sf_1",nextSlot:"s2"},
+    {id:"qf_3",date:"2026-07-12",time:"03:00",s1:"W R16-5",s2:"W R16-6",next:"sf_2",nextSlot:"s1"},
+    {id:"qf_4",date:"2026-07-12",time:"07:00",s1:"W R16-7",s2:"W R16-8",next:"sf_2",nextSlot:"s2"},
   ]},
   {name:"সেমি ফাইনাল",short:"SF",matches:[
-    {id:"sf_1",date:"2026-07-15",time:"01:00",s1:"W QF-1",s2:"W QF-2"},
-    {id:"sf_2",date:"2026-07-16",time:"01:00",s1:"W QF-3",s2:"W QF-4"},
+    {id:"sf_1",date:"2026-07-15",time:"01:00",s1:"W QF-1",s2:"W QF-2",next:"final",nextSlot:"s1"},
+    {id:"sf_2",date:"2026-07-16",time:"01:00",s1:"W QF-3",s2:"W QF-4",next:"final",nextSlot:"s2"},
   ]},
-  {name:"তৃতীয় স্থান",short:"3rd",matches:[
-    {id:"third",date:"2026-07-19",time:"01:00",s1:"L SF-1",s2:"L SF-2"},
+  {name:"তৃতীয় স্থান",short:"3PL",matches:[
+    {id:"third",date:"2026-07-19",time:"03:00",s1:"L SF-1",s2:"L SF-2"},
   ]},
   {name:"🏆 ফাইনাল",short:"F",matches:[
     {id:"final",date:"2026-07-19",time:"21:00",s1:"W SF-1",s2:"W SF-2"},

@@ -452,47 +452,94 @@ function buildB3MapAdmin(grps){
   return map;
 }
 
+function buildWinnerMapAdmin(grps,b3map){
+  const winners={};
+  const allMatches=KO_ROUNDS.flatMap(r=>r.matches);
+  for(const m of allMatches){
+    const sc=dbSc[m.id]||{};
+    if(sc.s1===undefined||sc.s1===null)continue;
+    let t1=sc.t1||'';let t2=sc.t2||'';
+    if(!t1){if(m.s1?.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||'';else t1=resolveSlotAdmin(m.s1,grps)||'';}
+    if(!t2){if(m.s2?.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||'';else t2=resolveWinSlot(m.s2,winners)||'';}
+    const s1=Number(sc.s1),s2=Number(sc.s2);
+    const pen1=sc.pen1!==undefined?Number(sc.pen1):null,pen2=sc.pen2!==undefined?Number(sc.pen2):null;
+    const et1=sc.et1!==undefined?Number(sc.et1):null,et2=sc.et2!==undefined?Number(sc.et2):null;
+    let winner='';
+    if(pen1!==null&&pen2!==null){winner=pen1>pen2?t1:t2;}
+    else if(et1!==null&&et2!==null){winner=(s1+et1)>(s2+et2)?t1:t2;}
+    else{winner=s1>s2?t1:s2>s1?t2:'';}
+    if(winner)winners[m.id]=winner;
+  }
+  return winners;
+}
+function resolveWinSlot(slot,winnerMap){
+  if(!slot)return'';
+  const wm=slot.match(/^W ([\w-]+)$/i);
+  if(wm){const mid=wm[1].toLowerCase().replace('-','_');return winnerMap[mid]||'';}
+  return'';
+}
+
 function renderKO(){
   const grps=calcGroupsAdmin();
   const b3map=buildB3MapAdmin(grps);
+  const winnerMap=buildWinnerMapAdmin(grps,b3map);
   const allKO=KO_ROUNDS.flatMap(r=>r.matches.map(m=>({...m,roundName:r.name})));
+
   document.getElementById('koGrid').innerHTML=allKO.map(m=>{
     const sc=dbSc[m.id]||{};
     const hg=(sc.goals1?.length||0)+(sc.goals2?.length||0);
-    // Auto-resolve team names
     let autoT1='',autoT2='';
     if(!sc.t1){
-      if(m.s1&&m.s1.startsWith('3rd '))autoT1=b3map[`${m.id}_s1`]||'';
-      else autoT1=resolveSlotAdmin(m.s1,grps)||'';
+      if(m.s1?.startsWith('3rd '))autoT1=b3map[`${m.id}_s1`]||'';
+      else autoT1=resolveSlotAdmin(m.s1,grps)||resolveWinSlot(m.s1,winnerMap)||'';
     }
     if(!sc.t2){
-      if(m.s2&&m.s2.startsWith('3rd '))autoT2=b3map[`${m.id}_s2`]||'';
-      else autoT2=resolveSlotAdmin(m.s2,grps)||'';
+      if(m.s2?.startsWith('3rd '))autoT2=b3map[`${m.id}_s2`]||'';
+      else autoT2=resolveSlotAdmin(m.s2,grps)||resolveWinSlot(m.s2,winnerMap)||'';
     }
-    const t1val=sc.t1||autoT1;
-    const t2val=sc.t2||autoT2;
-    const isAuto1=!sc.t1&&autoT1;
-    const isAuto2=!sc.t2&&autoT2;
+    const t1val=sc.t1||autoT1, t2val=sc.t2||autoT2;
+    const isAuto1=!sc.t1&&autoT1, isAuto2=!sc.t2&&autoT2;
+    const hasET=sc.et1!==undefined, hasPen=sc.pen1!==undefined;
+
     return`<div class="ko-card">
       <div class="ko-hd"><span class="ko-rname">${m.roundName}</span><span class="ko-mid">${m.id}</span></div>
       <div class="ko-body">
         <div class="ko-date">📅 ${fD(m.date)} · ⏰ ${fT(m.time)}</div>
         <div class="ko-tr">
-          <input class="ko-ti" id="kt1_${m.id}" placeholder="দল ১ নাম" value="${t1val}" style="${isAuto1?'color:var(--gold);opacity:.85':''}">
-          <input class="ko-si" type="number" min="0" id="ks1_${m.id}" value="${sc.s1!==undefined?sc.s1:''}">
+          <input class="ko-ti" id="kt1_${m.id}" placeholder="দল ১" value="${t1val}" style="${isAuto1?'color:var(--gold);opacity:.85':''}">
+          <input class="ko-si" type="number" min="0" id="ks1_${m.id}" placeholder="90'" value="${sc.s1!==undefined?sc.s1:''}">
         </div>
-        <div class="ko-tr">
-          <input class="ko-ti" id="kt2_${m.id}" placeholder="দল ২ নাম" value="${t2val}" style="${isAuto2?'color:var(--gold);opacity:.85':''}">
-          <input class="ko-si" type="number" min="0" id="ks2_${m.id}" value="${sc.s2!==undefined?sc.s2:''}">
+        <div class="ko-tr" style="margin-top:.25rem">
+          <input class="ko-ti" id="kt2_${m.id}" placeholder="দল ২" value="${t2val}" style="${isAuto2?'color:var(--gold);opacity:.85':''}">
+          <input class="ko-si" type="number" min="0" id="ks2_${m.id}" placeholder="90'" value="${sc.s2!==undefined?sc.s2:''}">
         </div>
-        <div class="ko-actions">
-          <button class="ko-sv" onclick="window.saveKO('${m.id}')">💾 Confirm & Save</button>
+        <label style="font-size:.63rem;color:var(--gold);cursor:pointer;display:flex;align-items:center;gap:.35rem;margin:.4rem 0 .2rem">
+          <input type="checkbox" id="etC_${m.id}" ${hasET?'checked':''} onchange="window.toggleET('${m.id}',this.checked)" style="accent-color:var(--gold)">
+          ⏱ অতিরিক্ত সময় (ET)
+        </label>
+        <div id="etS_${m.id}" style="display:${hasET?'block':'none'}">
+          <div class="ko-tr"><span style="font-size:.6rem;color:var(--gray);width:55px">ET দল ১</span><input class="ko-si" type="number" min="0" id="ket1_${m.id}" placeholder="ET" value="${sc.et1!==undefined?sc.et1:''}"></div>
+          <div class="ko-tr" style="margin-top:.2rem"><span style="font-size:.6rem;color:var(--gray);width:55px">ET দল ২</span><input class="ko-si" type="number" min="0" id="ket2_${m.id}" placeholder="ET" value="${sc.et2!==undefined?sc.et2:''}"></div>
+        </div>
+        <label style="font-size:.63rem;color:var(--orange);cursor:pointer;display:flex;align-items:center;gap:.35rem;margin:.35rem 0 .2rem">
+          <input type="checkbox" id="penC_${m.id}" ${hasPen?'checked':''} onchange="window.togglePen('${m.id}',this.checked)" style="accent-color:var(--orange)">
+          🎯 পেনাল্টি শুটআউট (PSO)
+        </label>
+        <div id="penS_${m.id}" style="display:${hasPen?'block':'none'}">
+          <div class="ko-tr"><span style="font-size:.6rem;color:var(--gray);width:55px">PSO দল ১</span><input class="ko-si" type="number" min="0" id="kp1_${m.id}" placeholder="PSO" value="${sc.pen1!==undefined?sc.pen1:''}"></div>
+          <div class="ko-tr" style="margin-top:.2rem"><span style="font-size:.6rem;color:var(--gray);width:55px">PSO দল ২</span><input class="ko-si" type="number" min="0" id="kp2_${m.id}" placeholder="PSO" value="${sc.pen2!==undefined?sc.pen2:''}"></div>
+        </div>
+        <div class="ko-actions" style="margin-top:.45rem">
+          <button class="ko-sv" onclick="window.saveKO('${m.id}')">💾 Save</button>
           <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true)">${hg?`⚽ ${hg}`:'+ গোল'}</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
+
+window.toggleET=function(id,on){document.getElementById('etS_'+id).style.display=on?'block':'none';};
+window.togglePen=function(id,on){document.getElementById('penS_'+id).style.display=on?'block':'none';};
 
 window.saveKO=async function(id){
   const t1=document.getElementById('kt1_'+id)?.value?.trim();
@@ -502,9 +549,29 @@ window.saveKO=async function(id){
   const data={};
   if(t1)data.t1=t1;if(t2)data.t2=t2;
   if(s1!=='')data.s1=Number(s1);if(s2!=='')data.s2=Number(s2);
+  // ET
+  const etOn=document.getElementById('etC_'+id)?.checked;
+  if(etOn){
+    const et1=document.getElementById('ket1_'+id)?.value;
+    const et2=document.getElementById('ket2_'+id)?.value;
+    if(et1!=='')data.et1=Number(et1);if(et2!=='')data.et2=Number(et2);
+  } else {delete data.et1;delete data.et2;}
+  // Penalty
+  const penOn=document.getElementById('penC_'+id)?.checked;
+  if(penOn){
+    const p1=document.getElementById('kp1_'+id)?.value;
+    const p2=document.getElementById('kp2_'+id)?.value;
+    if(p1!=='')data.pen1=Number(p1);if(p2!=='')data.pen2=Number(p2);
+  } else {delete data.pen1;delete data.pen2;}
   if(!Object.keys(data).length){toast('কিছু একটা দিন!','err');return;}
-  try{const ex=dbSc[id]||{};await set(ref(db,'scores/'+id),{...ex,...data});toast(`${id} সেভ ✓`,'ok');}
-  catch(e){toast('সেভ ব্যর্থ!','err');}
+  try{
+    const ex=dbSc[id]||{};
+    const newData={...ex,...data};
+    if(!etOn){delete newData.et1;delete newData.et2;}
+    if(!penOn){delete newData.pen1;delete newData.pen2;}
+    await set(ref(db,'scores/'+id),newData);
+    toast(`${id} সেভ ✓`,'ok');
+  }catch(e){toast('সেভ ব্যর্থ!','err');}
 };
 
 // ── GOAL MODAL ──

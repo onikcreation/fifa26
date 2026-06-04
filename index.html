@@ -453,20 +453,16 @@ function getBest3rd(grps){
     .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
 }
 
-// Build map: for each R32 slot with "3rd XXXXX", find the best qualifying 3rd team from those groups
 function buildBest3rdMap(grps){
-  const allThirds=getBest3rd(grps); // sorted best to worst, all 12
-  const map={}; // matchId_s1 or matchId_s2 => team name
-
+  const allThirds=getBest3rd(grps);
+  const map={};
   for(const m of KO_ROUNDS[0].matches){
     ['s1','s2'].forEach(side=>{
       const slot=m[side];
       if(!slot||!slot.startsWith('3rd '))return;
-      // slot format: "3rd ABCDF" — groups listed
       const groups=slot.replace('3rd ','').split('');
-      // Find best 3rd team from these specific groups
       const candidate=allThirds.find(t=>groups.includes(t.group));
-      if(candidate) map[`${m.id}_${side}`]=candidate.name;
+      if(candidate)map[`${m.id}_${side}`]=candidate.name;
     });
   }
   return map;
@@ -475,7 +471,6 @@ function buildBest3rdMap(grps){
 function resolveSlot(slot,grps){
   if(!slot)return'TBD';
   if(TEAMS[slot])return slot;
-  // "1A" or "2B"
   const m1=slot.match(/^([12])([A-L])$/);
   if(m1){
     const rank=parseInt(m1[1])-1;
@@ -486,47 +481,126 @@ function resolveSlot(slot,grps){
   return slot;
 }
 
-function buildMatch(m,grps={},b3map={}){
+// Build winner map: matchId → winner team name (from Firebase scores)
+function buildWinnerMap(grps,b3map){
+  const winners={}; // matchId → winner name
+  const allMatches=KO_ROUNDS.flatMap(r=>r.matches);
+
+  for(const m of allMatches){
+    const sc=scores[m.id]||{};
+    if(sc.s1===undefined||sc.s1===null)continue;
+    // Get t1, t2 names
+    let t1=sc.t1||'';
+    let t2=sc.t2||'';
+    if(!t1){
+      if(m.s1&&m.s1.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||'';
+      else t1=resolveSlot(m.s1,grps)||'';
+      // Check if t1 is winner from previous match
+      if(!t1&&winners[m.s1?.replace('W ','').toLowerCase().replace(/[^a-z0-9_]/g,'')])
+        t1=winners[m.id+'_auto_t1']||'';
+    }
+    if(!t2){
+      if(m.s2&&m.s2.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||'';
+      else t2=resolveSlot(m.s2,grps)||'';
+    }
+    // Determine winner (90 min or ET or penalties)
+    const s1=Number(sc.s1),s2=Number(sc.s2);
+    const et1=sc.et1!==undefined?Number(sc.et1):null;
+    const et2=sc.et2!==undefined?Number(sc.et2):null;
+    const pen1=sc.pen1!==undefined?Number(sc.pen1):null;
+    const pen2=sc.pen2!==undefined?Number(sc.pen2):null;
+    let winner='';
+    if(pen1!==null&&pen2!==null){winner=pen1>pen2?t1:t2;}
+    else if(et1!==null&&et2!==null){const tot1=s1+et1,tot2=s2+et2;winner=tot1>tot2?t1:t2;}
+    else{winner=s1>s2?t1:s2>s1?t2:'';}
+    if(winner)winners[m.id]=winner;
+  }
+  return winners;
+}
+
+// Resolve team name for a KO slot considering winner tracking
+function resolveKOSlot(slot,grps,b3map,winnerMap){
+  if(!slot)return'TBD';
+  if(TEAMS[slot])return slot;
+  if(slot.match(/^([12])([A-L])$/))return resolveSlot(slot,grps);
+  if(slot.startsWith('3rd '))return'3rd';
+  // "W R32-1" → find match id r32_1, get its winner
+  const wMatch=slot.match(/^W (r\d+_\d+|r16_\d+|qf_\d+|sf_\d+|final|third)$/i);
+  if(wMatch){
+    const mid=wMatch[1].toLowerCase().replace(' ','_').replace('-','_');
+    // map "R32-1" → "r32_1"
+    const mapped=mid.replace(/^r(\d+)-(\d+)$/,'r$1_$2');
+    return winnerMap[mapped]||slot;
+  }
+  return slot;
+}
+
+function buildMatch(m,grps={},b3map={},winnerMap={}){
   const sc=scores[m.id]||{};
-  const done=sc.s1!==undefined&&sc.s1!==null;
+  const s1raw=sc.s1;
+  const done=s1raw!==undefined&&s1raw!==null;
+  const et=sc.et1!==undefined;
+  const pen=sc.pen1!==undefined;
+
   let t1=sc.t1||'';
   let t2=sc.t2||'';
   if(!t1){
     if(m.s1&&m.s1.startsWith('3rd '))t1=b3map[`${m.id}_s1`]||m.s1;
-    else t1=resolveSlot(m.s1,grps)||m.s1||'TBD';
+    else t1=resolveKOSlot(m.s1,grps,b3map,winnerMap)||m.s1||'TBD';
   }
   if(!t2){
     if(m.s2&&m.s2.startsWith('3rd '))t2=b3map[`${m.id}_s2`]||m.s2;
-    else t2=resolveSlot(m.s2,grps)||m.s2||'TBD';
+    else t2=resolveKOSlot(m.s2,grps,b3map,winnerMap)||m.s2||'TBD';
   }
-  const s1win=done&&Number(sc.s1)>Number(sc.s2);
-  const s2win=done&&Number(sc.s2)>Number(sc.s1);
+
+  // Determine winner for highlighting
+  let s1win=false,s2win=false;
+  if(done){
+    const n1=Number(sc.s1),n2=Number(sc.s2);
+    if(pen){s1win=Number(sc.pen1)>Number(sc.pen2);s2win=!s1win;}
+    else if(et){const t1tot=n1+Number(sc.et1||0),t2tot=n2+Number(sc.et2||0);s1win=t1tot>t2tot;s2win=t2tot>t1tot;}
+    else{s1win=n1>n2;s2win=n2>n1;}
+  }
+
   const f1=TEAMS[t1]?fImg(t1,18,13):'';
   const f2=TEAMS[t2]?fImg(t2,18,13):'';
   const auto1=!sc.t1&&TEAMS[t1];
   const auto2=!sc.t2&&TEAMS[t2];
+
+  // Score display
+  let scoreDisp='';
+  if(done){
+    scoreDisp=`${sc.s1}–${sc.s2}`;
+    if(et)scoreDisp+=` (ET: ${sc.et1}–${sc.et2})`;
+    if(pen)scoreDisp+=` (PSO: ${sc.pen1}–${sc.pen2})`;
+  }
+
   return`<div class="bk-match">
-    <div class="bk-team ${s1win?'bk-win':''}" style="${auto1?'opacity:.85':''}">
+    <div class="bk-team ${s1win?'bk-win':''}" style="${auto1?'opacity:.82':''}">
       ${f1}<span class="bk-tname">${t1}</span><span class="bk-sc">${done?sc.s1:''}</span>
     </div>
-    <div class="bk-team ${s2win?'bk-win':''}" style="${auto2?'opacity:.85':''}">
+    <div class="bk-team ${s2win?'bk-win':''}" style="${auto2?'opacity:.82':''}">
       ${f2}<span class="bk-tname">${t2}</span><span class="bk-sc">${done?sc.s2:''}</span>
     </div>
+    ${pen?`<div class="bk-date" style="color:var(--orange)">PSO: ${sc.pen1}–${sc.pen2}</div>`:
+      et?`<div class="bk-date" style="color:var(--gold)">ET: ${sc.et1}–${sc.et2}</div>`:''}
     <div class="bk-date">${fD(m.date)} · ${fT(m.time)}</div>
   </div>`;
 }
 
 function renderBracket(grps={}){
   const b3map=buildBest3rdMap(grps);
-  // Desktop
+  const winnerMap=buildWinnerMap(grps,b3map);
+
+  // Desktop full bracket
   const desktopHTML=KO_ROUNDS.map(round=>{
-    const isFinal=round.short==='F';
+    const isFinal=round.short==='F'||round.short==='3PL';
     return`<div class="bk-col">
       <div class="bk-col-hd">${round.name}</div>
       <div class="bk-slots">
         ${isFinal
-          ?`<div class="bk-final-wrap"><div style="font-size:2rem;text-align:center;margin:.5rem 0">🏆</div>${round.matches.map(m=>buildMatch(m,grps,b3map)).join('')}</div>`
-          :round.matches.map(m=>buildMatch(m,grps,b3map)).join('')
+          ?`<div class="bk-final-wrap">${round.short==='F'?'<div style="font-size:1.8rem;text-align:center;margin:.4rem 0">🏆</div>':''}${round.matches.map(m=>buildMatch(m,grps,b3map,winnerMap)).join('')}</div>`
+          :round.matches.map(m=>buildMatch(m,grps,b3map,winnerMap)).join('')
         }
       </div>
     </div>`;
@@ -534,16 +608,14 @@ function renderBracket(grps={}){
   document.getElementById('bkDesktop').innerHTML=desktopHTML;
 
   // Mobile tabs
-  const tabsHTML=KO_ROUNDS.map((r,i)=>
+  document.getElementById('bkTabs').innerHTML=KO_ROUNDS.map((r,i)=>
     `<button class="bk-rtab ${i===activeBkTab?'on':''}" onclick="window._bktab(${i})">${r.name}</button>`
   ).join('');
-  document.getElementById('bkTabs').innerHTML=tabsHTML;
-  const mobileHTML=KO_ROUNDS.map((round,i)=>
+  document.getElementById('bkMobile').innerHTML=KO_ROUNDS.map((round,i)=>
     `<div class="bk-round-panel ${i===activeBkTab?'on':''}">
-      ${round.matches.map(m=>buildMatch(m,grps,b3map)).join('')}
+      ${round.matches.map(m=>buildMatch(m,grps,b3map,winnerMap)).join('')}
     </div>`
   ).join('');
-  document.getElementById('bkMobile').innerHTML=mobileHTML;
 }
 window._bktab=function(i){
   activeBkTab=i;
