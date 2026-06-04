@@ -581,8 +581,8 @@ const FONT_URLS_PUB={roboto:'https://fonts.googleapis.com/css2?family=Roboto+Con
 
 // Main site nav labels
 const NAV_LABELS={
-  bn:{schedule:'📅 ম্যাচ সূচি',groups:'📊 Group Table',knockout:'🏅 Knockout',stats:'📈 Stats',thirdplace:'🥉 3rd Places From Groups'},
-  en:{schedule:'📅 Schedule',groups:'📊 Groups',knockout:'🏅 Knockout',stats:'📈 Stats',thirdplace:'🥉 3rd Places From Groups'}
+  bn:{schedule:'📅 ম্যাচ সূচি',groups:'📊 Group Table',knockout:'🏅 Knockout',stats:'📈 Stats',squads:'🧑‍⚽ Squads',thirdplace:'🥉 3rd Places'},
+  en:{schedule:'📅 Schedule',groups:'📊 Groups',knockout:'🏅 Knockout',stats:'📈 Stats',squads:'🧑‍⚽ Squads',thirdplace:'🥉 3rd Places'}
 };
 
 function applySettingsPub(s){
@@ -610,12 +610,12 @@ function applySettingsPub(s){
     document.body.style.fontFamily=FONT_MAP_PUB[s.font]||FONT_MAP_PUB.barlow;
   }
   if(s.tz)window._siteTZ=parseFloat(s.tz)||6;
-  // Language
+  // Language — nav buttons by data attribute
   if(s.lang){
     window._siteLang=s.lang;
     const L=NAV_LABELS[s.lang]||NAV_LABELS.bn;
     const navBtns=document.querySelectorAll('.nav-btn');
-    const keys=['schedule','groups','knockout','stats','thirdplace'];
+    const keys=['schedule','groups','knockout','stats','squads','thirdplace'];
     navBtns.forEach((b,i)=>{if(keys[i]&&L[keys[i]])b.textContent=L[keys[i]];});
   }
 }
