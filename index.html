@@ -1262,7 +1262,7 @@ function renderStats(grps){
       const row={m,opp,oppCode,myScore,opScore,result,done};
       if(done)played.push(row);else upcoming.push(row);
     }
-    // KO matches — resolveKOSlot দিয়ে actual team বের করি
+    // KO matches — resolveKOSlot + b3map দিয়ে actual team বের করি
     const grps2=calcGroups();
     const b3map2=buildBest3rdMap(grps2);
     const wmap2=buildWinnerMap(grps2,b3map2);
@@ -1271,13 +1271,28 @@ function renderStats(grps){
       for(const m of round.matches){
         const sc=scores[m.id]||{};
 
-        // Resolve actual teams (from Firebase or from slot logic)
-        let t1=sc.t1||resolveKOSlot(m.s1,grps2,b3map2,wmap2)||'';
-        let t2=sc.t2||resolveKOSlot(m.s2,grps2,b3map2,wmap2)||'';
+        // Resolve t1 and t2
+        function resolveTeam(slot,side){
+          if(!slot)return'';
+          // Firebase stored team name
+          const stored=sc[side==='s1'?'t1':'t2'];
+          if(stored&&TEAMS[stored])return stored;
+          // 1st/2nd place slot
+          if(slot.match(/^([12])([A-L])$/))return resolveSlot(slot,grps2)||'';
+          // 3rd place — use b3map with match id + side key
+          if(slot.startsWith('3rd ')){
+            return b3map2[`${m.id}_${side}`]||slot;
+          }
+          // Winner/Loser of previous match
+          const wm=slot.match(/^W\s+(.+)$/i);
+          if(wm)return(wmap2.winners||{})[normalizeWinKey(wm[1])]||'';
+          const lm=slot.match(/^L\s+(.+)$/i);
+          if(lm)return(wmap2.losers||{})[normalizeWinKey(lm[1])]||'';
+          return'';
+        }
 
-        // TBD slot — not yet determined
-        const t1known=t1&&t1!==m.s1&&!t1.startsWith('W ')&&!t1.startsWith('L ')&&!t1.startsWith('3rd');
-        const t2known=t2&&t2!==m.s2&&!t2.startsWith('W ')&&!t2.startsWith('L ')&&!t2.startsWith('3rd');
+        const t1=resolveTeam(m.s1,'s1');
+        const t2=resolveTeam(m.s2,'s2');
 
         const teamInMatch=(t1===statsTeam)||(t2===statsTeam);
         if(!teamInMatch)continue;
@@ -1285,25 +1300,33 @@ function renderStats(grps){
         const done=sc.s1!==undefined&&sc.s1!==null;
         const isHome=t1===statsTeam;
         const opp=isHome?t2:t1;
-        const oppKnown=isHome?t2known:t1known;
+        const oppSlot=isHome?m.s2:m.s1;
+        const oppSide=isHome?'s2':'s1';
         const oppCode=TEAMS[opp]?.code||'';
         const myScore=done?(isHome?sc.s1:sc.s2):'';
         const opScore=done?(isHome?sc.s2:sc.s1):'';
         let result='';
         if(done){const ms=Number(myScore),os=Number(opScore);result=ms>os?'W':ms<os?'L':'D';}
 
-        // Display-friendly opponent name
-        let oppDisplay,oppDisplayCode='';
-        if(oppKnown&&TEAMS[opp]){
+        // Display-friendly opponent
+        let oppDisplay,oppDisplayCode=oppCode;
+        if(opp&&TEAMS[opp]){
           oppDisplay=enNameRanked(opp);
-          oppDisplayCode=TEAMS[opp]?.code||'';
-        } else if(opp&&opp.startsWith('3rd ')){
-          oppDisplay=`Best 3rd (${opp.replace('3rd ','')})`;
-        } else if(opp&&(opp.startsWith('W ')||opp.startsWith('L '))){
-          oppDisplay=`TBD (${opp})`;
+          oppDisplayCode=TEAMS[opp].code||'';
+        } else if(oppSlot?.startsWith('3rd ')){
+          const resolved=b3map2[`${m.id}_${oppSide}`];
+          if(resolved&&TEAMS[resolved]){
+            oppDisplay=enNameRanked(resolved);
+            oppDisplayCode=TEAMS[resolved].code||'';
+          } else {
+            oppDisplay=`Best 3rd (${oppSlot.replace('3rd ','')})`;
+          }
+        } else if(oppSlot?.startsWith('W ')||oppSlot?.startsWith('L ')){
+          oppDisplay=opp?enNameRanked(opp):`TBD`;
         } else {
           oppDisplay=opp||'TBD';
         }
+
         const row={m,opp:oppDisplay,oppCode:oppDisplayCode,myScore,opScore,result,done,round:round.name};
         if(done)played.push(row);else upcoming.push(row);
       }
