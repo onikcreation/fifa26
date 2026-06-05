@@ -854,7 +854,7 @@ window._reload=function(){location.reload();};
 
 function calcGroups(){
   const t={};
-  for(const[g,teams]of Object.entries(GROUPS)){t[g]={};for(const tm of teams)t[g][tm]={pl:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};}
+  for(const[g,teams]of Object.entries(GROUPS)){t[g]={};for(const tm of teams)t[g][tm]={pl:0,w:0,d:0,l:0,gf:0,ga:0,pts:0,fp:0};}
   for(const m of MATCHES){
     const sc=scores[m.id];if(!sc||sc.s1===undefined||sc.s1===null)continue;
     const tbl=t[m.grp];if(!tbl||!tbl[m.t1]||!tbl[m.t2])continue;
@@ -863,9 +863,17 @@ function calcGroups(){
     if(s1>s2){tbl[m.t1].w++;tbl[m.t1].pts+=3;tbl[m.t2].l++;}
     else if(s1<s2){tbl[m.t2].w++;tbl[m.t2].pts+=3;tbl[m.t1].l++;}
     else{tbl[m.t1].d++;tbl[m.t1].pts++;tbl[m.t2].d++;tbl[m.t2].pts++;}
+    // Fair play: yellow=-1, yr=-3, red=-4, yellow+red=-5
+    for(const[cards,team]of[[sc.cards1||[],m.t1],[sc.cards2||[],m.t2]]){
+      if(!tbl[team])continue;
+      let y=0,yr=0,r=0;
+      for(const c of cards){if(c.type==='yellow')y++;else if(c.type==='yr')yr++;else if(c.type==='red')r++;}
+      // yellow+red in same match = -5 (yr already covers double booking)
+      tbl[team].fp+=y*(-1)+yr*(-3)+r*(-4);
+    }
   }
   const s={};
-  for(const[g,tbl]of Object.entries(t)){s[g]=Object.entries(tbl).map(([n,v])=>({name:n,...v,gd:v.gf-v.ga})).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);}
+  for(const[g,tbl]of Object.entries(t)){s[g]=Object.entries(tbl).map(([n,v])=>({name:n,...v,gd:v.gf-v.ga})).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.fp-b.fp);}
   return s;
 }
 
@@ -1082,7 +1090,7 @@ function getBest3rd(grps){
   return Object.entries(grps)
     .map(([g,teams])=>teams[2]?{...teams[2],group:g}:null)
     .filter(t=>t&&t.pl>0)
-    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.fp-b.fp);
 }
 
 function buildBest3rdMap(grps){
@@ -1090,7 +1098,7 @@ function buildBest3rdMap(grps){
   const allThirds=Object.entries(grps)
     .map(([g,teams])=>teams[2]?{...teams[2],group:g}:null)
     .filter(t=>t&&t.pl>0)
-    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.fp-b.fp);
 
   const map={};
   const used=new Set(); // each team assigned to exactly ONE slot
