@@ -303,6 +303,14 @@ body::after{content:'';position:fixed;inset:0;
 .tp-tbl td:nth-child(2){text-align:left}
 .tp-tbl tbody tr:hover{background:rgba(255,255,255,.03)}
 
+/* Card gradient on/off */
+body.flat-cards .mc::before,
+body.flat-cards .grp-card::before,
+body.flat-cards .sc::before{display:none}
+body.flat-cards .mc-hdr{background:#1e1e1e}
+body.flat-cards .grp-hd{background:#1e1e1e}
+body.flat-cards .mc{border-color:rgba(255,255,255,0.1)}
+
 /* Utility */
 #expandInfo{font-size:.68rem;color:var(--gray);margin-left:.3rem}
 .bracket-scroll{overflow-x:auto;padding-bottom:.5rem}
@@ -457,7 +465,7 @@ body::after{content:'';position:fixed;inset:0;
 <nav class="nav">
   <a class="nav-btn on"  href="#schedule"   onclick="goTab('schedule',this)"><i class="fas fa-calendar-days"></i> ম্যাচ সূচি</a>
   <a class="nav-btn"     href="#groups"     onclick="goTab('groups',this)"><i class="fas fa-chart-column"></i> Group Table</a>
-  <a class="nav-btn"     href="#thirdplace" onclick="goTab('thirdplace',this)"><i class="fas fa-award"></i> Best 3rd Places</a>
+  <a class="nav-btn"     href="#thirdplace" onclick="goTab('thirdplace',this)"><i class="fas fa-award"></i> গ্রুপের ৩য় স্থান তালিকা</a>
   <a class="nav-btn"     href="#knockout"   onclick="goTab('knockout',this)"><i class="fas fa-medal"></i> Knockout</a>
   <a class="nav-btn"     href="#stats"      onclick="goTab('stats',this)"><i class="fas fa-chart-line"></i> Stats</a>
   <a class="nav-btn"     href="#squads"     onclick="goTab('squads',this)"><i class="fas fa-shirt"></i> Squads</a>
@@ -485,7 +493,7 @@ body::after{content:'';position:fixed;inset:0;
 
   <!-- BEST 3RD PLACES FROM GROUPS -->
   <div id="p-thirdplace" class="panel">
-    <div class="sec-title"><i class="fas fa-award"></i> Best 3rd Places From Groups</div>
+    <div class="sec-title"><i class="fas fa-award"></i> গ্রুপের ৩য় স্থান তালিকা</div>
     <div id="thirdPlace"></div>
   </div>
 
@@ -558,7 +566,7 @@ const STRINGS={
   bn:{
     loading:'লোড হচ্ছে...',hdrSub:'২০২৬ ফিফা বিশ্বকাপ · Al Amin Onik',
     secSchedule:'ম্যাচ সূচি',secGroups:'গ্রুপ পর্যায় টেবিল',
-    secThirdplace:"<i class='fas fa-award'></i> গ্রুপের ৩য় স্থান দল",
+    secThirdplace:"<i class='fas fa-award'></i> গ্রুপের ৩য় স্থান তালিকা",
     secKnockout:"<i class='fas fa-medal'></i> নকআউট ব্র্যাকেট",
     secStats:"<i class='fas fa-chart-line'></i> পরিসংখ্যান",
     secSquads:"<i class='fas fa-shirt'></i> দল তালিকা",
@@ -719,7 +727,7 @@ const FONT_URLS_PUB={
 
 // Main site nav labels
 const NAV_LABELS={
-  bn:{schedule:"<i class='fas fa-calendar-days'></i> ম্যাচ সূচি",groups:"<i class='fas fa-chart-column'></i> গ্রুপ টেবিল",thirdplace:"<i class='fas fa-award'></i> গ্রুপের ৩য় স্থান দল",knockout:"<i class='fas fa-medal'></i> নকআউট",stats:"<i class='fas fa-chart-line'></i> পরিসংখ্যান",squads:"<i class='fas fa-shirt'></i> দল তালিকা"},
+  bn:{schedule:"<i class='fas fa-calendar-days'></i> ম্যাচ সূচি",groups:"<i class='fas fa-chart-column'></i> গ্রুপ টেবিল",thirdplace:"<i class='fas fa-award'></i> গ্রুপের ৩য় স্থান তালিকা",knockout:"<i class='fas fa-medal'></i> নকআউট",stats:"<i class='fas fa-chart-line'></i> পরিসংখ্যান",squads:"<i class='fas fa-shirt'></i> দল তালিকা"},
   en:{schedule:"<i class='fas fa-calendar-days'></i> Schedule",groups:"<i class='fas fa-chart-column'></i> Groups",thirdplace:"<i class='fas fa-award'></i> Best 3rd Places",knockout:"<i class='fas fa-medal'></i> Knockout",stats:"<i class='fas fa-chart-line'></i> Stats",squads:"<i class='fas fa-shirt'></i> Squads"}
 };
 
@@ -804,6 +812,7 @@ function applySettingsPub(s){
     }
     document.body.style.fontFamily=FONT_MAP_PUB[s.font]||FONT_MAP_PUB.barlow;
   }
+  document.body.classList.toggle('flat-cards', s.cardGradient===false);
   if(s.tz)window._siteTZ=parseFloat(s.tz)||6;
   if(s.lang){
     window._siteLang=s.lang;
