@@ -630,11 +630,12 @@ function renderStats(){
   const total=MATCHES.length+koMatches.length;
   const gl=MATCHES.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0)
           +koMatches.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0);
+  const L=window._L||LABELS.bn;
   document.getElementById('statsRow').innerHTML=
-    `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">স্কোর দেওয়া</div></div>
-     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">বাকি</div></div>
-     <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">মোট গোল</div></div>
-     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">মোট ম্যাচ</div></div>`;
+    `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">${L.scored}</div></div>
+     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">${L.remaining}</div></div>
+     <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">${L.totalGoals}</div></div>
+     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">${L.totalMatches}</div></div>`;
 }
 
 window.switchAdminTab=function(id,el){
@@ -664,8 +665,9 @@ window.switchAdminTab=function(id,el){
 
 function renderGFilters(){
   const gs=['ALL','A','B','C','D','E','F','G','H','I','J','K','L'];
+  const L=window._L||LABELS.bn;
   document.getElementById('gFilters').innerHTML=gs.map(g=>
-    `<button class="fb ${activeGrp===g?'on':''}" onclick="window._afg('${g}')">${g==='ALL'?'সকল':'Group '+g}</button>`
+    `<button class="fb ${activeGrp===g?'on':''}" onclick="window._afg('${g}')">${g==='ALL'?L.allMatches:'Group '+g}</button>`
   ).join('');
 }
 window._afg=function(g){activeGrp=g;window._activeGrp=g;renderGFilters();renderTable(g);};
@@ -689,9 +691,8 @@ function markChanged(id){
 
 function renderTable(grp){
   const list=grp==='ALL'?MATCHES:MATCHES.filter(m=>m.grp===grp);
-  const DAYS=['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'];
-  const MON=['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'];
-  function dtitle(d){const dt=new Date(d+'T00:00:00');return`${DAYS[dt.getDay()]}, ${dt.getDate()} ${MON[dt.getMonth()]}`;}
+  const L=window._L||LABELS.bn;
+  function dtitle(d){const dt=new Date(d+'T00:00:00');return`${L.days[dt.getDay()]}, ${dt.getDate()} ${L.months[dt.getMonth()]}`;}
 
   function cardHTML(m){
     const sc=dbSc[m.id]||{};
@@ -946,13 +947,13 @@ function renderKO(){
           </tr></thead>
           <tbody>
             <tr>
-              <td><input class="ko-ti" id="kt1_${m.id}" placeholder="দল ১" value="${t1val}" style="${isAuto1?'color:var(--gold)':''}"></td>
+              <td><input class="ko-ti" id="kt1_${m.id}" placeholder="${(window._L||LABELS.bn).team1}" value="${t1val}" style="${isAuto1?'color:var(--gold)':''}"></td>
               <td><input class="ko-si" type="number" min="0" id="ks1_${m.id}" placeholder="-" value="${sc.s1!==undefined?sc.s1:''}"></td>
               <td><input class="ko-si ko-et" type="number" min="0" id="ket1_${m.id}" placeholder="-" value="${sc.et1!==undefined?sc.et1:''}"></td>
               <td><input class="ko-si ko-pen" type="number" min="0" id="kp1_${m.id}" placeholder="-" value="${sc.pen1!==undefined?sc.pen1:''}"></td>
             </tr>
             <tr>
-              <td><input class="ko-ti" id="kt2_${m.id}" placeholder="দল ২" value="${t2val}" style="${isAuto2?'color:var(--gold)':''}"></td>
+              <td><input class="ko-ti" id="kt2_${m.id}" placeholder="${(window._L||LABELS.bn).team2}" value="${t2val}" style="${isAuto2?'color:var(--gold)':''}"></td>
               <td><input class="ko-si" type="number" min="0" id="ks2_${m.id}" placeholder="-" value="${sc.s2!==undefined?sc.s2:''}"></td>
               <td><input class="ko-si ko-et" type="number" min="0" id="ket2_${m.id}" placeholder="-" value="${sc.et2!==undefined?sc.et2:''}"></td>
               <td><input class="ko-si ko-pen" type="number" min="0" id="kp2_${m.id}" placeholder="-" value="${sc.pen2!==undefined?sc.pen2:''}"></td>
@@ -962,23 +963,24 @@ function renderKO(){
       </div>
       <div class="ko-actions">
         <button class="ko-sv" onclick="window.saveKO('${m.id}')"><i class='fas fa-floppy-disk'></i> Save</button>
-        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true)"><i class='fas fa-futbol'></i>${hg?' '+hg:' গোল'}</button>
-        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true);setTimeout(()=>switchModalTab('cards',document.querySelector('.modal-tab:nth-child(2)')),50)"><svg width="11" height="15" viewBox="0 0 11 15" style="vertical-align:middle;margin-right:3px"><rect x="0" y="0" width="5" height="15" rx="1" fill="#ffc800"/><rect x="5.5" y="0" width="5.5" height="15" rx="1" fill="#ff3232"/></svg>${hc?' '+hc:' কার্ড'}</button>
+        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true)"><i class='fas fa-futbol'></i>${hg?' '+hg:' '+(window._L||LABELS.bn).koGoals}</button>
+        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true);setTimeout(()=>switchModalTab('cards',document.querySelector('.modal-tab:nth-child(2)')),50)"><svg width="11" height="15" viewBox="0 0 11 15" style="vertical-align:middle;margin-right:3px"><rect x="0" y="0" width="5" height="15" rx="1" fill="#ffc800"/><rect x="5.5" y="0" width="5.5" height="15" rx="1" fill="#ff3232"/></svg>${hc?' '+hc:' '+(window._L||LABELS.bn).koCards}</button>
       </div>
     </div>`;
   }
 
+  const L=window._L||LABELS.bn;
   const sections=[
-    {icon:'<i class="fas fa-medal"></i>',    name:'শেষ বত্রিশ',      matches:KO_ROUNDS[0].matches},
-    {icon:'<i class="fas fa-shield-halved"></i>', name:'শেষ ষোলো',   matches:KO_ROUNDS[1].matches},
-    {icon:'<i class="fas fa-crosshairs"></i>',name:'কোয়ার্টার ফাইনাল',matches:KO_ROUNDS[2].matches},
-    {icon:'<i class="fas fa-fire"></i>',      name:'সেমি ফাইনাল',    matches:KO_ROUNDS[3].matches},
-    {icon:'<i class="fas fa-award"></i>',     name:'তৃতীয় স্থান',   matches:KO_ROUNDS[4].matches},
-    {icon:'<i class="fas fa-trophy"></i>',    name:'ফাইনাল',         matches:KO_ROUNDS[5].matches},
+    {icon:'<i class="fas fa-medal"></i>',         name:L.r32,   matches:KO_ROUNDS[0].matches},
+    {icon:'<i class="fas fa-shield-halved"></i>',  name:L.r16,   matches:KO_ROUNDS[1].matches},
+    {icon:'<i class="fas fa-crosshairs"></i>',     name:L.qf,    matches:KO_ROUNDS[2].matches},
+    {icon:'<i class="fas fa-fire"></i>',           name:L.sf,    matches:KO_ROUNDS[3].matches},
+    {icon:'<i class="fas fa-award"></i>',          name:L.third, matches:KO_ROUNDS[4].matches},
+    {icon:'<i class="fas fa-trophy"></i>',         name:L.final, matches:KO_ROUNDS[5].matches},
   ];
-
+  const cs=L.countSuffix;
   document.getElementById('koGrid').innerHTML=sections.map(sec=>`
-    <div class="ko-section-title">${sec.icon} ${sec.name} <span style="font-size:.65rem;opacity:.5">(${sec.matches.length}টি)</span></div>
+    <div class="ko-section-title">${sec.icon} ${sec.name} <span style="font-size:.65rem;opacity:.5">(${sec.matches.length}${cs})</span></div>
     ${sec.matches.map(m=>cardHTML({...m,roundName:sec.name})).join('')}
   `).join('');
 }
@@ -1326,20 +1328,52 @@ function lighten(hex, pct){
 // Language labels
 const LABELS = {
   bn:{
-    schedule:"<i class='fas fa-calendar-days'></i> ম্যাচ সূচি", groups:"<i class='fas fa-chart-column'></i> Group Table",
-    knockout:"<i class='fas fa-medal'></i> Knockout", stats:"<i class='fas fa-chart-line'></i> Stats",
-    thirdplace:"<i class='fas fa-award'></i> 3rd Places", groupStage:"<i class='fas fa-chart-column'></i> Group Stage",
-    koRound:"<i class='fas fa-medal'></i> Knockout", settings:"<i class='fas fa-gear'></i> Settings",
-    saveAll:"<i class='fas fa-floppy-disk'></i> সব Save করো", clearAll:"<i class='fas fa-trash'></i> Clear All",
+    schedule:"<i class='fas fa-calendar-days'></i> ম্যাচ সূচি",
+    groups:"<i class='fas fa-chart-column'></i> গ্রুপ টেবিল",
+    knockout:"<i class='fas fa-medal'></i> নকআউট",
+    groupStage:"<i class='fas fa-chart-column'></i> গ্রুপ পর্যায়",
+    koRound:"<i class='fas fa-medal'></i> নকআউট",
+    settings:"<i class='fas fa-gear'></i> সেটিংস",
+    saveAll:"<i class='fas fa-floppy-disk'></i> সব Save করো",
+    clearAll:"<i class='fas fa-trash'></i> সব মুছুন",
     changed:'পরিবর্তিত:', matches:'টি ম্যাচ',
+    bulkHint:'একসাথে সব সেভ করতে "সব Save করো" চাপো।',
+    bulkHintEn:'Click "Save All" to save together.',
+    secGroup:'গ্রুপ পর্যায় স্কোর',secKO:'Knockout Round স্কোর',
+    allMatches:'সকল',
+    scored:'স্কোর দেওয়া',remaining:'বাকি',totalGoals:'মোট গোল',totalMatches:'মোট ম্যাচ',
+    days:['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'],
+    months:['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'],
+    r32:'শেষ বত্রিশ',r16:'শেষ ষোলো',qf:'কোয়ার্টার ফাইনাল',
+    sf:'সেমি ফাইনাল',third:'তৃতীয় স্থান',final:'ফাইনাল',
+    team1:'দল ১',team2:'দল ২',
+    koGoals:'গোল',koCards:'কার্ড',
+    countSuffix:'টি',
+    saveSettings:"<i class='fas fa-floppy-disk'></i> Settings Save করো",
   },
   en:{
-    schedule:"<i class='fas fa-calendar-days'></i> Schedule", groups:"<i class='fas fa-chart-column'></i> Groups",
-    knockout:"<i class='fas fa-medal'></i> Knockout", stats:"<i class='fas fa-chart-line'></i> Stats",
-    thirdplace:"<i class='fas fa-award'></i> 3rd Places", groupStage:"<i class='fas fa-chart-column'></i> Group Stage",
-    koRound:"<i class='fas fa-medal'></i> Knockout", settings:"<i class='fas fa-gear'></i> Settings",
-    saveAll:"<i class='fas fa-floppy-disk'></i> Save All", clearAll:"<i class='fas fa-trash'></i> Clear All",
+    schedule:"<i class='fas fa-calendar-days'></i> Schedule",
+    groups:"<i class='fas fa-chart-column'></i> Groups",
+    knockout:"<i class='fas fa-medal'></i> Knockout",
+    groupStage:"<i class='fas fa-chart-column'></i> Group Stage",
+    koRound:"<i class='fas fa-medal'></i> Knockout",
+    settings:"<i class='fas fa-gear'></i> Settings",
+    saveAll:"<i class='fas fa-floppy-disk'></i> Save All",
+    clearAll:"<i class='fas fa-trash'></i> Clear All",
     changed:'Changed:', matches:' matches',
+    bulkHint:'Click "Save All" to save together.',
+    bulkHintEn:'Click "Save All" to save together.',
+    secGroup:'Group Stage Scores',secKO:'Knockout Round Scores',
+    allMatches:'All',
+    scored:'Scored',remaining:'Remaining',totalGoals:'Total Goals',totalMatches:'Total',
+    days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    r32:'Round of 32',r16:'Round of 16',qf:'Quarter Finals',
+    sf:'Semi Finals',third:'3rd Place',final:'Final',
+    team1:'Team 1',team2:'Team 2',
+    koGoals:'Goals',koCards:'Cards',
+    countSuffix:'',
+    saveSettings:"<i class='fas fa-floppy-disk'></i> Save Settings",
   }
 };
 
@@ -1354,21 +1388,25 @@ function applyLang(lang){
   // Bulk save buttons
   const bsBtn=document.getElementById('bulkSaveBtn');
   if(bsBtn)bsBtn.innerHTML=L.saveAll;
-  const bcBtn=document.querySelector('.bbtn-clear');
-  if(bcBtn)bcBtn.innerHTML=L.clearAll;
+  document.querySelectorAll('.bbtn-clear').forEach(b=>{if(b.id!='bulkSaveBtn')b.innerHTML=L.clearAll;});
   // Bulk info text
   const bulkInfo=document.querySelector('.bulk-info');
   if(bulkInfo){
     const n=document.getElementById('changedCount')?.textContent||'0';
-    if(lang==='en') bulkInfo.innerHTML=`${L.changed} <span id="changedCount">${n}</span> ${L.matches}. Click "Save All" to save together.`;
-    else bulkInfo.innerHTML=`${L.changed} <span id="changedCount">${n}</span>${L.matches}। একসাথে সব সেভ করতে "সব Save করো" চাপো।`;
+    bulkInfo.innerHTML=`${L.changed} <span id="changedCount">${n}</span>${L.matches}. ${L.bulkHint}`;
   }
-  // Sec title
+  // Section titles
   const secTitles=document.querySelectorAll('.sec-title');
-  if(secTitles[0]) secTitles[0].innerHTML=lang==='en'?'Group Stage Scores':'গ্রুপ পর্যায় স্কোর';
-  if(secTitles[1]) secTitles[1].innerHTML=lang==='en'?'Knockout Round Scores':'Knockout Round স্কোর';
-  // Re-render tables to update date section titles etc.
+  if(secTitles[0]) secTitles[0].innerHTML=L.secGroup;
+  if(secTitles[1]) secTitles[1].innerHTML=L.secKO;
+  // Settings save button
+  const sBtn=document.querySelector('.bbtn-wide');
+  if(sBtn)sBtn.innerHTML=L.saveSettings;
+  // Re-render tables and KO to update date titles and section names
   renderTable(window._activeGrp||'ALL');
+  if(typeof renderKO==='function'&&document.getElementById('koGrid'))renderKO();
+  // Re-render stats strip
+  if(typeof renderStats==='function')renderStats();
 }
 
 // Populate settings UI from saved data

@@ -418,8 +418,8 @@ body::after{content:'';position:fixed;inset:0;
     <div class="sec-title">ম্যাচ সূচি</div>
     <div class="filters" id="schedFilters"></div>
     <div class="match-controls">
-      <button class="ctrl-btn" onclick="expandAll()">▼ Expand All</button>
-      <button class="ctrl-btn" onclick="collapseAll()">▲ Collapse All</button>
+      <button class="ctrl-btn" id="expandAllBtn" onclick="expandAll()">▼ সব খুলুন</button>
+      <button class="ctrl-btn" id="collapseAllBtn" onclick="collapseAll()">▲ সব বন্ধ করুন</button>
       <span id="expandInfo" style="font-size:.68rem;color:var(--gray);margin-left:.3rem"></span>
     </div>
     <div class="match-sections" id="matchList"></div>
@@ -468,7 +468,7 @@ body::after{content:'';position:fixed;inset:0;
     <div id="sqHeader"></div>
     <div class="sq-pos-row" id="sqPosRow" style="display:none;margin-bottom:.8rem">
       <div class="sq-pos-btns">
-        <button class="sq-pos-btn on" onclick="setSqPos('ALL',this)">সকল</button>
+        <button class="sq-pos-btn on" id="sqAllBtn" onclick="setSqPos('ALL',this)">সকল</button>
         <button class="sq-pos-btn" onclick="setSqPos('GK',this)" style="color:#ffaa00">GK</button>
         <button class="sq-pos-btn" onclick="setSqPos('DF',this)">DF</button>
         <button class="sq-pos-btn" onclick="setSqPos('MF',this)" style="color:#00aaff">MF</button>
@@ -501,9 +501,78 @@ function koNum(m){return m.num||KO_NUM_MAP[m.id]||'';}
 const app=initializeApp(FIREBASE_CONFIG);
 const db=getDatabase(app);
 
-const DAYS=['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'];
-const MON=['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'];
-function fD(d){const dt=new Date(d+'T00:00:00');return`${DAYS[dt.getDay()]}, ${dt.getDate()} ${MON[dt.getMonth()]}`;}
+// ══ UI TEXT (bn/en) ══
+const STRINGS={
+  bn:{
+    loading:'লোড হচ্ছে...',hdrSub:'২০২৬ ফিফা বিশ্বকাপ · Al Amin Onik',
+    secSchedule:'ম্যাচ সূচি',secGroups:'গ্রুপ পর্যায় টেবিল',
+    secThirdplace:"<i class='fas fa-award'></i> সেরা ৩য় দল",
+    secKnockout:"<i class='fas fa-medal'></i> নকআউট ব্র্যাকেট",
+    secStats:"<i class='fas fa-chart-line'></i> পরিসংখ্যান",
+    secSquads:"<i class='fas fa-shirt'></i> দল তালিকা",
+    expandAll:'▼ সব খুলুন',collapseAll:'▲ সব বন্ধ করুন',sqAll:'সকল',
+    played:'খেলা হয়েছে',remaining:'বাকি ম্যাচ',totalMatches:'মোট ম্যাচ',
+    totalGoals:'মোট গোল',avgGoals:'গড় গোল',teams:'দেশ',
+    allMatches:'সকল ম্যাচ',allTeams:'সকল দল',allGroups:'সকল',
+    days:['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'],
+    months:['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'],
+    today:'আজ',doneBadge:(d,t)=>`✓ ${d}/${t} শেষ`,partBadge:(d,t)=>`${d}/${t} শেষ`,
+    matchesBadge:t=>`${t}টি ম্যাচ`,
+    openClosed:(o,c)=>`${o}টি খোলা · ${c}টি বন্ধ`,
+    team:'দল',pl:'খে',won:'জ',draw:'ড্র',lost:'হা',grpLabel:g=>`গ্রুপ ${g}`,
+    r32:'শেষ বত্রিশ',r16:'শেষ ষোলো',qf:'কোয়ার্টার',sf:'সেমি ফাইনাল',
+    sfShort:'সেমি',final:'ফাইনাল',third:'তৃতীয় স্থান',
+    topScorers:'সর্বোচ্চ গোলদাতা',teamGoals:'দলীয় গোল',cards:'কার্ড',
+    noGoalData:'এখনো গোলের তথ্য নেই',noCardData:'এখনো কার্ডের তথ্য নেই',
+    matchHistory:'ম্যাচ ইতিহাস',playedH:'খেলা হয়েছে',upcomingH:'বাকি আছে',
+    noPlayedYet:'এখনো কোনো ম্যাচ খেলা হয়নি',allDone:'সব ম্যাচ খেলা হয়ে গেছে',
+    upcomingScore:'বাকি',
+    thirdDesc:'১২টি গ্রুপের ৩য় স্থানের দলের মধ্যে সেরা ৮টি শেষ বত্রিশে যাবে। র‍্যাংকিং: পয়েন্ট → GD → GF।',
+    statusCol:'মর্যাদা',qualified:'✓ উত্তীর্ণ',eliminated:'✗ বাদ',
+    sqLoading:'লোড হচ্ছে...',sqNoData:'Firebase-এ squad data নেই',
+    sqNoPos:'এই পজিশনে কোনো খেলোয়াড় নেই',
+    sqPlayers:'খেলোয়াড়',sqCaps:'মোট Caps',sqGoals:'মোট গোল',sqAge:'গড় বয়স',
+    sqMostCapped:'সর্বোচ্চ caps',sqTopScorer:'সর্বোচ্চ গোল',sqGoalSuffix:'গোল',
+  },
+  en:{
+    loading:'Loading...',hdrSub:'FIFA World Cup 2026 · Al Amin Onik',
+    secSchedule:'Schedule',secGroups:'Group Stage Table',
+    secThirdplace:"<i class='fas fa-award'></i> Best 3rd Places",
+    secKnockout:"<i class='fas fa-medal'></i> Knockout Bracket",
+    secStats:"<i class='fas fa-chart-line'></i> Stats",
+    secSquads:"<i class='fas fa-shirt'></i> Squads",
+    expandAll:'▼ Expand All',collapseAll:'▲ Collapse All',sqAll:'All',
+    played:'Played',remaining:'Remaining',totalMatches:'Total',
+    totalGoals:'Goals',avgGoals:'Avg Goals',teams:'Teams',
+    allMatches:'All Matches',allTeams:'All Teams',allGroups:'All',
+    days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    today:'Today',doneBadge:(d,t)=>`✓ ${d}/${t} done`,partBadge:(d,t)=>`${d}/${t} done`,
+    matchesBadge:t=>`${t} matches`,
+    openClosed:(o,c)=>`${o} open · ${c} closed`,
+    team:'Team',pl:'P',won:'W',draw:'D',lost:'L',grpLabel:g=>`Group ${g}`,
+    r32:'Round of 32',r16:'Round of 16',qf:'Quarter',sf:'Semi Final',
+    sfShort:'Semi',final:'Final',third:'3rd Place',
+    topScorers:'Top Scorers',teamGoals:'Team Goals',cards:'Cards',
+    noGoalData:'No goal data yet',noCardData:'No card data yet',
+    matchHistory:'Match History',playedH:'Played',upcomingH:'Upcoming',
+    noPlayedYet:'No matches played yet',allDone:'All matches completed',
+    upcomingScore:'Upcoming',
+    thirdDesc:'Top 8 of 12 third-place teams advance to Round of 32. Ranking: Points → GD → GF.',
+    statusCol:'Status',qualified:'✓ Qualified',eliminated:'✗ Eliminated',
+    sqLoading:'Loading...',sqNoData:'No squad data in Firebase',
+    sqNoPos:'No players in this position',
+    sqPlayers:'Players',sqCaps:'Total Caps',sqGoals:'Total Goals',sqAge:'Avg Age',
+    sqMostCapped:'Most capped',sqTopScorer:'Top scorer',sqGoalSuffix:'goals',
+  }
+};
+window._S=STRINGS.bn;
+
+function fD(d){
+  const S=window._S;
+  const dt=new Date(d+'T00:00:00');
+  return`${S.days[dt.getDay()]}, ${dt.getDate()} ${S.months[dt.getMonth()]}`;
+}
 function fT(t){
   const[h,m]=t.split(':').map(Number);
   const tz=window._siteTZ||6;
@@ -558,9 +627,35 @@ const FONT_URLS_PUB={roboto:'https://fonts.googleapis.com/css2?family=Roboto+Con
 
 // Main site nav labels
 const NAV_LABELS={
-  bn:{schedule:"<i class='fas fa-calendar-days'></i> ম্যাচ সূচি",groups:"<i class='fas fa-chart-column'></i> Group Table",thirdplace:"<i class='fas fa-award'></i> Best 3rd Places",knockout:"<i class='fas fa-medal'></i> Knockout",stats:"<i class='fas fa-chart-line'></i> Stats",squads:"<i class='fas fa-shirt'></i> Squads"},
+  bn:{schedule:"<i class='fas fa-calendar-days'></i> ম্যাচ সূচি",groups:"<i class='fas fa-chart-column'></i> গ্রুপ টেবিল",thirdplace:"<i class='fas fa-award'></i> সেরা ৩য় দল",knockout:"<i class='fas fa-medal'></i> নকআউট",stats:"<i class='fas fa-chart-line'></i> পরিসংখ্যান",squads:"<i class='fas fa-shirt'></i> দল তালিকা"},
   en:{schedule:"<i class='fas fa-calendar-days'></i> Schedule",groups:"<i class='fas fa-chart-column'></i> Groups",thirdplace:"<i class='fas fa-award'></i> Best 3rd Places",knockout:"<i class='fas fa-medal'></i> Knockout",stats:"<i class='fas fa-chart-line'></i> Stats",squads:"<i class='fas fa-shirt'></i> Squads"}
 };
+
+function applyStaticText(){
+  const S=window._S;
+  const loaderTxt=document.querySelector('.loader-txt');
+  if(loaderTxt)loaderTxt.textContent=S.loading;
+  const hdrSub=document.querySelector('.hdr-sub');
+  if(hdrSub)hdrSub.textContent=S.hdrSub;
+  const eTitles={
+    'p-schedule':S.secSchedule,
+    'p-groups':S.secGroups,
+    'p-thirdplace':S.secThirdplace,
+    'p-knockout':S.secKnockout,
+    'p-stats':S.secStats,
+    'p-squads':S.secSquads,
+  };
+  Object.entries(eTitles).forEach(([id,txt])=>{
+    const el=document.querySelector(`#${id} .sec-title`);
+    if(el)el.innerHTML=txt;
+  });
+  const expBtn=document.getElementById('expandAllBtn');
+  if(expBtn)expBtn.textContent=S.expandAll;
+  const colBtn=document.getElementById('collapseAllBtn');
+  if(colBtn)colBtn.textContent=S.collapseAll;
+  const sqAllBtn=document.getElementById('sqAllBtn');
+  if(sqAllBtn)sqAllBtn.textContent=S.sqAll;
+}
 
 function applySettingsPub(s){
   if(!s)return;
@@ -587,13 +682,15 @@ function applySettingsPub(s){
     document.body.style.fontFamily=FONT_MAP_PUB[s.font]||FONT_MAP_PUB.barlow;
   }
   if(s.tz)window._siteTZ=parseFloat(s.tz)||6;
-  // Language — nav buttons by data attribute
   if(s.lang){
     window._siteLang=s.lang;
+    window._S=STRINGS[s.lang]||STRINGS.bn;
     const L=NAV_LABELS[s.lang]||NAV_LABELS.bn;
     const navBtns=document.querySelectorAll('.nav-btn');
     const keys=['schedule','groups','thirdplace','knockout','stats','squads'];
     navBtns.forEach((b,i)=>{if(keys[i]&&L[keys[i]])b.innerHTML=L[keys[i]];});
+    applyStaticText();
+    if(window._scoresLoaded)renderAll();
   }
 }
 
@@ -610,9 +707,11 @@ onValue(ref(db,'settings'),snap=>{
 // Firebase scores
 onValue(ref(db,'scores'),snap=>{
   scores=snap.val()||{};
+  window._scoresLoaded=true;
   document.getElementById('dbSt').innerHTML='<div class="dot"></div>LIVE';
   renderAll();hideLoader();
 },()=>{
+  window._scoresLoaded=true;
   document.getElementById('dbSt').innerHTML='<span style="color:var(--red);font-size:.6rem">✗ Offline</span>';
   document.getElementById('dbSt').style.background='rgba(255,77,77,.1)';
   document.getElementById('dbSt').style.borderColor='rgba(255,77,77,.3)';
@@ -657,20 +756,22 @@ function renderStrip(){
   const total=MATCHES.length+koMatches.length; // 72+32=104
   const gl=MATCHES.reduce((s,m)=>s+(scores[m.id]?Number(scores[m.id].s1||0)+Number(scores[m.id].s2||0):0),0)
           +koMatches.reduce((s,m)=>s+(scores[m.id]?Number(scores[m.id].s1||0)+Number(scores[m.id].s2||0):0),0);
+  const S=window._S;
   document.getElementById('statStrip').innerHTML=
-    `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">খেলা হয়েছে</div></div>
-     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">বাকি ম্যাচ</div></div>
-     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">মোট ম্যাচ</div></div>
-     <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">মোট গোল</div></div>
-     <div class="sc"><div class="sc-n">${pl?(gl/pl).toFixed(1):'0.0'}</div><div class="sc-l">গড় গোল</div></div>
-     <div class="sc"><div class="sc-n">48</div><div class="sc-l">দেশ</div></div>`;
+    `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">${S.played}</div></div>
+     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">${S.remaining}</div></div>
+     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">${S.totalMatches}</div></div>
+     <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">${S.totalGoals}</div></div>
+     <div class="sc"><div class="sc-n">${pl?(gl/pl).toFixed(1):'0.0'}</div><div class="sc-l">${S.avgGoals}</div></div>
+     <div class="sc"><div class="sc-n">48</div><div class="sc-l">${S.teams}</div></div>`;
 }
 
 // Schedule
 function renderSchedFilters(){
   const gs=['ALL','A','B','C','D','E','F','G','H','I','J','K','L'];
+  const S=window._S;
   document.getElementById('schedFilters').innerHTML=gs.map(g=>
-    `<button class="fb ${schedGrp===g?'on':''}" onclick="window._sfg('${g}')">${g==='ALL'?'সকল ম্যাচ':'Group '+g}</button>`
+    `<button class="fb ${schedGrp===g?'on':''}" onclick="window._sfg('${g}')">${g==='ALL'?S.allMatches:'Group '+g}</button>`
   ).join('');
 }
 window._sfg=function(g){schedGrp=g;renderSchedFilters();renderMatches(g);};
@@ -729,12 +830,11 @@ function renderMatches(grp){
     byDate[m.date].push(m);
   }
   const sortedDates=Object.keys(byDate).sort();
-  const DAYS=['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'];
-  const MON_BN=['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'];
+  const S=window._S;
 
   function dateTitle(d){
     const dt=new Date(d+'T00:00:00');
-    return`${DAYS[dt.getDay()]}, ${dt.getDate()} ${MON_BN[dt.getMonth()]} ${dt.getFullYear()}`;
+    return`${S.days[dt.getDay()]}, ${dt.getDate()} ${S.months[dt.getMonth()]} ${dt.getFullYear()}`;
   }
 
   // Determine today's date string
@@ -760,12 +860,12 @@ function renderMatches(grp){
     const isToday=date===todayStr;
 
     const statusBadge=allDone
-      ?`<span class="ds-done">✓ ${doneCount}/${total} শেষ</span>`
+      ?`<span class="ds-done">${S.doneBadge(doneCount,total)}</span>`
       :doneCount>0
-        ?`<span class="ds-done">${doneCount}/${total} শেষ</span>`
-        :`<span class="ds-past">${total}টি ম্যাচ</span>`;
+        ?`<span class="ds-done">${S.partBadge(doneCount,total)}</span>`
+        :`<span class="ds-past">${S.matchesBadge(total)}</span>`;
 
-    const todayBadge=isToday?`<span style="background:rgba(161,240,0,.2);border:1px solid var(--neon);border-radius:10px;font-size:.6rem;padding:.1rem .5rem;color:var(--neon);font-family:'Barlow Condensed',sans-serif">আজ</span>`:'';
+    const todayBadge=isToday?`<span style="background:rgba(161,240,0,.2);border:1px solid var(--neon);border-radius:10px;font-size:.6rem;padding:.1rem .5rem;color:var(--neon);font-family:'Barlow Condensed',sans-serif">${S.today}</span>`:'';
 
     return`<div class="date-section" data-date="${date}">
       <div class="date-section-title" onclick="toggleSection(this)">
@@ -785,7 +885,8 @@ function renderMatches(grp){
   const total=sortedDates.length;
   const collapsed=document.querySelectorAll('.date-section-body.collapsed').length;
   const info=document.getElementById('expandInfo');
-  if(info)info.textContent=`${total-collapsed}টি খোলা · ${collapsed}টি বন্ধ`;
+  const _S=window._S;
+  if(info)info.textContent=_S.openClosed(total-collapsed,collapsed);
 }
 
 // Toggle individual section
@@ -795,11 +896,11 @@ window.toggleSection=function(titleEl){
   const isCollapsed=body.classList.contains('collapsed');
   body.classList.toggle('collapsed',!isCollapsed);
   if(arrow)arrow.style.transform=isCollapsed?'':'rotate(-90deg)';
-  // Update info
   const total=document.querySelectorAll('.date-section-body').length;
   const collapsed=document.querySelectorAll('.date-section-body.collapsed').length;
   const info=document.getElementById('expandInfo');
-  if(info)info.textContent=`${total-collapsed}টি খোলা · ${collapsed}টি বন্ধ`;
+  const _S=window._S;
+  if(info)info.textContent=_S.openClosed(total-collapsed,collapsed);
 };
 
 // Expand All
@@ -808,7 +909,8 @@ window.expandAll=function(){
   document.querySelectorAll('.ds-arrow').forEach(a=>a.style.transform='');
   const total=document.querySelectorAll('.date-section-body').length;
   const info=document.getElementById('expandInfo');
-  if(info)info.textContent=`${total}টি খোলা · 0টি বন্ধ`;
+  const _S=window._S;
+  if(info)info.textContent=_S.openClosed(total,0);
 };
 
 // Collapse All
@@ -817,16 +919,18 @@ window.collapseAll=function(){
   document.querySelectorAll('.ds-arrow').forEach(a=>a.style.transform='rotate(-90deg)');
   const total=document.querySelectorAll('.date-section-body').length;
   const info=document.getElementById('expandInfo');
-  if(info)info.textContent=`0টি খোলা · ${total}টি বন্ধ`;
+  const _S=window._S;
+  if(info)info.textContent=_S.openClosed(0,total);
 };
 
 // Groups
 function renderGroups(grps){
+  const S=window._S;
   document.getElementById('grpGrid').innerHTML=Object.entries(grps).map(([g,teams])=>`
     <div class="grp-card">
-      <div class="grp-hd"><div class="grp-let">${g}</div><div><div style="font-size:.68rem;color:var(--gold-l)">GROUP ${g}</div><div class="grp-lbl">গ্রুপ ${g}</div></div></div>
+      <div class="grp-hd"><div class="grp-let">${g}</div><div><div style="font-size:.68rem;color:var(--gold-l)">GROUP ${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div></div>
       <table class="gt">
-        <thead><tr><th>দল</th><th>খে</th><th>জ</th><th>ড্র</th><th>হা</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
+        <thead><tr><th>${S.team}</th><th>${S.pl}</th><th>${S.won}</th><th>${S.draw}</th><th>${S.lost}</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
           <tr class="${i<2?'row-q':i===2?'row-3':''}">
             <td><div class="gt-team"><span class="gt-rank">${i+1}</span>${fImg(t.name,20,15)}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.name}</span></div></td>
@@ -1082,14 +1186,15 @@ function renderBracket(grps={}){
 
   // spacer math: R32=8matches,R16=4,QF=2,SF=1
   // top/bottom spacer = midFlex/2 for visual centering
+  const S=window._S;
   let html='';
-  html+=symCol('শেষ বত্রিশ',R32.slice(0,8),1,2);
-  html+=symCol('শেষ ষোলো',R16.slice(0,4),3,6);
-  html+=symCol('কোয়ার্টার',QF.slice(0,2),7,14);
-  html+=symCol('সেমি ফাইনাল',[SF[0]],15,0);
+  html+=symCol(S.r32,R32.slice(0,8),1,2);
+  html+=symCol(S.r16,R16.slice(0,4),3,6);
+  html+=symCol(S.qf,QF.slice(0,2),7,14);
+  html+=symCol(S.sf,[SF[0]],15,0);
 
   html+=`<div class="sym-center">
-    <div class="sym-final-label"><i class='fas fa-trophy'></i> ফাইনাল</div>
+    <div class="sym-final-label"><i class='fas fa-trophy'></i> ${S.final}</div>
     <div class="sym-champion">
       ${champFlagURL?`<img class="sym-champ-flag" src="${champFlagURL}" loading="lazy" onerror="this.style.display='none'">`
         :`<div style="width:44px;height:33px;background:rgba(201,168,76,.15);border-radius:4px;margin:0 auto 5px"></div>`}
@@ -1097,25 +1202,25 @@ function renderBracket(grps={}){
     </div>
     <div style="width:100%">${symMatch(FINAL,true)}</div>
     <div class="sym-3rd-wrap">
-      <div class="sym-3rd-label"><i class='fas fa-award'></i> তৃতীয় স্থান</div>
+      <div class="sym-3rd-label"><i class='fas fa-award'></i> ${S.third}</div>
       <div style="width:100%">${symMatch(THIRD,true)}</div>
     </div>
   </div>`;
 
-  html+=symCol('সেমি ফাইনাল',[SF[1]],15,0);
-  html+=symCol('কোয়ার্টার',QF.slice(2,4),7,14);
-  html+=symCol('শেষ ষোলো',R16.slice(4,8),3,6);
-  html+=symCol('শেষ বত্রিশ',R32.slice(8,16),1,2);
+  html+=symCol(S.sf,[SF[1]],15,0);
+  html+=symCol(S.qf,QF.slice(2,4),7,14);
+  html+=symCol(S.r16,R16.slice(4,8),3,6);
+  html+=symCol(S.r32,R32.slice(8,16),1,2);
 
   document.getElementById('symDesktop').innerHTML=html;
 
   // Mobile
   const mRounds=[
-    {name:'শেষ বত্রিশ',matches:R32},
-    {name:'শেষ ষোলো',matches:R16},
-    {name:'কোয়ার্টার',matches:QF},
-    {name:'সেমি',matches:SF},
-    {name:"<i class='fas fa-trophy'></i> ফাইনাল",matches:[FINAL,THIRD]},
+    {name:S.r32,matches:R32},
+    {name:S.r16,matches:R16},
+    {name:S.qf,matches:QF},
+    {name:S.sfShort,matches:SF},
+    {name:`<i class='fas fa-trophy'></i> ${S.final}`,matches:[FINAL,THIRD]},
   ];
   document.getElementById('bkTabs').innerHTML=mRounds.map((r,i)=>
     `<button class="bk-rtab ${i===activeBkTab?'on':''}" onclick="window._bktab(${i})">${r.name}</button>`
@@ -1135,16 +1240,17 @@ window._bktab=function(i){
 // ══ STATS ══
 function renderStats(grps){
   // ── Group filter ──
+  const S=window._S;
   const gs=['ALL','A','B','C','D','E','F','G','H','I','J','K','L'];
   document.getElementById('statsGrpFilters').innerHTML=gs.map(g=>
-    `<button class="fb ${statsGrp===g?'on':''}" onclick="window._stg('${g}')">${g==='ALL'?'সকল':'Group '+g}</button>`
+    `<button class="fb ${statsGrp===g?'on':''}" onclick="window._stg('${g}')">${g==='ALL'?S.allGroups:'Group '+g}</button>`
   ).join('');
 
   // ── Team filter ──
   const teamPool=statsGrp==='ALL'?Object.keys(TEAMS):GROUPS[statsGrp]||[];
   const sortedTeams=[...teamPool].sort((a,b)=>(parseInt(getRank(a))||999)-(parseInt(getRank(b))||999));
   document.getElementById('statsTeamFilters').innerHTML=
-    `<button class="fb ${statsTeam==='ALL'?'on':''}" onclick="window._stt('ALL')">সকল দল</button>`
+    `<button class="fb ${statsTeam==='ALL'?'on':''}" onclick="window._stt('ALL')">${S.allTeams}</button>`
     +sortedTeams.map(n=>{
       const code=TEAMS[n]?.code||'';
       const en=TEAMS[n]?.en||n;
@@ -1321,21 +1427,21 @@ function renderStats(grps){
         </div>
         ${isDone
           ?`<div class="mh-score" style="color:${resultColor[row.result]||'#fff'}">${row.result} ${row.myScore}–${row.opScore}</div>`
-          :`<div class="mh-score" style="color:var(--gray)">বাকি</div>`
+          :`<div class="mh-score" style="color:var(--gray)">${S.upcomingScore}</div>`
         }
       </div>`;
 
     matchHistoryHTML=`
       <div class="stats-card" style="grid-column:1/-1">
-        <div class="stats-card-title">📋 ম্যাচ ইতিহাস · ${enNameRanked(statsTeam)}</div>
+        <div class="stats-card-title"><i class='fas fa-list'></i> ${S.matchHistory} · ${enNameRanked(statsTeam)}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
           <div>
-            <div class="mh-header">✅ খেলা হয়েছে (${played.length})</div>
-            ${played.length?played.map(r=>matchRow(r,true)).join(''):`<div class="stats-empty">এখনো কোনো ম্যাচ খেলা হয়নি</div>`}
+            <div class="mh-header"><i class='fas fa-check'></i> ${S.playedH} (${played.length})</div>
+            ${played.length?played.map(r=>matchRow(r,true)).join(''):`<div class="stats-empty">${S.noPlayedYet}</div>`}
           </div>
           <div style="border-left:1px solid var(--border2)">
-            <div class="mh-header">⏳ বাকি আছে (${upcoming.length})</div>
-            ${upcoming.length?upcoming.map(r=>matchRow(r,false)).join(''):`<div class="stats-empty">সব ম্যাচ খেলা হয়ে গেছে</div>`}
+            <div class="mh-header"><i class='fas fa-clock'></i> ${S.upcomingH} (${upcoming.length})</div>
+            ${upcoming.length?upcoming.map(r=>matchRow(r,false)).join(''):`<div class="stats-empty">${S.allDone}</div>`}
           </div>
         </div>
       </div>`;
@@ -1344,8 +1450,8 @@ function renderStats(grps){
   document.getElementById('statsGrid').innerHTML=`
     ${matchHistoryHTML}
     <div class="stats-card">
-      <div class="stats-card-title"><i class='fas fa-futbol'></i> সর্বোচ্চ গোলদাতা ${titleSuffix}</div>
-      ${scorers.length===0?`<div class="stats-empty">এখনো গোলের তথ্য নেই</div>`
+      <div class="stats-card-title"><i class='fas fa-futbol'></i> ${S.topScorers} ${titleSuffix}</div>
+      ${scorers.length===0?`<div class="stats-empty">${S.noGoalData}</div>`
         :scorers.slice(0,20).map((s,i)=>`
           <div class="scorer-row">
             <div class="sr-rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</div>
@@ -1355,8 +1461,8 @@ function renderStats(grps){
           </div>`).join('')}
     </div>
     <div class="stats-card">
-      <div class="stats-card-title">🏳️ দলীয় গোল ${titleSuffix}</div>
-      ${teamList.length===0?`<div class="stats-empty">এখনো গোলের তথ্য নেই</div>`
+      <div class="stats-card-title"><i class='fas fa-flag'></i> ${S.teamGoals} ${titleSuffix}</div>
+      ${teamList.length===0?`<div class="stats-empty">${S.noGoalData}</div>`
         :teamList.map(([name,v])=>`
           <div class="team-row">
             ${fImg(name,28,21)}
@@ -1366,8 +1472,8 @@ function renderStats(grps){
           </div>`).join('')}
     </div>
     <div class="stats-card">
-      <div class="stats-card-title">🟨🟥 কার্ড ${titleSuffix}</div>
-      ${cardList.length===0?`<div class="stats-empty">এখনো কার্ডের তথ্য নেই</div>`
+      <div class="stats-card-title"><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.cards} ${titleSuffix}</div>
+      ${cardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
         :cardList.map(c=>`
           <div class="scorer-row">
             ${fImg(c.team,26,19)}
@@ -1386,11 +1492,12 @@ window._stt=function(t){statsTeam=t;const grps=calcGroups();renderStats(grps);};
 function renderThirdPlace(grps){
   const thirds=Object.entries(grps).map(([g,teams])=>({...teams[2],group:g}))
     .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+  const S=window._S;
   document.getElementById('thirdPlace').innerHTML=`
     <div class="tp-card">
-      <p style="font-size:.76rem;color:var(--gray);margin-bottom:1rem;">১২টি গ্রুপের ৩য় স্থানের দলের মধ্যে সেরা ৮টি শেষ বত্রিশে যাবে। র‍্যাংকিং: পয়েন্ট → GD → GF।</p>
+      <p style="font-size:.76rem;color:var(--gray);margin-bottom:1rem;">${S.thirdDesc}</p>
       <table class="tp-tbl">
-        <thead><tr><th>#</th><th>দল</th><th>গ্রুপ</th><th>খে</th><th>Pts</th><th>GF</th><th>GA</th><th>GD</th><th>মর্যাদা</th></tr></thead>
+        <thead><tr><th>#</th><th>${S.team}</th><th>Grp</th><th>${S.pl}</th><th>Pts</th><th>GF</th><th>GA</th><th>GD</th><th>${S.statusCol}</th></tr></thead>
         <tbody>${thirds.map((t,i)=>`
           <tr class="${i<8?'row-q':''}">
             <td>${i+1}</td>
@@ -1399,7 +1506,7 @@ function renderThirdPlace(grps){
             <td>${t.pl}</td><td class="pts-c">${t.pts}</td>
             <td>${t.gf}</td><td>${t.ga}</td>
             <td class="${t.gd>0?'gdp':t.gd<0?'gdn':'gdz'}">${t.gd>0?'+'+t.gd:t.gd}</td>
-            <td style="font-size:.7rem;color:${i<8?'var(--green)':'var(--gray)'}">${i<8?'✓ উত্তীর্ণ':'✗ বাদ'}</td>
+            <td style="font-size:.7rem;color:${i<8?'var(--green)':'var(--gray)'}">${i<8?S.qualified:S.eliminated}</td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -1502,7 +1609,7 @@ function teamKeyToFbKey(teamKey){
 }
 
 function loadSquads(){
-  document.getElementById('sqGrid').innerHTML=`<div class="sq-loading" style="grid-column:1/-1">⏳ লোড হচ্ছে...</div>`;
+  document.getElementById('sqGrid').innerHTML=`<div class="sq-loading" style="grid-column:1/-1"><i class='fas fa-spinner fa-spin'></i> ${(window._S).sqLoading}</div>`;
   onValue(ref(db,'squads'),snap=>{
     sqData=snap.val()||{};
     sqLoaded=true;
@@ -1525,7 +1632,7 @@ function loadSquads(){
       if(posRow)posRow.style.display='';
       renderSquad();
     } else {
-      document.getElementById('sqGrid').innerHTML=`<div class="sq-empty" style="grid-column:1/-1">Firebase-এ squad data নেই</div>`;
+      document.getElementById('sqGrid').innerHTML=`<div class="sq-empty" style="grid-column:1/-1">${(window._S).sqNoData}</div>`;
     }
   },{onlyOnce:true});
 }
@@ -1605,12 +1712,13 @@ function renderSquad(){
           </div>`:''}
         </div>
         <div class="sq-header-right">
-          <div class="sq-stat-box"><div class="sq-stat-n">${players.length}</div><div class="sq-stat-l">খেলোয়াড়</div></div>
-          <div class="sq-stat-box"><div class="sq-stat-n">${totalCaps}</div><div class="sq-stat-l">মোট Caps</div></div>
-          <div class="sq-stat-box"><div class="sq-stat-n">${totalGoals}</div><div class="sq-stat-l">মোট গোল</div></div>
-          <div class="sq-stat-box"><div class="sq-stat-n">${avgAge}</div><div class="sq-stat-l">গড় বয়স</div></div>
-          ${mostCapped&&mostCapped.caps?`<div class="sq-stat-box wide"><div class="sq-extra-row"><i class='fas fa-trophy'></i> সর্বোচ্চ caps: <span>${esc(mostCapped.name)}</span> · ${mostCapped.caps} · ${mostCapped.pos||''}</div></div>`:''}
-          ${topScorer&&topScorer.goals?`<div class="sq-stat-box wide"><div class="sq-extra-row"><i class='fas fa-futbol'></i> সর্বোচ্চ গোল: <span>${esc(topScorer.name)}</span> · ${topScorer.goals} গোল · ${topScorer.pos||''}</div></div>`:''}
+  const SQ=window._S;
+          <div class="sq-stat-box"><div class="sq-stat-n">${players.length}</div><div class="sq-stat-l">${SQ.sqPlayers}</div></div>
+          <div class="sq-stat-box"><div class="sq-stat-n">${totalCaps}</div><div class="sq-stat-l">${SQ.sqCaps}</div></div>
+          <div class="sq-stat-box"><div class="sq-stat-n">${totalGoals}</div><div class="sq-stat-l">${SQ.sqGoals}</div></div>
+          <div class="sq-stat-box"><div class="sq-stat-n">${avgAge}</div><div class="sq-stat-l">${SQ.sqAge}</div></div>
+          ${mostCapped&&mostCapped.caps?`<div class="sq-stat-box wide"><div class="sq-extra-row"><i class='fas fa-trophy'></i> ${SQ.sqMostCapped}: <span>${esc(mostCapped.name)}</span> · ${mostCapped.caps} · ${mostCapped.pos||''}</div></div>`:''}
+          ${topScorer&&topScorer.goals?`<div class="sq-stat-box wide"><div class="sq-extra-row"><i class='fas fa-futbol'></i> ${SQ.sqTopScorer}: <span>${esc(topScorer.name)}</span> · ${topScorer.goals} ${SQ.sqGoalSuffix} · ${topScorer.pos||''}</div></div>`:''}
         </div>
       </div>
     </div>`;
@@ -1619,7 +1727,7 @@ function renderSquad(){
   const filtered=sqPos==='ALL'?players:players.filter(p=>p.pos===sqPos);
 
   if(filtered.length===0){
-    document.getElementById('sqGrid').innerHTML=`<div class="sq-empty" style="grid-column:1/-1">এই পজিশনে কোনো খেলোয়াড় নেই</div>`;
+    document.getElementById('sqGrid').innerHTML=`<div class="sq-empty" style="grid-column:1/-1">${(window._S).sqNoPos}</div>`;
     return;
   }
 
