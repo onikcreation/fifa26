@@ -239,6 +239,19 @@ body.flat-cards .ko-hd{background:#1e1e1e}
 body.flat-cards .amc{border-color:rgba(255,255,255,0.1)}
 body.flat-cards .ko-card{border-color:rgba(255,255,255,0.1)}
 
+/* ══ STADIUM DARK THEME ══ */
+body.stadium-theme{background:linear-gradient(135deg,#08111e,#0d1b3e)}
+body.stadium-theme::before{
+  background-image:url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1920&q=80') !important;
+  background-size:cover !important;
+  background-position:center !important;
+  opacity:.15 !important;
+}
+body.stadium-theme .amc-hdr{background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(10,20,50,0.95))}
+body.stadium-theme .amc-grp{background:#D4AF37;color:#0a1628}
+body.stadium-theme .ko-hd{background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(10,20,50,0.95))}
+body.stadium-theme .ko-rname{background:#D4AF37;color:#0a1628}
+
 /* keep old classes working (used in JS) */
 .s-label{font-size:.72rem;color:var(--text2);display:block;margin-bottom:.5rem;letter-spacing:.5px}
 .settings-actions{display:none}
@@ -265,6 +278,7 @@ body.flat-cards .ko-card{border-color:rgba(255,255,255,0.1)}
 .psw-neonpink{background:linear-gradient(90deg,#120010 50%,#ff2d78 50%)}
 .psw-slate{background:linear-gradient(90deg,#1c2333 50%,#58a6ff 50%)}
 .psw-crimgold{background:linear-gradient(90deg,#0a0a0a 25%,#8B1538 50%,#D4AF37 100%)}
+.psw-stadium{background:linear-gradient(90deg,#0a1628 40%,#1a3a6e 70%,#D4AF37 100%)}
 
 /* GOAL & CARD MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem}
@@ -569,6 +583,7 @@ body.flat-cards .ko-card{border-color:rgba(255,255,255,0.1)}
             <!-- Preset themes -->
             <div class="st-presets-label">Preset Themes</div>
             <div class="st-preset-grid">
+              <button type="button" class="st-preset-btn" onclick="applyPreset('#0a1628','#D4AF37','#ffffff')"><span class="st-preset-swatch psw-stadium"></span>🏟 Stadium Dark</button>
               <button type="button" class="st-preset-btn" onclick="applyPreset('#0a0a0a','#D4AF37','#ffffff')"><span class="st-preset-swatch psw-crimgold"></span>Crimson Gold</button>
               <button type="button" class="st-preset-btn" onclick="applyPreset('#050f10','#A1F000','#ffffff')"><span class="st-preset-swatch psw-neon"></span>Neon Green</button>
               <button type="button" class="st-preset-btn" onclick="applyPreset('#0a0a0f','#FFD700','#ffffff')"><span class="st-preset-swatch psw-royalgold"></span>Royal Gold</button>
@@ -1485,6 +1500,17 @@ function applySettings(s, save=false){
   r.setProperty('--inp', hexToRgba(acc, 0.06));
   // Card gradient
   document.body.classList.toggle('flat-cards', s.cardGradient===false);
+  // Stadium Dark theme
+  const isStadium=bg==='#0a1628';
+  document.body.classList.toggle('stadium-theme',isStadium);
+  if(isStadium){
+    r.setProperty('--bg2','#0d1b3e');r.setProperty('--bg3','#112244');
+    r.setProperty('--card','rgba(10,20,50,0.85)');
+    r.setProperty('--neon-glow','rgba(212,175,55,0.25)');r.setProperty('--neon-glow2','rgba(212,175,55,0.08)');
+    r.setProperty('--border','rgba(212,175,55,0.3)');r.setProperty('--border2','rgba(212,175,55,0.12)');
+    r.setProperty('--text2','#e8eaf0');r.setProperty('--gray','rgba(255,255,255,0.5)');
+    r.setProperty('--inp','rgba(255,255,255,0.06)');r.setProperty('--shadow','rgba(0,0,0,0.6)');
+  }
   // Font
   loadFont(s.font);
   document.body.style.fontFamily = FONT_MAP[s.font] || FONT_MAP.barlow;

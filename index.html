@@ -309,6 +309,23 @@ body.flat-cards .mc-hdr{background:#1e1e1e}
 body.flat-cards .grp-hd{background:#1e1e1e}
 body.flat-cards .mc{border-color:rgba(255,255,255,0.1)}
 
+/* ══ STADIUM DARK THEME ══ */
+body.stadium-theme{background:linear-gradient(135deg,#08111e,#0d1b3e)}
+body.stadium-theme::before{
+  background-image:url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1920&q=80') !important;
+  background-size:cover !important;
+  background-position:center !important;
+  opacity:.15 !important;
+}
+/* Group card colored headers */
+body.stadium-theme .grp-hd{background:var(--gc,var(--gradient-primary))}
+body.stadium-theme .grp-let{display:inline-flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);border-radius:6px;width:2rem;height:2rem;flex-shrink:0}
+body.stadium-theme .grp-hd .grp-lbl{color:rgba(255,255,255,0.8)}
+body.stadium-theme .grp-hd>div>div:first-child{color:#fff}
+/* Match card */
+body.stadium-theme .mc-hdr{background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(10,20,50,0.95))}
+body.stadium-theme .mc-grp-badge{background:#D4AF37;color:#0a1628}
+
 /* Utility */
 #expandInfo{font-size:.68rem;color:var(--gray);margin-left:.3rem}
 .bracket-scroll{overflow-x:auto;padding-bottom:.5rem}
@@ -811,6 +828,20 @@ function applySettingsPub(s){
     document.body.style.fontFamily=FONT_MAP_PUB[s.font]||FONT_MAP_PUB.barlow;
   }
   document.body.classList.toggle('flat-cards', s.cardGradient===false);
+  // Stadium Dark theme
+  if(s.colors){
+    const isStadium=s.colors.bg==='#0a1628';
+    document.body.classList.toggle('stadium-theme',isStadium);
+    if(isStadium){
+      const r2=document.documentElement.style;
+      r2.setProperty('--bg2','#0d1b3e');r2.setProperty('--bg3','#112244');
+      r2.setProperty('--card','rgba(10,20,50,0.85)');
+      r2.setProperty('--neon-glow','rgba(212,175,55,0.25)');r2.setProperty('--neon-glow2','rgba(212,175,55,0.08)');
+      r2.setProperty('--border','rgba(212,175,55,0.3)');r2.setProperty('--border2','rgba(212,175,55,0.12)');
+      r2.setProperty('--text2','#e8eaf0');r2.setProperty('--gray','rgba(255,255,255,0.5)');
+      r2.setProperty('--inp','rgba(255,255,255,0.06)');r2.setProperty('--shadow','rgba(0,0,0,0.6)');
+    }
+  }
   if(s.tz)window._siteTZ=parseFloat(s.tz)||6;
   if(s.lang){
     window._siteLang=s.lang;
@@ -1065,9 +1096,10 @@ window.collapseAll=function(){
 // Groups
 function renderGroups(grps){
   const S=window._S;
+  const GRP_COLORS={A:'linear-gradient(135deg,#2e7d32,#43a047)',B:'linear-gradient(135deg,#1565c0,#1976d2)',C:'linear-gradient(135deg,#b8860b,#DAA520)',D:'linear-gradient(135deg,#6a1b9a,#7b1fa2)',E:'linear-gradient(135deg,#e65100,#f57c00)',F:'linear-gradient(135deg,#00695c,#00796b)',G:'linear-gradient(135deg,#b71c1c,#c62828)',H:'linear-gradient(135deg,#0277bd,#0288d1)',I:'linear-gradient(135deg,#6a1b9a,#8e24aa)',J:'linear-gradient(135deg,#b8860b,#c9a227)',K:'linear-gradient(135deg,#2e7d32,#388e3c)',L:'linear-gradient(135deg,#1565c0,#1e88e5)'};
   document.getElementById('grpGrid').innerHTML=Object.entries(grps).map(([g,teams])=>`
     <div class="grp-card">
-      <div class="grp-hd"><div class="grp-let">${g}</div><div><div style="font-size:.68rem;color:var(--gold-l)">GROUP ${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div></div>
+      <div class="grp-hd" style="--gc:${GRP_COLORS[g]||''}"><div class="grp-let">${g}</div><div><div style="font-size:.68rem;color:var(--gold-l)">GROUP ${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div></div>
       <div class="gt-wrap"><table class="gt">
         <thead><tr><th>${S.team}</th><th>${S.pl}</th><th>${S.won}</th><th>${S.draw}</th><th>${S.lost}</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
