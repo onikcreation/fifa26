@@ -475,6 +475,19 @@ import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.12.0/f
 import{FIREBASE_CONFIG}from'./firebase-config.js';
 import{TEAMS,GROUPS,MATCHES,KO_ROUNDS}from'./data.js';
 
+// id → match number mapping (data.js-এ num field না থাকলেও কাজ করবে)
+const KO_NUM_MAP={
+  r32_1:73,r32_2:76,r32_3:74,r32_4:75,
+  r32_5:78,r32_6:77,r32_7:79,r32_8:80,
+  r32_9:82,r32_10:81,r32_11:84,r32_12:83,
+  r32_13:85,r32_14:88,r32_15:86,r32_16:87,
+  r16_1:89,r16_2:90,r16_3:91,r16_4:92,
+  r16_5:93,r16_6:94,r16_7:95,r16_8:96,
+  qf_1:97,qf_2:98,qf_3:99,qf_4:100,
+  sf_1:101,sf_2:102,third:103,final:104
+};
+function koNum(m){return m.num||KO_NUM_MAP[m.id]||'';}
+
 const app=initializeApp(FIREBASE_CONFIG);
 const db=getDatabase(app);
 
@@ -1030,7 +1043,7 @@ function renderBracket(grps={}){
         <span class="sym-score">${s2}</span>
       </div>
       ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:hasET?`<div class="sym-extra">ET: ${sc.et1}–${sc.et2}</div>`:''}
-      <div class="sym-date">${m.num?`Match #${m.num}`:''}${!compact&&m.date?` · ${fD(m.date)}`:''}${` · ${fT(m.time)}`}</div>
+      <div class="sym-date">${koNum(m)?`Match #${koNum(m)}`:''}${!compact&&m.date?` · ${fD(m.date)}`:''}${` · ${fT(m.time)}`}</div>
     </div>`;
   }
   // Column builder — evenly distribute spacers

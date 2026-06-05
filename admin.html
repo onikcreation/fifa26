@@ -478,6 +478,18 @@ import{getDatabase,ref,set,update,onValue,remove}from"https://www.gstatic.com/fi
 import{FIREBASE_CONFIG,ADMIN_PASSWORD}from'./firebase-config.js';
 import{TEAMS,GROUPS,MATCHES,KO_ROUNDS}from'./data.js';
 
+const KO_NUM_MAP={
+  r32_1:73,r32_2:76,r32_3:74,r32_4:75,
+  r32_5:78,r32_6:77,r32_7:79,r32_8:80,
+  r32_9:82,r32_10:81,r32_11:84,r32_12:83,
+  r32_13:85,r32_14:88,r32_15:86,r32_16:87,
+  r16_1:89,r16_2:90,r16_3:91,r16_4:92,
+  r16_5:93,r16_6:94,r16_7:95,r16_8:96,
+  qf_1:97,qf_2:98,qf_3:99,qf_4:100,
+  sf_1:101,sf_2:102,third:103,final:104
+};
+function koNum(m){return m.num||KO_NUM_MAP[m.id]||'';}
+
 const app=initializeApp(FIREBASE_CONFIG);
 const db=getDatabase(app);
 
@@ -844,7 +856,7 @@ function renderKO(){
     const hasET=sc.et1!==undefined, hasPen=sc.pen1!==undefined;
 
     return`<div class="ko-card">
-      <div class="ko-hd"><span class="ko-rname">${m.roundName}</span><span class="ko-mid">Match #${m.num||m.id}</span></div>
+      <div class="ko-hd"><span class="ko-rname">${m.roundName}</span><span class="ko-mid">Match #${koNum(m)}</span></div>
       <div class="ko-body">
         <div class="ko-date">📅 ${fD(m.date)} · ⏰ ${fT(m.time)}</div>
         <div class="ko-tr">
