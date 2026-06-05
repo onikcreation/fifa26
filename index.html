@@ -317,16 +317,30 @@ body::before{content:'';position:fixed;inset:0;
 .sq-pos-btn.on{background:rgba(161,240,0,.15);border-color:var(--neon);color:var(--neon)}
 
 /* Squad header card */
-.sq-header{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;backdrop-filter:blur(8px)}
-.sq-header-flag{width:80px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 0 14px rgba(161,240,0,.12)}
-.sq-header-info{flex:1}
-.sq-header-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;color:var(--neon);text-shadow:0 0 12px var(--neon-glow)}
-.sq-header-sub{font-size:.75rem;color:var(--gray);margin-top:2px}
-.sq-header-coach{font-size:.8rem;color:var(--text2);margin-top:.4rem}
-.sq-header-stats{display:flex;gap:1rem;margin-top:.5rem}
-.sq-stat{text-align:center}
-.sq-stat-n{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--neon)}
-.sq-stat-l{font-size:.58rem;color:var(--gray);letter-spacing:.5px}
+/* Squad header — Format B */
+.sq-header{background:#0a1e20;border:1px solid rgba(161,240,0,.2);border-radius:12px;overflow:hidden;margin-bottom:1rem}
+.sq-header-body{display:grid;grid-template-columns:auto 1fr;gap:0}
+.sq-header-left{padding:1rem 1rem 1rem 1.2rem;display:flex;flex-direction:column;justify-content:center;gap:.35rem;border-right:1px solid rgba(161,240,0,.08)}
+.sq-header-flag{width:80px;height:60px;object-fit:cover;border-radius:8px;border:1px solid rgba(161,240,0,.2);box-shadow:0 0 12px rgba(161,240,0,.1)}
+.sq-header-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--neon);line-height:1;text-shadow:0 0 10px var(--neon-glow)}
+.sq-header-sub{font-size:.68rem;color:var(--gray)}
+.sq-header-coach{font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:.3rem}
+.sq-cap-row{display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:rgba(255,255,255,.7)}
+.sq-cap-tag{font-family:'Bebas Neue',sans-serif;font-size:.58rem;padding:.1rem .4rem;background:rgba(161,240,0,.12);border:1px solid rgba(161,240,0,.3);border-radius:3px;color:var(--neon);letter-spacing:.5px}
+.sq-cap-no{font-size:.62rem;color:rgba(255,255,255,.35)}
+/* Right: 2x2 stat boxes + wide extra row */
+.sq-header-right{padding:.7rem 1.2rem .7rem .8rem;display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;align-content:center}
+.sq-stat-box{background:rgba(161,240,0,.05);border:1px solid rgba(161,240,0,.08);border-radius:7px;padding:.45rem .5rem;text-align:center}
+.sq-stat-box.wide{grid-column:1/-1;background:rgba(161,240,0,.08);border-color:rgba(161,240,0,.12)}
+.sq-stat-n{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--neon);line-height:1}
+.sq-stat-l{font-size:.58rem;color:rgba(255,255,255,.4);letter-spacing:.5px;margin-top:2px}
+.sq-extra-row{font-size:.7rem;color:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;gap:.4rem}
+.sq-extra-row span{color:var(--neon)}
+@media(max-width:600px){
+  .sq-header-body{grid-template-columns:1fr}
+  .sq-header-right{grid-template-columns:repeat(2,1fr)}
+  .sq-header-left{border-right:none;border-bottom:1px solid rgba(161,240,0,.08)}
+}
 
 /* Player grid */
 .sq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem}
@@ -1546,20 +1560,31 @@ function renderSquad(){
   const totalGoals=players.reduce((s,p)=>s+(p.goals||0),0);
   const avgAge=players.length?(players.reduce((s,p)=>s+(p.age||0),0)/players.length).toFixed(1):'—';
   const captain=players.find(p=>p.captain);
+  // Most capped & top scorer
+  const mostCapped=[...players].sort((a,b)=>(b.caps||0)-(a.caps||0))[0];
+  const topScorer=[...players].sort((a,b)=>(b.goals||0)-(a.goals||0))[0];
 
   document.getElementById('sqHeader').innerHTML=`
     <div class="sq-header">
-      ${code?`<img class="sq-header-flag" src="https://flagcdn.com/80x60/${code}.png" loading="lazy" onerror="this.style.display='none'">`:''}
-      <div class="sq-header-info">
-        <div class="sq-header-name">${rank?rank+'.':''} ${esc(en)}</div>
-        <div class="sq-header-sub">Group ${data.group||'?'}</div>
-        <div class="sq-header-coach">👔 Coach: ${esc(data.coach||'—')}</div>
-        <div class="sq-header-stats">
-          <div class="sq-stat"><div class="sq-stat-n">${players.length}</div><div class="sq-stat-l">Players</div></div>
-          <div class="sq-stat"><div class="sq-stat-n">${totalCaps}</div><div class="sq-stat-l">Caps</div></div>
-          <div class="sq-stat"><div class="sq-stat-n">${totalGoals}</div><div class="sq-stat-l">Goals</div></div>
-          <div class="sq-stat"><div class="sq-stat-n">${avgAge}</div><div class="sq-stat-l">Avg Age</div></div>
-          ${captain?`<div class="sq-stat"><div class="sq-stat-n" style="font-size:.75rem;color:var(--neon)">© Captain</div><div class="sq-stat-l">${esc(captain.name)}</div></div>`:''}
+      <div class="sq-header-body">
+        <div class="sq-header-left">
+          ${code?`<img class="sq-header-flag" src="https://flagcdn.com/80x60/${code}.png" loading="lazy" onerror="this.style.display='none'">`:''}
+          <div class="sq-header-name">${rank?rank+'.':''} ${esc(en)}</div>
+          <div class="sq-header-sub">Group ${data.group||'?'}</div>
+          <div class="sq-header-coach">👔 ${esc(data.coach||'—')}</div>
+          ${captain?`<div class="sq-cap-row">
+            <span class="sq-cap-tag">© CAPTAIN</span>
+            <span>${esc(captain.name)}</span>
+            <span class="sq-cap-no">#${captain.no||''} · ${captain.pos||''}</span>
+          </div>`:''}
+        </div>
+        <div class="sq-header-right">
+          <div class="sq-stat-box"><div class="sq-stat-n">${players.length}</div><div class="sq-stat-l">খেলোয়াড়</div></div>
+          <div class="sq-stat-box"><div class="sq-stat-n">${totalCaps}</div><div class="sq-stat-l">মোট Caps</div></div>
+          <div class="sq-stat-box"><div class="sq-stat-n">${totalGoals}</div><div class="sq-stat-l">মোট গোল</div></div>
+          <div class="sq-stat-box"><div class="sq-stat-n">${avgAge}</div><div class="sq-stat-l">গড় বয়স</div></div>
+          ${mostCapped&&mostCapped.caps?`<div class="sq-stat-box wide"><div class="sq-extra-row">🏆 সর্বোচ্চ caps: <span>${esc(mostCapped.name)}</span> · ${mostCapped.caps} · ${mostCapped.pos||''}</div></div>`:''}
+          ${topScorer&&topScorer.goals?`<div class="sq-stat-box wide"><div class="sq-extra-row">⚽ সর্বোচ্চ গোল: <span>${esc(topScorer.name)}</span> · ${topScorer.goals} গোল · ${topScorer.pos||''}</div></div>`:''}
         </div>
       </div>
     </div>`;
