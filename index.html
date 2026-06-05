@@ -157,7 +157,8 @@ body::after{content:'';position:fixed;inset:0;
 }
 
 /* GROUP */
-.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1rem}
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem}
+.gt-wrap{overflow-x:auto}
 .grp-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;overflow:hidden;position:relative}
 .grp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-primary)}
 .grp-hd{background:linear-gradient(135deg,rgba(139,21,56,0.3),rgba(20,20,20,0.98));padding:.55rem .9rem;display:flex;align-items:center;gap:.55rem;border-bottom:1px solid rgba(255,255,255,0.06)}
@@ -190,39 +191,34 @@ body::after{content:'';position:fixed;inset:0;
   gap:0;
   min-width:1050px;
 }
-.sym-col{display:flex;flex-direction:column;padding:0 2px;min-height:600px}
-.sym-col-title{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:.68rem;letter-spacing:1.5px;
-  background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  text-align:center;
-  padding:.4rem 0 .6rem;
-}
+.sym-col{display:flex;flex-direction:column;padding:0 5px;min-height:600px}
+.sym-col-title{font-family:'Bebas Neue',sans-serif;font-size:.68rem;letter-spacing:1.5px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding:.4rem 0 .6rem}
 .sym-spacer{flex:1;min-height:4px}
 
-/* Match card */
-.sym-match{
-  background:var(--card);border:1px solid var(--border2);
-  border-radius:7px;overflow:hidden;margin:2px 0;transition:border .15s;
-}
-.sym-match:hover{border-color:rgba(212,175,55,0.4)}
-.sym-match.has-result{border-color:rgba(139,21,56,0.5)}
-.sym-team{
-  display:flex;align-items:center;gap:5px;
-  padding:5px 7px;border-bottom:1px solid var(--border2);
-  min-height:28px;font-size:.72rem;
-}
+/* Match card — mc-style */
+.sym-match{background:#141414;border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;margin:3px 0;transition:all .2s;position:relative;box-shadow:0 2px 14px rgba(0,0,0,.5)}
+.sym-match::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-primary);z-index:1}
+.sym-match:hover{border-color:rgba(212,175,55,0.3);box-shadow:0 0 20px rgba(139,21,56,0.28);transform:translateY(-1px)}
+.sym-match.has-result{border-color:rgba(139,21,56,0.45)}
+.sym-match-num{font-family:'Bebas Neue',sans-serif;font-size:.6rem;letter-spacing:1px;color:var(--neon);background:linear-gradient(135deg,rgba(139,21,56,.5) 0%,rgba(20,20,20,.98) 100%);border-bottom:1px solid rgba(212,175,55,.12);padding:3px 7px;display:flex;justify-content:space-between;align-items:center}
+.sym-team{display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.05);min-height:28px;font-size:.72rem}
 .sym-team:last-of-type{border-bottom:none}
 .sym-flag{width:20px;height:15px;object-fit:cover;border-radius:2px;flex-shrink:0}
 .sym-tname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .sym-tname.tbd{color:var(--gray);font-style:italic;font-size:.65rem}
-.sym-score{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--neon);min-width:16px;text-align:right}
-.sym-team.win{background:rgba(161,240,0,.1)}
-.sym-team.win .sym-tname{font-weight:700}
+.sym-score{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:rgba(255,255,255,.4);min-width:16px;text-align:right}
+.sym-team.win{background:rgba(139,21,56,.1)}
+.sym-team.win .sym-tname{font-weight:700;color:#fff}
 .sym-team.win .sym-score{color:var(--neon)}
-.sym-match-num{font-family:'Bebas Neue',sans-serif;font-size:.58rem;letter-spacing:1px;color:var(--neon);background:rgba(139,21,56,0.18);border-bottom:1px solid rgba(212,175,55,0.12);text-align:center;padding:2px 4px}
-.sym-extra{text-align:center;font-size:.58rem;color:var(--orange);padding:2px;border-top:1px solid var(--border2)}
-.sym-date{text-align:center;font-size:.6rem;color:rgba(255,255,255,.65);padding:3px;background:rgba(0,0,0,.2);font-family:'Bebas Neue',sans-serif;letter-spacing:.5px}
+.sym-extra{text-align:center;font-size:.58rem;color:var(--orange);padding:2px 7px;border-top:1px solid var(--border2)}
+.sym-date{text-align:center;font-size:.58rem;color:rgba(255,255,255,.5);padding:3px 7px;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.05);font-family:'Bebas Neue',sans-serif;letter-spacing:.5px}
+/* Connector lines */
+.smr{position:relative}
+.sym-col:not(.sym-col-r) .smr::after{content:'';position:absolute;right:-5px;top:50%;width:5px;height:1px;background:rgba(212,175,55,.22)}
+.sym-col-r .smr::after{content:'';position:absolute;left:-5px;top:50%;width:5px;height:1px;background:rgba(212,175,55,.22)}
+.sym-con{position:relative}
+.sym-col:not(.sym-col-r) .sym-con::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:1px;background:rgba(212,175,55,.22)}
+.sym-col-r .sym-con::after{content:'';position:absolute;left:-5px;top:0;bottom:0;width:1px;background:rgba(212,175,55,.22)}
 
 /* Center column */
 .sym-center{
@@ -306,7 +302,9 @@ body::after{content:'';position:fixed;inset:0;
 /* Card gradient on/off */
 body.flat-cards .mc::before,
 body.flat-cards .grp-card::before,
-body.flat-cards .sc::before{display:none}
+body.flat-cards .sc::before,
+body.flat-cards .sym-match::before{display:none}
+body.flat-cards .sym-match-num{background:rgba(20,20,20,.98)}
 body.flat-cards .mc-hdr{background:#1e1e1e}
 body.flat-cards .grp-hd{background:#1e1e1e}
 body.flat-cards .mc{border-color:rgba(255,255,255,0.1)}
@@ -1070,7 +1068,7 @@ function renderGroups(grps){
   document.getElementById('grpGrid').innerHTML=Object.entries(grps).map(([g,teams])=>`
     <div class="grp-card">
       <div class="grp-hd"><div class="grp-let">${g}</div><div><div style="font-size:.68rem;color:var(--gold-l)">GROUP ${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div></div>
-      <table class="gt">
+      <div class="gt-wrap"><table class="gt">
         <thead><tr><th>${S.team}</th><th>${S.pl}</th><th>${S.won}</th><th>${S.draw}</th><th>${S.lost}</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
           <tr class="${i<2?'row-q':i===2?'row-3':''}">
@@ -1081,7 +1079,7 @@ function renderGroups(grps){
             <td class="pts-c">${t.pts}</td>
           </tr>`).join('')}
         </tbody>
-      </table>
+      </table></div>
     </div>`).join('');
 }
 
@@ -1289,7 +1287,10 @@ function renderBracket(grps={}){
     const auto1=!(scores[m.id]||{}).t1&&TEAMS[t1];
     const auto2=!(scores[m.id]||{}).t2&&TEAMS[t2];
     return`<div class="sym-match ${done?'has-result':''}">
-      ${koNum(m)?`<div class="sym-match-num">Match #${koNum(m)}</div>`:''}
+      <div class="sym-match-num">
+        <span>${koNum(m)?`#${koNum(m)}`:''}</span>
+        <span style="font-size:.55rem;color:rgba(255,255,255,.45)">${!compact&&m.date?fD(m.date):''}</span>
+      </div>
       <div class="sym-team ${w&&w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
         ${symFlag(t1)}<span class="sym-tname ${isTBDish(t1)?'tbd':''}">${displayName(t1)}</span>
         <span class="sym-score">${s1}</span>
@@ -1299,16 +1300,16 @@ function renderBracket(grps={}){
         <span class="sym-score">${s2}</span>
       </div>
       ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:hasET?`<div class="sym-extra">ET: ${sc.et1}–${sc.et2}</div>`:''}
-      <div class="sym-date">${!compact&&m.date?`${fD(m.date)} · `:''}${fT(m.time)}</div>
+      <div class="sym-date">${fT(m.time)}</div>
     </div>`;
   }
   // Column builder — evenly distribute spacers
-  function symCol(title,matches,topFlex,midFlex){
-    let h=`<div class="sym-col"><div class="sym-col-title">${title}</div>`;
+  function symCol(title,matches,topFlex,midFlex,isRight=false){
+    let h=`<div class="sym-col${isRight?' sym-col-r':''}"><div class="sym-col-title">${title}</div>`;
     h+=`<div class="sym-spacer" style="flex:${topFlex}"></div>`;
     for(let i=0;i<matches.length;i++){
-      h+=symMatch(matches[i]);
-      if(i<matches.length-1)h+=`<div class="sym-spacer" style="flex:${midFlex}"></div>`;
+      h+=`<div class="smr">${symMatch(matches[i])}</div>`;
+      if(i<matches.length-1)h+=`<div class="sym-spacer${i%2===0?' sym-con':''}" style="flex:${midFlex}"></div>`;
     }
     h+=`<div class="sym-spacer" style="flex:${topFlex}"></div>`;
     h+=`</div>`;return h;
@@ -1329,10 +1330,10 @@ function renderBracket(grps={}){
   // top/bottom spacer = midFlex/2 for visual centering
   const S=window._S;
   let html='';
-  html+=symCol(S.r32,R32.slice(0,8),1,2);
-  html+=symCol(S.r16,R16.slice(0,4),3,6);
-  html+=symCol(S.qf,QF.slice(0,2),7,14);
-  html+=symCol(S.sf,[SF[0]],15,0);
+  html+=symCol(S.r32,R32.slice(0,8),1,2,false);
+  html+=symCol(S.r16,R16.slice(0,4),3,6,false);
+  html+=symCol(S.qf,QF.slice(0,2),7,14,false);
+  html+=symCol(S.sf,[SF[0]],15,0,false);
 
   html+=`<div class="sym-center">
     <div class="sym-final-label"><i class='fas fa-trophy'></i> ${S.final}</div>
@@ -1348,10 +1349,10 @@ function renderBracket(grps={}){
     </div>
   </div>`;
 
-  html+=symCol(S.sf,[SF[1]],15,0);
-  html+=symCol(S.qf,QF.slice(2,4),7,14);
-  html+=symCol(S.r16,R16.slice(4,8),3,6);
-  html+=symCol(S.r32,R32.slice(8,16),1,2);
+  html+=symCol(S.sf,[SF[1]],15,0,true);
+  html+=symCol(S.qf,QF.slice(2,4),7,14,true);
+  html+=symCol(S.r16,R16.slice(4,8),3,6,true);
+  html+=symCol(S.r32,R32.slice(8,16),1,2,true);
 
   document.getElementById('symDesktop').innerHTML=html;
 
