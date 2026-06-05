@@ -568,6 +568,7 @@ const STRINGS={
     sqLoading:'লোড হচ্ছে...',sqNoData:'Firebase-এ squad data নেই',
     sqNoPos:'এই পজিশনে কোনো খেলোয়াড় নেই',
     sqPlayers:'খেলোয়াড়',sqCaps:'মোট Caps',sqGoals:'মোট গোল',sqAge:'গড় বয়স',
+    sqCoach:'কোচ',sqCaptain:'অধিনায়ক',
     sqMostCapped:'সর্বোচ্চ caps',sqTopScorer:'সর্বোচ্চ গোল',sqGoalSuffix:'গোল',
   },
   en:{
@@ -599,6 +600,7 @@ const STRINGS={
     sqLoading:'Loading...',sqNoData:'No squad data in Firebase',
     sqNoPos:'No players in this position',
     sqPlayers:'Players',sqCaps:'Total Caps',sqGoals:'Total Goals',sqAge:'Avg Age',
+    sqCoach:'Coach',sqCaptain:'Captain',
     sqMostCapped:'Most capped',sqTopScorer:'Top scorer',sqGoalSuffix:'goals',
   }
 };
@@ -1742,17 +1744,13 @@ function renderSquad(){
           <div class="sq-header-info">
             <div class="sq-header-name">${rank?rank+'.':''} ${esc(en)}</div>
             <div class="sq-header-sub">GROUP ${data.group||'?'}</div>
-            <div class="sq-header-coach"><i class='fas fa-user-tie'></i> ${esc(data.coach||'—')}</div>
-            ${captain?`<div class="sq-cap-row">
-              <span class="sq-cap-tag">© CAPTAIN</span>
-              <span>${esc(captain.name)}</span>
-              <span class="sq-cap-no">#${captain.no||''} · ${captain.pos||''}</span>
-            </div>`:''}
           </div>
         </div>
         <div class="sq-header-right">
           <div class="sq-stat-box"><div class="sq-stat-n">${players.length}</div><div class="sq-stat-l">${SQ.sqPlayers}</div></div>
           <div class="sq-stat-box"><div class="sq-stat-n">${avgAge}</div><div class="sq-stat-l">${SQ.sqAge}</div></div>
+          ${data.coach?`<div class="sq-extra-box"><div class="sq-extra-label">${SQ.sqCoach||'COACH'}</div><div class="sq-extra-row"><i class='fas fa-user-tie'></i><span>${esc(data.coach)}</span></div></div>`:''}
+          ${captain?`<div class="sq-extra-box"><div class="sq-extra-label">${SQ.sqCaptain||'CAPTAIN'}</div><div class="sq-extra-row"><i class='fas fa-shield-halved'></i><span>${esc(captain.name)}</span> · #${captain.no||''} · ${captain.pos||''}</div></div>`:''}
           ${mostCapped&&mostCapped.caps?`<div class="sq-extra-box"><div class="sq-extra-label">${SQ.sqMostCapped}</div><div class="sq-extra-row"><i class='fas fa-trophy'></i><span>${esc(mostCapped.name)}</span> · ${mostCapped.caps} caps · ${mostCapped.pos||''}</div></div>`:''}
           ${topScorer&&topScorer.goals?`<div class="sq-extra-box"><div class="sq-extra-label">${SQ.sqTopScorer}</div><div class="sq-extra-row"><i class='fas fa-futbol'></i><span>${esc(topScorer.name)}</span> · ${topScorer.goals} ${SQ.sqGoalSuffix} · ${topScorer.pos||''}</div></div>`:''}
         </div>
