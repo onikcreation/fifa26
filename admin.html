@@ -210,13 +210,16 @@ body::before{content:'';position:fixed;inset:0;
 .card-section-title{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:1px;color:var(--text2);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
 .card-entry{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;padding:.4rem .5rem;background:rgba(255,255,255,.03);border-radius:6px;border:1px solid var(--border2)}
 .card-type-btns{display:flex;gap:.3rem;flex-shrink:0}
-.card-type-btn{font-size:.75rem;padding:.2rem .5rem;border-radius:4px;cursor:pointer;border:1px solid transparent;transition:all .2s;font-weight:700}
-.card-type-btn.yellow{background:rgba(255,200,0,.1);border-color:rgba(255,200,0,.3);color:#ffc800}
-.card-type-btn.red{background:rgba(255,50,50,.1);border-color:rgba(255,50,50,.3);color:#ff3232}
-.card-type-btn.on.yellow{background:rgba(255,200,0,.25);border-color:#ffc800}
-.card-type-btn.on.red{background:rgba(255,50,50,.25);border-color:#ff3232}
-.cn-in{flex:1;background:var(--inp);border:1px solid var(--border2);border-radius:5px;padding:.3rem .5rem;color:var(--text);font-size:.8rem;outline:none}
-.cn-in:focus{border-color:var(--neon)}
+.card-type-btn{font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:.5px;padding:.25rem .5rem;border-radius:4px;cursor:pointer;border:1px solid transparent;transition:all .2s;white-space:nowrap}
+.card-type-btn.yellow{background:rgba(255,200,0,.08);border-color:rgba(255,200,0,.25);color:#ffc800}
+.card-type-btn.red{background:rgba(255,50,50,.08);border-color:rgba(255,50,50,.25);color:#ff5050}
+.card-type-btn.yr{background:rgba(255,100,0,.08);border-color:rgba(255,100,0,.25);color:#ff8c00}
+.card-type-btn.on.yellow{background:rgba(255,200,0,.22);border-color:#ffc800;box-shadow:0 0 6px rgba(255,200,0,.3)}
+.card-type-btn.on.red{background:rgba(255,50,50,.22);border-color:#ff5050;box-shadow:0 0 6px rgba(255,50,50,.3)}
+.card-type-btn.on.yr{background:rgba(255,100,0,.22);border-color:#ff8c00;box-shadow:0 0 6px rgba(255,100,0,.3)}
+.gn-in,.cn-in{flex:1;min-width:80px;background:#071517;border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:.76rem;padding:.32rem .45rem;outline:none;transition:border .2s;cursor:pointer}
+.gn-in:focus,.cn-in:focus{border-color:var(--neon)}
+.gn-in option,.cn-in option{background:#071517;color:#fff}
 .cm-in{width:52px;background:var(--inp);border:1px solid var(--border2);border-radius:5px;padding:.3rem .4rem;color:var(--text);font-size:.8rem;text-align:center;outline:none}
 .add-card-btn{font-size:.7rem;letter-spacing:1px;padding:.28rem .65rem;background:rgba(161,240,0,.08);border:1px solid var(--border2);border-radius:5px;color:var(--neon);cursor:pointer;transition:all .2s;white-space:nowrap}
 .add-card-btn:hover{background:rgba(161,240,0,.18);border-color:var(--neon)}
@@ -227,7 +230,6 @@ body::before{content:'';position:fixed;inset:0;
 @media(max-width:500px){.modal-teams{grid-template-columns:1fr}}
 .modal-team-title{font-size:.72rem;letter-spacing:1px;color:var(--neon);margin-bottom:.5rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
 .goal-entry{display:flex;gap:.35rem;align-items:center;margin-bottom:.35rem;flex-wrap:wrap}
-.gn-in{flex:1;min-width:80px;background:var(--inp);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:.76rem;padding:.32rem .45rem;outline:none;transition:border .2s}
 .gn-in:focus{border-color:var(--neon)}
 .gm-in{width:46px;background:var(--inp);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:.76rem;padding:.32rem .35rem;text-align:center;outline:none}
 .gm-in:focus{border-color:var(--neon)}
@@ -1026,15 +1028,26 @@ window.openGoalModal=function(id,isKO){
 
   // Goals
   const g1=sc.goals1||[],g2=sc.goals2||[];
+
+  function playerOptions(players,selected=''){
+    const opts=players.map(p=>`<option value="${esc(p.name)}" ${p.name===selected?'selected':''}>#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join('');
+    return`<option value="">— খেলোয়াড় বেছে নাও —</option>${opts}`;
+  }
+
   function goalEntry(side,i,name='',min='',pen=false){
-    const dl=side==='t1'?dl1:dl2;
+    const players=side==='t1'?p1:p2;
+    const hasSquad=players.length>0;
     return`<div class="goal-entry" id="ge_${side}_${i}">
-      <input class="gn-in" placeholder="গোলদাতার নাম" value="${esc(name)}" id="gn_${side}_${i}" list="${dl}" autocomplete="off">
+      ${hasSquad
+        ?`<select class="gn-in" id="gn_${side}_${i}" style="flex:1">${playerOptions(players,name)}</select>`
+        :`<input class="gn-in" placeholder="গোলদাতার নাম" value="${esc(name)}" id="gn_${side}_${i}">`
+      }
       <input class="gm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="gm_${side}_${i}">
       <input type="checkbox" class="pen-cb" id="gp_${side}_${i}" ${pen?'checked':''}><label class="pen-lbl" for="gp_${side}_${i}">P</label>
       <button class="rm-btn" onclick="rmGoal('${side}',${i})">✕</button>
     </div>`;
   }
+
   function goalSection(side,teamName,goals){
     const pc=side==='t1'?p1.length:p2.length;
     return`<div>
@@ -1051,15 +1064,20 @@ window.openGoalModal=function(id,isKO){
 
   // Cards
   const c1=sc.cards1||[],c2=sc.cards2||[];
+
   function cardEntry(side,i,name='',min='',type='yellow'){
-    const cdl=side==='t1'?cdl1:cdl2;
+    const players=side==='t1'?p1:p2;
+    const hasSquad=players.length>0;
     return`<div class="card-entry" id="ce_${side}_${i}">
       <div class="card-type-btns">
-        <button class="card-type-btn yellow ${type==='yellow'?'on':''}" onclick="setCardType('${side}',${i},'yellow',this)">🟨</button>
-        <button class="card-type-btn red ${type==='red'?'on':''}" onclick="setCardType('${side}',${i},'red',this)">🟥</button>
-        <button class="card-type-btn red ${type==='yr'?'on':''}" onclick="setCardType('${side}',${i},'yr',this)" title="২য় হলুদ = লাল" style="font-size:.6rem">🟨🟥</button>
+        <button class="card-type-btn yellow ${type==='yellow'?'on':''}" onclick="setCardType('${side}',${i},'yellow',this)">হলুদ</button>
+        <button class="card-type-btn red ${type==='red'?'on':''}" onclick="setCardType('${side}',${i},'red',this)">লাল</button>
+        <button class="card-type-btn yr ${type==='yr'?'on':''}" onclick="setCardType('${side}',${i},'yr',this)">২য় হলুদ</button>
       </div>
-      <input class="cn-in" placeholder="খেলোয়াড়ের নাম" value="${esc(name)}" id="cn_${side}_${i}" list="${cdl}" autocomplete="off">
+      ${hasSquad
+        ?`<select class="cn-in" id="cn_${side}_${i}" style="flex:1">${playerOptions(players,name)}</select>`
+        :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" value="${esc(name)}" id="cn_${side}_${i}">`
+      }
       <input class="cm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="cm_${side}_${i}">
       <input type="hidden" id="ct_${side}_${i}" value="${type}">
       <button class="rm-btn" onclick="rmCard('${side}',${i})">✕</button>
@@ -1090,12 +1108,15 @@ window.setCardType=function(side,i,type,btn){
 window.addGoal=function(side){
   const c=document.getElementById('glist_'+side);
   const i=c.children.length;
-  // Find datalist id from existing entries
-  const existingInput=c.querySelector('input.gn-in');
-  const dlid=existingInput?.getAttribute('list')||'';
+  const players=side==='t1'?p1:p2;
+  const hasSquad=players.length>0;
   const d=document.createElement('div');
+  const opts=hasSquad?players.map(p=>`<option value="${esc(p.name)}">#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join(''):'';
   d.innerHTML=`<div class="goal-entry" id="ge_${side}_${i}">
-    <input class="gn-in" placeholder="গোলদাতার নাম" id="gn_${side}_${i}" list="${dlid}" autocomplete="off">
+    ${hasSquad
+      ?`<select class="gn-in" id="gn_${side}_${i}" style="flex:1"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
+      :`<input class="gn-in" placeholder="গোলদাতার নাম" id="gn_${side}_${i}">`
+    }
     <input class="gm-in" type="number" min="1" max="130" placeholder="মি." id="gm_${side}_${i}">
     <input type="checkbox" class="pen-cb" id="gp_${side}_${i}"><label class="pen-lbl" for="gp_${side}_${i}">P</label>
     <button class="rm-btn" onclick="rmGoal('${side}',${i})">✕</button>
@@ -1107,16 +1128,20 @@ window.rmGoal=function(side,i){const el=document.getElementById(`ge_${side}_${i}
 window.addCard=function(side){
   const c=document.getElementById('clist_'+side);
   const i=c.children.length;
-  const existingInput=c.querySelector('input.cn-in');
-  const dlid=existingInput?.getAttribute('list')||'';
+  const players=side==='t1'?p1:p2;
+  const hasSquad=players.length>0;
+  const opts=hasSquad?players.map(p=>`<option value="${esc(p.name)}">#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join(''):'';
   const d=document.createElement('div');
   d.innerHTML=`<div class="card-entry" id="ce_${side}_${i}">
     <div class="card-type-btns">
-      <button class="card-type-btn yellow on" onclick="setCardType('${side}',${i},'yellow',this)">🟨</button>
-      <button class="card-type-btn red" onclick="setCardType('${side}',${i},'red',this)">🟥</button>
-      <button class="card-type-btn red" onclick="setCardType('${side}',${i},'yr',this)" style="font-size:.6rem">🟨🟥</button>
+      <button class="card-type-btn yellow on" onclick="setCardType('${side}',${i},'yellow',this)">হলুদ</button>
+      <button class="card-type-btn red" onclick="setCardType('${side}',${i},'red',this)">লাল</button>
+      <button class="card-type-btn yr" onclick="setCardType('${side}',${i},'yr',this)">২য় হলুদ</button>
     </div>
-    <input class="cn-in" placeholder="খেলোয়াড়ের নাম" id="cn_${side}_${i}" list="${dlid}" autocomplete="off">
+    ${hasSquad
+      ?`<select class="cn-in" id="cn_${side}_${i}" style="flex:1"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
+      :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" id="cn_${side}_${i}">`
+    }
     <input class="cm-in" type="number" min="1" max="130" placeholder="মি." id="cm_${side}_${i}">
     <input type="hidden" id="ct_${side}_${i}" value="yellow">
     <button class="rm-btn" onclick="rmCard('${side}',${i})">✕</button>
