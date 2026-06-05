@@ -257,7 +257,7 @@ body::before{content:'';position:fixed;inset:0;
 /* Score grid: 6 inputs in a structured layout */
 .ko-score-grid{display:grid;grid-template-columns:1fr auto auto auto auto;gap:.3rem;align-items:center;margin-bottom:.3rem}
 .ko-score-grid + .ko-score-grid{margin-top:0}
-.ko-ti{background:var(--inp);border:1px solid var(--border2);border-radius:5px;padding:.32rem .45rem;color:var(--text);font-size:.74rem;outline:none;min-width:0}
+.ko-ti{width:100%;background:var(--inp);border:1px solid var(--border2);border-radius:5px;padding:.32rem .45rem;color:var(--text);font-size:.74rem;outline:none;min-width:0;box-sizing:border-box}
 .ko-ti:focus{border-color:var(--neon)}
 /* Score input boxes */
 .ko-si{width:36px;height:30px;background:var(--inp);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:.95rem;text-align:center;outline:none;transition:border .15s}
