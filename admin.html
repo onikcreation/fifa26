@@ -238,8 +238,12 @@ body::before{content:'';position:fixed;inset:0;
 .modal-save{width:100%;margin-top:1rem;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:.55rem;background:rgba(161,240,0,.2);color:var(--neon);border:1px solid var(--border);border-radius:8px;color:#fff;cursor:pointer}
 
 /* KO CARDS */
-.ko-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.75rem}
-.ko-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.ko-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+@media(max-width:900px){.ko-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.ko-grid{grid-template-columns:1fr}}
+.ko-section-title{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:3px;color:var(--neon);padding:.5rem .9rem;background:rgba(161,240,0,.05);border-left:3px solid var(--neon);border-radius:0 6px 6px 0;margin:1.2rem 0 .7rem;grid-column:1/-1}
+.ko-card{background:#0a1e20;border:1px solid rgba(161,240,0,.2);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.ko-card .ko-body{flex:1}
 .ko-hd{background:linear-gradient(135deg,rgba(161,240,0,.22) 0%,rgba(12,43,45,.95) 100%);padding:.42rem .8rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(161,240,0,.12)}
 .ko-rname{font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:1px;color:#050f10;background:var(--neon);padding:.15rem .55rem;border-radius:20px}
 .ko-mid{font-family:'Bebas Neue',sans-serif;font-size:.75rem;color:rgba(255,255,255,.88);letter-spacing:.5px}
@@ -250,7 +254,7 @@ body::before{content:'';position:fixed;inset:0;
 .ko-ti:focus{border-color:var(--neon)}
 .ko-si{width:34px;height:27px;background:var(--inp);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:.9rem;text-align:center;outline:none}
 .ko-si:focus{border-color:var(--neon)}
-.ko-actions{display:flex;gap:.35rem;margin-top:.35rem}
+.ko-actions{display:flex;gap:.35rem;padding:.5rem .65rem;border-top:1px solid rgba(161,240,0,.08);background:rgba(0,0,0,.2)}
 .ko-sv{flex:1;font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:1px;padding:.35rem;background:rgba(161,240,0,.15);border:1px solid var(--border);border-radius:5px;color:#fff;cursor:pointer}
 .ko-sv:hover{background:rgba(161,240,0,.22)}
 .ko-goal-btn{font-size:.68rem;padding:.3rem .6rem;background:rgba(161,240,0,.1);border:1px solid var(--border);border-radius:5px;color:var(--neon);cursor:pointer;white-space:nowrap}
@@ -837,11 +841,11 @@ function renderKO(){
   const grps=calcGroupsAdmin();
   const b3map=buildB3MapAdmin(grps);
   const winnerMap=buildWinnerMapAdmin(grps,b3map);
-  const allKO=KO_ROUNDS.flatMap(r=>r.matches.map(m=>({...m,roundName:r.name})));
 
-  document.getElementById('koGrid').innerHTML=allKO.map(m=>{
+  function cardHTML(m){
     const sc=dbSc[m.id]||{};
     const hg=(sc.goals1?.length||0)+(sc.goals2?.length||0);
+    const hc=(sc.cards1?.length||0)+(sc.cards2?.length||0);
     let autoT1='',autoT2='';
     if(!sc.t1){
       if(m.s1?.startsWith('3rd '))autoT1=b3map[`${m.id}_s1`]||'';
@@ -856,7 +860,10 @@ function renderKO(){
     const hasET=sc.et1!==undefined, hasPen=sc.pen1!==undefined;
 
     return`<div class="ko-card">
-      <div class="ko-hd"><span class="ko-rname">${m.roundName}</span><span class="ko-mid">Match #${koNum(m)}</span></div>
+      <div class="ko-hd">
+        <span class="ko-rname">${m.roundName}</span>
+        <span class="ko-mid">Match #${koNum(m)}</span>
+      </div>
       <div class="ko-body">
         <div class="ko-date">📅 ${fD(m.date)} · ⏰ ${fT(m.time)}</div>
         <div class="ko-tr">
@@ -883,13 +890,29 @@ function renderKO(){
           <div class="ko-tr"><span style="font-size:.6rem;color:var(--gray);width:55px">PSO দল ১</span><input class="ko-si" type="number" min="0" id="kp1_${m.id}" placeholder="PSO" value="${sc.pen1!==undefined?sc.pen1:''}"></div>
           <div class="ko-tr" style="margin-top:.2rem"><span style="font-size:.6rem;color:var(--gray);width:55px">PSO দল ২</span><input class="ko-si" type="number" min="0" id="kp2_${m.id}" placeholder="PSO" value="${sc.pen2!==undefined?sc.pen2:''}"></div>
         </div>
-        <div class="ko-actions" style="margin-top:.45rem">
-          <button class="ko-sv" onclick="window.saveKO('${m.id}')">💾 Save</button>
-          <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true)">${hg?`⚽ ${hg}`:'+ গোল'}</button>
-        </div>
+      </div>
+      <!-- বাটন কার্ডের বাইরে footer-এ -->
+      <div class="ko-actions">
+        <button class="ko-sv" onclick="window.saveKO('${m.id}')">💾 Save</button>
+        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true)">⚽${hg?' '+hg:' গোল'}</button>
+        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true);switchModalTab('cards',document.querySelector('.modal-tab:nth-child(2)'))">🟨${hc?' '+hc:' কার্ড'}</button>
       </div>
     </div>`;
-  }).join('');
+  }
+
+  const sections=[
+    {name:'🏅 শেষ বত্রিশ',matches:KO_ROUNDS[0].matches},
+    {name:'⚔️ শেষ ষোলো',matches:KO_ROUNDS[1].matches},
+    {name:'🎯 কোয়ার্টার ফাইনাল',matches:KO_ROUNDS[2].matches},
+    {name:'🔥 সেমি ফাইনাল',matches:KO_ROUNDS[3].matches},
+    {name:'🥉 তৃতীয় স্থান',matches:KO_ROUNDS[4].matches},
+    {name:'🏆 ফাইনাল',matches:KO_ROUNDS[5].matches},
+  ];
+
+  document.getElementById('koGrid').innerHTML=sections.map(sec=>`
+    <div class="ko-section-title">${sec.name} <span style="font-size:.65rem;opacity:.5">(${sec.matches.length}টি)</span></div>
+    ${sec.matches.map(m=>cardHTML({...m,roundName:sec.name.replace(/^[^ ]+ /,'')})).join('')}
+  `).join('');
 }
 
 window.toggleET=function(id,on){document.getElementById('etS_'+id).style.display=on?'block':'none';};

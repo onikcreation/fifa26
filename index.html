@@ -203,14 +203,15 @@ body::before{content:'';position:fixed;inset:0;
 .sym-team.win{background:rgba(161,240,0,.1)}
 .sym-team.win .sym-tname{font-weight:700}
 .sym-team.win .sym-score{color:var(--neon)}
+.sym-match-num{font-family:'Bebas Neue',sans-serif;font-size:.58rem;letter-spacing:1px;color:var(--neon);background:rgba(161,240,0,.1);border-bottom:1px solid rgba(161,240,0,.12);text-align:center;padding:2px 4px}
 .sym-extra{text-align:center;font-size:.58rem;color:var(--orange);padding:2px;border-top:1px solid var(--border2)}
 .sym-date{text-align:center;font-size:.6rem;color:rgba(255,255,255,.65);padding:3px;background:rgba(0,0,0,.2);font-family:'Bebas Neue',sans-serif;letter-spacing:.5px}
 
 /* Center column */
 .sym-center{
   display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:0 4px;gap:8px;
+  align-items:center;justify-content:space-between;
+  padding:0 4px;gap:6px;
 }
 .sym-final-label{
   font-family:'Bebas Neue',sans-serif;
@@ -230,7 +231,9 @@ body::before{content:'';position:fixed;inset:0;
   font-family:'Bebas Neue',sans-serif;
   font-size:.95rem;letter-spacing:1px;color:var(--neon);
 }
-.sym-3rd-label{font-size:.6rem;letter-spacing:1px;color:var(--gray);text-align:center}
+/* 3rd place pushed to bottom */
+.sym-3rd-wrap{margin-top:auto;width:100%;padding-top:8px;border-top:1px solid var(--border2)}
+.sym-3rd-label{font-size:.6rem;letter-spacing:1px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:4px}
 
 /* Mobile tabs */
 .bk-round-tabs{display:flex;gap:.3rem;flex-wrap:nowrap;overflow-x:auto;margin-bottom:.8rem;padding-bottom:.3rem;scrollbar-width:none}
@@ -1034,6 +1037,7 @@ function renderBracket(grps={}){
     const auto1=!(scores[m.id]||{}).t1&&TEAMS[t1];
     const auto2=!(scores[m.id]||{}).t2&&TEAMS[t2];
     return`<div class="sym-match ${done?'has-result':''}">
+      ${koNum(m)?`<div class="sym-match-num">Match #${koNum(m)}</div>`:''}
       <div class="sym-team ${w&&w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
         ${symFlag(t1)}<span class="sym-tname ${isTBDish(t1)?'tbd':''}">${t1}</span>
         <span class="sym-score">${s1}</span>
@@ -1043,7 +1047,7 @@ function renderBracket(grps={}){
         <span class="sym-score">${s2}</span>
       </div>
       ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:hasET?`<div class="sym-extra">ET: ${sc.et1}–${sc.et2}</div>`:''}
-      <div class="sym-date">${koNum(m)?`Match #${koNum(m)}`:''}${!compact&&m.date?` · ${fD(m.date)}`:''}${` · ${fT(m.time)}`}</div>
+      <div class="sym-date">${!compact&&m.date?`${fD(m.date)} · `:''}${fT(m.time)}</div>
     </div>`;
   }
   // Column builder — evenly distribute spacers
@@ -1085,8 +1089,10 @@ function renderBracket(grps={}){
       <div class="sym-champ-name">${champion||'—'}</div>
     </div>
     <div style="width:100%">${symMatch(FINAL,true)}</div>
-    <div class="sym-3rd-label">🥉 তৃতীয় স্থান</div>
-    <div style="width:100%">${symMatch(THIRD,true)}</div>
+    <div class="sym-3rd-wrap">
+      <div class="sym-3rd-label">🥉 তৃতীয় স্থান</div>
+      <div style="width:100%">${symMatch(THIRD,true)}</div>
+    </div>
   </div>`;
 
   html+=symCol('সেমি ফাইনাল',[SF[1]],15,0);
