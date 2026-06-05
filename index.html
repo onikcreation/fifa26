@@ -642,13 +642,20 @@ function getRank(name){
   const bn='০১২৩৪৫৬৭৮৯';
   return m[1].split('').map(c=>{const i=bn.indexOf(c);return i>=0?i:c;}).join('');
 }
-function enName(name){return TEAMS[name]?.en||name}
-// Name with rank prefix: "15. Mexico"
-function enNameRanked(name){
-  const rank=getRank(name);
-  const en=TEAMS[name]?.en||name;
-  return rank?`${rank}. ${en}`:en;
+// Language-aware team name (no rank)
+function tName(name){
+  if(!TEAMS[name])return name;
+  if(window._S===STRINGS.en)return TEAMS[name].en;
+  return name.replace(/^[\d০-৯]+\.\s*/,'');
 }
+// Language-aware team name with rank prefix: "15. Mexico" or "১৫. মেক্সিকো"
+function tNameRanked(name){
+  const rank=getRank(name);
+  const n=tName(name);
+  return rank?`${rank}. ${n}`:n;
+}
+// Display name: language-aware if known team, else raw (TBD/slot strings)
+function displayName(name){return TEAMS[name]?tName(name):name;}
 
 let scores={};
 let schedGrp='ALL';
@@ -729,6 +736,7 @@ function applySettingsPub(s){
     navBtns.forEach((b,i)=>{if(keys[i]&&L[keys[i]])b.innerHTML=L[keys[i]];});
     applyStaticText();
     if(window._scoresLoaded)renderAll();
+    if(sqLoaded){buildSqTeamBtns();if(sqTeam)renderSquad();}
   }
 }
 
@@ -837,7 +845,7 @@ function renderMatches(grp){
       <div class="mc-body">
         <div class="mc-team">
           ${bigFlag(m.t1)}
-          <div class="mc-tname">${enNameRanked(m.t1)}</div>
+          <div class="mc-tname">${tNameRanked(m.t1)}</div>
         </div>
         <div class="mc-score-center">
           ${done
@@ -847,7 +855,7 @@ function renderMatches(grp){
         </div>
         <div class="mc-team">
           ${bigFlag(m.t2)}
-          <div class="mc-tname">${enNameRanked(m.t2)}</div>
+          <div class="mc-tname">${tNameRanked(m.t2)}</div>
         </div>
       </div>
       ${hasGoals?`<div class="mc-goals">
@@ -971,7 +979,7 @@ function renderGroups(grps){
         <thead><tr><th>${S.team}</th><th>${S.pl}</th><th>${S.won}</th><th>${S.draw}</th><th>${S.lost}</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
           <tr class="${i<2?'row-q':i===2?'row-3':''}">
-            <td><div class="gt-team"><span class="gt-rank">${i+1}</span>${fImg(t.name,20,15)}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.name}</span></div></td>
+            <td><div class="gt-team"><span class="gt-rank">${i+1}</span>${fImg(t.name,20,15)}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tName(t.name)}</span></div></td>
             <td>${t.pl}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
             <td>${t.gf}</td><td>${t.ga}</td>
             <td class="${t.gd>0?'gdp':t.gd<0?'gdn':'gdz'}">${t.gd>0?'+'+t.gd:t.gd}</td>
@@ -1134,10 +1142,10 @@ function buildMatch(m,grps={},b3map={},winnerMap={}){
 
   return`<div class="bk-match">
     <div class="bk-team ${s1win?'bk-win':''}" style="${auto1?'opacity:.82':''}">
-      ${f1}<span class="bk-tname">${t1}</span><span class="bk-sc">${done?sc.s1:''}</span>
+      ${f1}<span class="bk-tname">${displayName(t1)}</span><span class="bk-sc">${done?sc.s1:''}</span>
     </div>
     <div class="bk-team ${s2win?'bk-win':''}" style="${auto2?'opacity:.82':''}">
-      ${f2}<span class="bk-tname">${t2}</span><span class="bk-sc">${done?sc.s2:''}</span>
+      ${f2}<span class="bk-tname">${displayName(t2)}</span><span class="bk-sc">${done?sc.s2:''}</span>
     </div>
     ${pen?`<div class="bk-date" style="color:var(--orange)">PSO: ${sc.pen1}–${sc.pen2}</div>`:
       et?`<div class="bk-date" style="color:var(--gold)">ET: ${sc.et1}–${sc.et2}</div>`:''}
@@ -1188,11 +1196,11 @@ function renderBracket(grps={}){
     return`<div class="sym-match ${done?'has-result':''}">
       ${koNum(m)?`<div class="sym-match-num">Match #${koNum(m)}</div>`:''}
       <div class="sym-team ${w&&w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
-        ${symFlag(t1)}<span class="sym-tname ${isTBDish(t1)?'tbd':''}">${t1}</span>
+        ${symFlag(t1)}<span class="sym-tname ${isTBDish(t1)?'tbd':''}">${displayName(t1)}</span>
         <span class="sym-score">${s1}</span>
       </div>
       <div class="sym-team ${w&&w===t2?'win':''}" style="${auto2?'opacity:.82':''}">
-        ${symFlag(t2)}<span class="sym-tname ${isTBDish(t2)?'tbd':''}">${t2}</span>
+        ${symFlag(t2)}<span class="sym-tname ${isTBDish(t2)?'tbd':''}">${displayName(t2)}</span>
         <span class="sym-score">${s2}</span>
       </div>
       ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:hasET?`<div class="sym-extra">ET: ${sc.et1}–${sc.et2}</div>`:''}
@@ -1236,7 +1244,7 @@ function renderBracket(grps={}){
     <div class="sym-champion">
       ${champFlagURL?`<img class="sym-champ-flag" src="${champFlagURL}" loading="lazy" onerror="this.style.display='none'">`
         :`<div style="width:44px;height:33px;background:rgba(201,168,76,.15);border-radius:4px;margin:0 auto 5px"></div>`}
-      <div class="sym-champ-name">${champion||'—'}</div>
+      <div class="sym-champ-name">${champion?displayName(champion):'—'}</div>
     </div>
     <div style="width:100%">${symMatch(FINAL,true)}</div>
     <div class="sym-3rd-wrap">
@@ -1291,11 +1299,11 @@ function renderStats(grps){
     `<button class="fb ${statsTeam==='ALL'?'on':''}" onclick="window._stt('ALL')">${S.allTeams}</button>`
     +sortedTeams.map(n=>{
       const code=TEAMS[n]?.code||'';
-      const en=TEAMS[n]?.en||n;
+      const dn=tName(n);
       const rank=getRank(n);
       return`<button class="fb ${statsTeam===n?'on':''}" onclick="window._stt('${n.replace(/'/g,"\\'")}')">
         ${code?`<img src="https://flagcdn.com/20x15/${code}.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:3px" loading="lazy">`:''}
-        <span style="font-size:.6rem;opacity:.6;margin-right:2px">${rank}</span>${en}
+        <span style="font-size:.6rem;opacity:.6;margin-right:2px">${rank}</span>${dn}
       </button>`;
     }).join('');
 
@@ -1361,7 +1369,7 @@ function renderStats(grps){
   if(statsTeam!=='ALL') cardList=cardList.filter(c=>c.team===statsTeam);
   else if(statsGrp!=='ALL') cardList=cardList.filter(c=>GROUPS[statsGrp]?.includes(c.team));
 
-  const titleSuffix=statsTeam!=='ALL'?`· ${enNameRanked(statsTeam)}`:statsGrp!=='ALL'?`· Group ${statsGrp}`:'';
+  const titleSuffix=statsTeam!=='ALL'?`· ${tNameRanked(statsTeam)}`:statsGrp!=='ALL'?`· Group ${statsGrp}`:'';
 
   // ── Match history (only when a specific team is selected) ──
   let matchHistoryHTML='';
@@ -1433,18 +1441,18 @@ function renderStats(grps){
         // Display-friendly opponent
         let oppDisplay,oppDisplayCode=oppCode;
         if(opp&&TEAMS[opp]){
-          oppDisplay=enNameRanked(opp);
+          oppDisplay=tNameRanked(opp);
           oppDisplayCode=TEAMS[opp].code||'';
         } else if(oppSlot?.startsWith('3rd ')){
           const resolved=b3map2[`${m.id}_${oppSide}`];
           if(resolved&&TEAMS[resolved]){
-            oppDisplay=enNameRanked(resolved);
+            oppDisplay=tNameRanked(resolved);
             oppDisplayCode=TEAMS[resolved].code||'';
           } else {
             oppDisplay=`Best 3rd (${oppSlot.replace('3rd ','')})`;
           }
         } else if(oppSlot?.startsWith('W ')||oppSlot?.startsWith('L ')){
-          oppDisplay=opp?enNameRanked(opp):`TBD`;
+          oppDisplay=opp?tNameRanked(opp):`TBD`;
         } else {
           oppDisplay=opp||'TBD';
         }
@@ -1471,7 +1479,7 @@ function renderStats(grps){
 
     matchHistoryHTML=`
       <div class="stats-card" style="grid-column:1/-1">
-        <div class="stats-card-title"><i class='fas fa-list'></i> ${S.matchHistory} · ${enNameRanked(statsTeam)}</div>
+        <div class="stats-card-title"><i class='fas fa-list'></i> ${S.matchHistory} · ${tNameRanked(statsTeam)}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
           <div>
             <div class="mh-header"><i class='fas fa-check'></i> ${S.playedH} (${played.length})</div>
@@ -1494,7 +1502,7 @@ function renderStats(grps){
           <div class="scorer-row">
             <div class="sr-rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</div>
             ${fImg(s.team,26,19)}
-            <div class="sr-info"><div class="sr-name">${esc(s.name)}</div><div class="sr-team">${enNameRanked(s.team)}</div></div>
+            <div class="sr-info"><div class="sr-name">${esc(s.name)}</div><div class="sr-team">${tNameRanked(s.team)}</div></div>
             <div class="sr-goals">${s.goals}</div>
           </div>`).join('')}
     </div>
@@ -1504,7 +1512,7 @@ function renderStats(grps){
         :teamList.map(([name,v])=>`
           <div class="team-row">
             ${fImg(name,28,21)}
-            <div class="tr-name">${enNameRanked(name)}</div>
+            <div class="tr-name">${tNameRanked(name)}</div>
             <div class="tr-bar-wrap"><div class="tr-bar" style="width:${Math.round(v.goals/maxG*100)}%"></div></div>
             <div class="tr-goals">${v.goals}</div>
           </div>`).join('')}
@@ -1515,7 +1523,7 @@ function renderStats(grps){
         :cardList.map(c=>`
           <div class="scorer-row">
             ${fImg(c.team,26,19)}
-            <div class="sr-info"><div class="sr-name">${esc(c.name)}</div><div class="sr-team">${enNameRanked(c.team)}</div></div>
+            <div class="sr-info"><div class="sr-name">${esc(c.name)}</div><div class="sr-team">${tNameRanked(c.team)}</div></div>
             <div style="display:flex;gap:.4rem;flex-shrink:0">
               ${c.yellow?`<span style="background:rgba(255,200,0,.15);border:1px solid rgba(255,200,0,.4);border-radius:4px;padding:.1rem .45rem;font-size:.78rem;color:#ffc800">🟨 ${c.yellow}</span>`:''}
               ${c.red?`<span style="background:rgba(255,50,50,.15);border:1px solid rgba(255,50,50,.4);border-radius:4px;padding:.1rem .45rem;font-size:.78rem;color:#ff5050">🟥 ${c.red}</span>`:''}
@@ -1539,7 +1547,7 @@ function renderThirdPlace(grps){
         <tbody>${thirds.map((t,i)=>`
           <tr class="${i<8?'row-q':''}">
             <td>${i+1}</td>
-            <td><div class="gt-team">${fImg(t.name,20,15)}<span>${t.name}</span></div></td>
+            <td><div class="gt-team">${fImg(t.name,20,15)}<span>${tName(t.name)}</span></div></td>
             <td><span class="mc-grp">Grp ${t.group}</span></td>
             <td>${t.pl}</td><td class="pts-c">${t.pts}</td>
             <td>${t.gf}</td><td>${t.ga}</td>
@@ -1687,12 +1695,12 @@ function buildSqTeamBtns(){
     const t=TEAMS[teamKey];
     const code=t?.code||'';
     const rank=getRank(teamKey);
-    const en=t?.en||sqData[fbKey]?.coach||fbKey;
+    const dn=teamKey?tName(teamKey):fbKey;
     const flagHtml=code?`<img src="https://flagcdn.com/20x15/${code}.png" loading="lazy" onerror="this.style.display='none'">`:'';
     return`<button class="sq-team-btn ${sqTeam===fbKey?'on':''}" onclick="setSqTeam('${fbKey.replace(/'/g,"\\'")}')" data-key="${esc(fbKey)}">
       ${flagHtml}
       <span style="font-size:.6rem;opacity:.55">${rank}.</span>
-      ${esc(en)}
+      ${esc(dn)}
     </button>`;
   }).join('');
 }
@@ -1722,7 +1730,6 @@ function renderSquad(){
   const teamKey=fbKeyToTeamKey(sqTeam);
   const t=TEAMS[teamKey];
   const code=t?.code||'';
-  const en=t?.en||teamKey;
   const rank=getRank(teamKey);
 
   // Header stats
@@ -1742,7 +1749,7 @@ function renderSquad(){
         <div class="sq-header-left">
           ${code?`<img class="sq-header-flag" src="https://flagcdn.com/96x72/${code}.png" loading="lazy" onerror="this.style.display='none'">`:''}
           <div class="sq-header-info">
-            <div class="sq-header-name">${rank?rank+'.':''} ${esc(en)}</div>
+            <div class="sq-header-name">${tNameRanked(teamKey)}</div>
             <div class="sq-header-sub">GROUP ${data.group||'?'}</div>
           </div>
         </div>
