@@ -88,111 +88,47 @@ body::before{content:'';position:fixed;inset:0;
 .fb{font-size:.72rem;letter-spacing:.5px;padding:.3rem .75rem;background:var(--neon-glow2);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;transition:all .2s;white-space:nowrap}
 .fb:hover,.fb.on{background:rgba(161,240,0,.18);border-color:var(--neon);color:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
 
-/* ══ MATCH CARD — CARD STYLE ══ */
+/* ══ MATCH CARD — V2-D GRADIENT HEADER ══ */
 .match-sections{display:flex;flex-direction:column;gap:1.2rem}
-
-/* Expand/Collapse controls */
 .match-controls{display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem;flex-wrap:wrap}
 .ctrl-btn{font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:1.5px;padding:.35rem .9rem;background:rgba(161,240,0,.08);border:1px solid var(--border2);border-radius:20px;color:var(--neon);cursor:pointer;transition:all .2s}
 .ctrl-btn:hover{background:rgba(161,240,0,.18);border-color:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
-
-/* Date section */
 .date-section{overflow:hidden}
-.date-section-title{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1rem;letter-spacing:2px;color:var(--neon);
-  margin-bottom:.7rem;
-  display:flex;align-items:center;gap:.7rem;
-  padding:.55rem .9rem;
-  background:rgba(161,240,0,.05);
-  border-left:3px solid var(--neon);
-  border-radius:0 6px 6px 0;
-  cursor:pointer;
-  user-select:none;
-  transition:background .2s;
-}
+.date-section-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--neon);margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;background:rgba(161,240,0,.05);border-left:3px solid var(--neon);border-radius:0 6px 6px 0;cursor:pointer;user-select:none;transition:background .2s}
 .date-section-title:hover{background:rgba(161,240,0,.1)}
 .date-section-title .ds-arrow{margin-left:auto;font-size:.75rem;transition:transform .25s;display:inline-block}
-.date-section-title .ds-count{font-size:.65rem;color:rgba(255,255,255,.45);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
 .date-section-title .ds-done{font-size:.6rem;padding:.1rem .45rem;background:rgba(161,240,0,.12);border:1px solid var(--border2);border-radius:10px;color:var(--neon)}
 .date-section-title .ds-past{font-size:.6rem;padding:.1rem .45rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.4)}
-.date-section-body{
-  overflow:hidden;
-  transition:max-height .35s ease, opacity .25s ease;
-  max-height:2000px;
-  opacity:1;
-}
+.date-section-body{overflow:hidden;transition:max-height .35s ease,opacity .25s ease;max-height:2000px;opacity:1}
 .date-section-body.collapsed{max-height:0;opacity:0}
-
 .match-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;padding-bottom:.3rem}
-
 /* Card */
-.mc{background:var(--card);border:1px solid var(--border2);border-radius:14px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
+.mc{background:#0a1e20;border:1px solid rgba(161,240,0,.2);border-radius:14px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
 .mc:hover{border-color:var(--neon);box-shadow:0 0 20px var(--neon-glow),0 8px 28px var(--shadow);transform:translateY(-2px)}
-
-/* Card header */
-.mc-hdr{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;border-bottom:1px solid var(--border2)}
-.mc-grp-badge{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:.82rem;letter-spacing:1px;
-  padding:.2rem .65rem;border-radius:20px;
-  background:rgba(161,240,0,.1);color:var(--neon);
-  border:1px solid var(--border2);
-}
-.mc-matchday{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:.78rem;letter-spacing:.5px;
-  color:rgba(255,255,255,.45);
-}
-
-/* Card body */
-.mc-body{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1rem .75rem;gap:.5rem}
-.mc-team{display:flex;flex-direction:column;align-items:center;gap:.55rem;flex:1;min-width:0}
-.mc-flag-big{width:80px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 0 14px rgba(161,240,0,.12),0 3px 10px var(--shadow)}
-.mc-flag-ph{width:80px;height:60px;background:var(--bg3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--gray)}
-.mc-tname{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1rem;letter-spacing:.5px;
-  color:var(--text);text-align:center;line-height:1.2;max-width:110px;
-}
-
-/* Score center */
-.mc-score-center{display:flex;align-items:center;gap:.4rem;flex-shrink:0;padding:0 .4rem}
-.mc-vs{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1.1rem;font-weight:700;
-  color:rgba(161,240,0,.35);letter-spacing:3px;
-}
-.mc-sc{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--neon);line-height:1;min-width:26px;text-align:center;text-shadow:0 0 15px var(--neon-glow)}
+/* Header — gradient */
+.mc-hdr{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;background:linear-gradient(135deg,rgba(161,240,0,.22) 0%,rgba(12,43,45,.95) 100%);border-bottom:1px solid rgba(161,240,0,.12)}
+.mc-grp-badge{font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:1px;padding:.22rem .7rem;border-radius:20px;background:var(--neon);color:#050f10;font-weight:700}
+.mc-matchday{font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:.5px;color:rgba(255,255,255,.85)}
+/* Body — 3 column grid */
+.mc-body{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:1.1rem .8rem .8rem;gap:.5rem}
+.mc-team{display:flex;flex-direction:column;align-items:center;gap:.5rem;min-width:0}
+.mc-flag-big{width:72px;height:54px;object-fit:cover;border-radius:7px;border:1px solid rgba(161,240,0,.2);box-shadow:0 3px 10px var(--shadow);display:block}
+.mc-flag-ph{width:72px;height:54px;background:var(--bg3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--gray)}
+.mc-tname{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.5px;color:var(--text);text-align:center;line-height:1.2;max-width:110px}
+/* Score */
+.mc-score-center{display:flex;align-items:center;justify-content:center;padding:0 .5rem}
+.mc-vs{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:rgba(161,240,0,.35);letter-spacing:3px}
+.mc-sc{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--neon);line-height:1;text-shadow:0 0 14px var(--neon-glow)}
 .mc-sc-sep{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:rgba(161,240,0,.5);margin:0 .1rem}
-
-/* Card footer */
-.mc-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:.6rem 1rem;border-top:1px solid var(--border2);
-  margin-top:auto;
-}
-.mc-footer-date{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:.8rem;letter-spacing:.5px;
-  color:rgba(255,255,255,.5);
-  flex-shrink:0;
-}
-.mc-footer-stadium{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:.78rem;letter-spacing:.3px;
-  color:rgba(255,255,255,.45);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;text-align:right;
-}
-
+/* Footer — V2-D: time=neon, stadium=white */
+.mc-footer{display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem;background:rgba(0,0,0,.25);border-top:1px solid rgba(161,240,0,.08);margin-top:auto}
+.mc-footer-date{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:.3px;color:var(--neon)}
+.mc-footer-stadium{font-family:'Bebas Neue',sans-serif;font-size:.8rem;letter-spacing:.3px;color:rgba(255,255,255,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;text-align:right}
 /* Goals */
-.mc-goals{padding:.5rem 1rem;display:flex;gap:1.5rem;border-top:1px solid var(--border2);background:rgba(161,240,0,.03)}
+.mc-goals{padding:.5rem 1rem;display:flex;gap:1.5rem;border-top:1px solid rgba(161,240,0,.08);background:rgba(0,0,0,.15)}
 .mc-goals-side{flex:1}
 .mc-goals-side.right{text-align:right}
-.goal-item{
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:.78rem;color:var(--text2);padding:1px 0;
-}
+.goal-item{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;color:rgba(255,255,255,.7);padding:1px 0}
 .goal-item .gmin{color:var(--neon);font-weight:700}
 .goal-item .gpen{color:var(--orange);font-size:.68rem}
 
