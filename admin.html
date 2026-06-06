@@ -430,7 +430,6 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
         <div class="hdr-sub"><i class="fas fa-gear"></i> Admin Panel · Al Amin Onik</div>
       </div>
       <div class="hdr-right">
-        <span id="fbSt">Firebase...</span>
         <button class="icon-btn icon-btn-sm" onclick="location.reload()" title="রিফ্রেশ"><i class="fas fa-rotate-right"></i></button>
         <a href="index.html" class="nav-link"><i class="fas fa-house"></i> সাইট</a>
         <button class="nav-link danger" onclick="window.doLogout()"><i class="fas fa-right-from-bracket"></i> Logout</button>
@@ -793,7 +792,6 @@ function initAdmin(){
   loadAdminSquads(); // Load squad data for player autocomplete
   onValue(ref(db,'scores'),snap=>{
     dbSc=snap.val()||{};
-    document.getElementById('fbSt').innerHTML='<span style="color:var(--neon)">✓ Live</span>';
     renderStats();
     renderTable(activeGrp);
     renderKO();

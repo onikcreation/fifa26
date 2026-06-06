@@ -493,7 +493,6 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
       <div class="hdr-sub">২০২৬ ফিফা বিশ্বকাপ · Al Amin Onik</div>
     </div>
     <div class="hdr-right">
-      <div class="live-pill" id="dbSt"><div class="dot"></div>LIVE</div>
       <button type="button" class="icon-btn icon-btn-sm" onclick="window._reload&&window._reload()" title="রিফ্রেশ"><i class="fas fa-rotate-right"></i></button>
       <a href="admin.html" class="admin-btn"><i class="fas fa-lock"></i> Admin</a>
     </div>
@@ -907,13 +906,9 @@ onValue(ref(db,'settings'),snap=>{
 onValue(ref(db,'scores'),snap=>{
   scores=snap.val()||{};
   window._scoresLoaded=true;
-  document.getElementById('dbSt').innerHTML='<div class="dot"></div>LIVE';
   renderAll();hideLoader();
 },()=>{
   window._scoresLoaded=true;
-  document.getElementById('dbSt').innerHTML='<span style="color:var(--red);font-size:.6rem">✗ Offline</span>';
-  document.getElementById('dbSt').style.background='rgba(255,77,77,.1)';
-  document.getElementById('dbSt').style.borderColor='rgba(255,77,77,.3)';
   renderAll();hideLoader();
 });
 window._reload=function(){location.reload();};
