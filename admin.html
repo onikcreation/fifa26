@@ -216,6 +216,22 @@ body::after{content:'';position:fixed;inset:0;
 .cpb-card{margin:.55rem .55rem .3rem;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.1);position:relative;background:#1a1a1a}
 .cpb-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cpb-acc,#8b1538),var(--cpb-acc,#D4AF37));z-index:1}
 .color-preview-box.preview-flat .cpb-card::before{opacity:0}
+/* ── Preset-specific preview overrides (CSS !important beats updateColorPreview inline styles) ── */
+/* Stadium Light: dark glassmorphism with gold accent */
+.color-preview-box.preview-stadium-light{background:linear-gradient(160deg,#041020,#0a2040,#071535) !important}
+.color-preview-box.preview-stadium-light .cpb-hdr{background:rgba(4,16,32,.85) !important;border-bottom:1px solid rgba(212,175,55,.2) !important}
+.color-preview-box.preview-stadium-light #cpb-title{color:#D4AF37 !important;text-shadow:0 0 10px rgba(212,175,55,.35) !important}
+.color-preview-box.preview-stadium-light #cpb-badge{color:#D4AF37 !important;background:rgba(212,175,55,.12) !important;border:1px solid rgba(212,175,55,.3) !important}
+.color-preview-box.preview-stadium-light #cpb-card,.color-preview-box.preview-stadium-light #cpb-card2{background:rgba(8,18,45,.50) !important;border:1px solid rgba(255,255,255,.14) !important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.color-preview-box.preview-stadium-light #cpb-card-hdr{background:linear-gradient(135deg,rgba(212,175,55,.22),rgba(5,12,35,.92)) !important}
+.color-preview-box.preview-stadium-light .cpb-cbadge{background:#D4AF37 !important;color:#041020 !important}
+.color-preview-box.preview-stadium-light .cpb-grp{color:rgba(255,255,255,.85) !important}
+.color-preview-box.preview-stadium-light #cpb-score{color:#D4AF37 !important;text-shadow:0 0 12px rgba(212,175,55,.55) !important}
+.color-preview-box.preview-stadium-light #cpb-team1,.color-preview-box.preview-stadium-light #cpb-team2{color:#fff !important}
+.color-preview-box.preview-stadium-light #cpb-footer{background:rgba(0,0,0,.3) !important;border-top:1px solid rgba(212,175,55,.1) !important}
+.color-preview-box.preview-stadium-light #cpb-ftime{color:#D4AF37 !important}
+/* Arctic White: card needs visible separation on light bg */
+.color-preview-box.preview-arctic #cpb-card,.color-preview-box.preview-arctic #cpb-card2{background:rgba(255,255,255,.9) !important;box-shadow:0 2px 14px rgba(0,0,0,.12) !important}
 .cpb-card-hdr{display:flex;justify-content:space-between;padding:.48rem .9rem;align-items:center;background:linear-gradient(135deg,rgba(139,21,56,.45),rgba(20,20,20,.98));border-bottom:1px solid rgba(255,255,255,.06)}
 .cpb-grp{font-size:.63rem;font-weight:700;letter-spacing:.5px}
 .cpb-cbadge{font-family:"Google Sans",sans-serif;font-size:.68rem;letter-spacing:1px;padding:.15rem .5rem;border-radius:20px;background:#D4AF37;color:#141414}
@@ -1684,8 +1700,8 @@ function populateSettingsUI(s){
   document.getElementById('cp-bg-hex').textContent=s.colors.bg;
   document.getElementById('cp-accent-hex').textContent=s.colors.accent;
   document.getElementById('cp-text-hex').textContent=s.colors.text;
-  updateFullPreview();
   syncPresetDropdown(s.colors.bg, s.colors.accent);
+  updateFullPreview();
 }
 
 // Toggle buttons (lang)
@@ -1729,10 +1745,16 @@ function updateFullPreview(){
   const bg=s.colors?.bg||'#050f10';
   const acc=s.colors?.accent||'#A1F000';
   const txt=s.colors?.text||'#ffffff';
+  // Apply JS color overrides (preset CSS !important will override these for special themes)
   updateColorPreview(bg,acc,txt);
-  // Card gradient bar
   const box=document.getElementById('colorPreviewBox');
-  if(box)box.classList.toggle('preview-flat',s.cardGradient===false);
+  if(!box)return;
+  // Detect active preset from dropdown and toggle CSS class
+  const preset=document.getElementById('cfg-preset')?.value||'';
+  ['stadium-light','stadium-dark','arctic'].forEach(p=>box.classList.remove('preview-'+p));
+  if(preset)box.classList.add('preview-'+preset);
+  // Card gradient bar
+  box.classList.toggle('preview-flat',s.cardGradient===false);
   // Language
   const isBn=s.lang==='bn';
   const grpEl=document.getElementById('cpb-grp');
