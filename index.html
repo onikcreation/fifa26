@@ -157,8 +157,8 @@ body::after{content:'';position:fixed;inset:0;
 }
 
 /* GROUP */
-.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem}
-.gt-wrap{overflow-x:auto}
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem}
+.gt-wrap{overflow-x:visible}
 .grp-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;overflow:hidden;position:relative}
 .grp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-primary)}
 .grp-hd{background:linear-gradient(135deg,rgba(139,21,56,0.3),rgba(20,20,20,0.98));padding:.55rem .9rem;display:flex;align-items:center;gap:.55rem;border-bottom:1px solid rgba(255,255,255,0.06)}
@@ -192,7 +192,8 @@ body::after{content:'';position:fixed;inset:0;
   min-width:1050px;
 }
 .sym-col{display:flex;flex-direction:column;padding:0 5px;min-height:600px}
-.sym-col-title{font-family:"Google Sans",sans-serif;font-size:.68rem;letter-spacing:1.5px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding:.4rem 0 .6rem}
+.sym-col-title{font-family:"Google Sans",sans-serif;font-size:.68rem;letter-spacing:1.5px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding:.4rem .5rem .6rem;position:relative;z-index:1}
+.sym-col-title::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.35);border-radius:5px;z-index:-1}
 .sym-spacer{flex:1;min-height:4px}
 
 /* Match card — mc-style */
@@ -391,8 +392,9 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 
 /* Squad header — redesigned */
 .sq-header{
-  background:linear-gradient(135deg,rgba(20,20,20,.97) 0%,rgba(10,10,10,.99) 100%);
-  border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;
+  background:rgba(5,15,16,0.40);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.10);border-radius:14px;overflow:hidden;
   margin-bottom:1rem;position:relative;
 }
 .sq-header::before{
@@ -1134,7 +1136,7 @@ function renderGroups(grps){
   const GRP_COLORS={A:'linear-gradient(135deg,#2e7d32,#43a047)',B:'linear-gradient(135deg,#1565c0,#1976d2)',C:'linear-gradient(135deg,#b8860b,#DAA520)',D:'linear-gradient(135deg,#6a1b9a,#7b1fa2)',E:'linear-gradient(135deg,#e65100,#f57c00)',F:'linear-gradient(135deg,#00695c,#00796b)',G:'linear-gradient(135deg,#b71c1c,#c62828)',H:'linear-gradient(135deg,#0277bd,#0288d1)',I:'linear-gradient(135deg,#6a1b9a,#8e24aa)',J:'linear-gradient(135deg,#b8860b,#c9a227)',K:'linear-gradient(135deg,#2e7d32,#388e3c)',L:'linear-gradient(135deg,#1565c0,#1e88e5)'};
   document.getElementById('grpGrid').innerHTML=Object.entries(grps).map(([g,teams])=>`
     <div class="grp-card">
-      <div class="grp-hd" style="--gc:${GRP_COLORS[g]||''}"><div class="grp-let">${g}</div><div><div style="font-size:.68rem;color:var(--gold-l)">GROUP ${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div></div>
+      <div class="grp-hd" style="--gc:${GRP_COLORS[g]||''}"><div class="grp-let">${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div>
       <div class="gt-wrap"><table class="gt">
         <thead><tr><th>${S.team}</th><th>${S.pl}</th><th>${S.won}</th><th>${S.draw}</th><th>${S.lost}</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
@@ -1709,7 +1711,7 @@ function renderThirdPlace(grps){
           <tr class="${i<8?'row-q':''}">
             <td>${i+1}</td>
             <td><div class="gt-team">${fImg(t.name,20,15)}<span>${tNameRanked(t.name)}</span></div></td>
-            <td><span class="mc-grp">Grp ${t.group}</span></td>
+            <td>${t.group}</td>
             <td>${t.pl}</td><td class="pts-c">${t.pts}</td>
             <td>${t.gf}</td><td>${t.ga}</td>
             <td class="${t.gd>0?'gdp':t.gd<0?'gdn':'gdz'}">${t.gd>0?'+'+t.gd:t.gd}</td>

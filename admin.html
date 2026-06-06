@@ -256,7 +256,7 @@ body::after{content:'';position:fixed;inset:0;
 .st-preview-card{flex:0 0 auto;display:flex;flex-direction:column;max-height:calc((100vh - 140px) * 0.67)}
 .st-preview-body{flex:1;padding:.6rem;display:flex;flex-direction:column;min-height:0;overflow:hidden}
 .color-preview-box{flex:1 !important;min-height:0 !important;overflow-y:auto;border-radius:8px}
-.st-save-row-c{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;padding:.55rem .7rem;background:rgba(161,240,0,.03);border:1px solid rgba(161,240,0,.12);border-radius:10px;margin-top:auto}
+.st-save-row-c{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;padding:.55rem .7rem;background:rgba(161,240,0,.03);border:1px solid rgba(161,240,0,.12);border-radius:10px}
 /* Compact color pickers */
 .st-cp-row-c{display:flex;gap:.5rem;align-items:center}
 .st-cp-item-c{display:flex;align-items:center;gap:.4rem;flex:1}
@@ -481,8 +481,6 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
   </nav>
 
   <div class="main">
-    <div class="stats-row" id="statsRow"></div>
-
     <!-- GROUP STAGE PANEL -->
     <div id="ap-group" class="admin-panel on">
       <div class="bulk">
@@ -547,38 +545,6 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
                   <button type="button" class="s-toggle on" data-val="bn" onclick="setToggle('lang',this)"><i class="fas fa-language st-lang-icon"></i>বাংলা</button>
                   <button type="button" class="s-toggle" data-val="en" onclick="setToggle('lang',this)"><i class="fas fa-language st-lang-icon"></i>EN</button>
                 </div>
-              </div>
-            </div>
-
-            <!-- Font -->
-            <div class="st-card st-card-sm">
-              <div class="st-card-hd"><i class="fas fa-font"></i><span>Font</span></div>
-              <div class="st-card-body">
-                <select class="s-select" id="cfg-font" onchange="setFont(this)">
-                  <option value="barlow">Barlow Condensed</option>
-                  <option value="hind">Hind Siliguri</option>
-                  <option value="roboto">Roboto Condensed</option>
-                  <option value="oswald">Oswald</option>
-                  <option value="exo">Exo 2</option>
-                  <option value="rajdhani">Rajdhani</option>
-                  <option value="teko">Teko</option>
-                  <option value="kanit">Kanit</option>
-                  <option value="saira">Saira Condensed</option>
-                  <option value="ubuntu">Ubuntu Condensed</option>
-                  <option value="titillium">Titillium Web</option>
-                  <option value="nunito">Nunito Sans</option>
-                  <option value="ptsans">PT Sans Narrow</option>
-                  <option value="cabin">Cabin Condensed</option>
-                  <option value="maven">Maven Pro</option>
-                  <option value="quantico">Quantico</option>
-                  <option value="play">Play</option>
-                  <option value="noto">Noto Sans</option>
-                  <option value="source">Source Sans 3</option>
-                  <option value="dm">DM Sans</option>
-                  <option value="arial">Arial</option>
-                  <option value="googlesans">Google Sans</option>
-                </select>
-                <div class="s-preview-sm" id="fontPreview">FIFA 2026 · বিশ্বকাপ</div>
               </div>
             </div>
 
@@ -839,12 +805,6 @@ function renderStats(){
   const total=MATCHES.length+koMatches.length;
   const gl=MATCHES.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0)
           +koMatches.reduce((s,m)=>s+(dbSc[m.id]?Number(dbSc[m.id].s1||0)+Number(dbSc[m.id].s2||0):0),0);
-  const L=window._L||LABELS.bn;
-  document.getElementById('statsRow').innerHTML=
-    `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">${L.scored}</div></div>
-     <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">${L.remaining}</div></div>
-     <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">${L.totalGoals}</div></div>
-     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">${L.totalMatches}</div></div>`;
 }
 
 window.switchAdminTab=function(id,el){
@@ -854,8 +814,6 @@ window.switchAdminTab=function(id,el){
   document.querySelectorAll('.admin-tab').forEach(b=>{
     if(b.getAttribute('href')==='#'+id||b===el)b.classList.add('on');
   });
-  const sr=document.getElementById('statsRow');
-  if(sr)sr.style.display=id==='settings'?'none':'';
   history.replaceState(null,'','#'+id);
 };
 
@@ -1714,10 +1672,6 @@ function populateSettingsUI(s){
   document.querySelectorAll('#cfg-lang .s-toggle').forEach(b=>{
     b.classList.toggle('on', b.dataset.val===s.lang);
   });
-  // Font
-  const fontSel=document.getElementById('cfg-font');
-  if(fontSel)fontSel.value=s.font||'barlow';
-  updateFontPreview(s.font);
   // Card Gradient
   document.querySelectorAll('#cfg-cardgradient .s-toggle').forEach(b=>{
     b.classList.toggle('on', b.dataset.val===String(s.cardGradient!==false));
@@ -1852,7 +1806,7 @@ window.saveSettings=async function(){
   const s={
     tz: document.getElementById('cfg-tz')?.value||'6',
     lang: document.querySelector('#cfg-lang .s-toggle.on')?.dataset.val||'bn',
-    font: document.getElementById('cfg-font')?.value||'barlow',
+    font: 'googlesans',
     cardGradient: document.querySelector('#cfg-cardgradient .s-toggle.on')?.dataset.val!=='false',
     colors:{
       bg: document.getElementById('cp-bg')?.value||'#050f10',
