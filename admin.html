@@ -230,6 +230,39 @@ body::after{content:'';position:fixed;inset:0;
 .st-save-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;padding:1rem 1.2rem;background:rgba(161,240,0,.03);border:1px solid rgba(161,240,0,.12);border-radius:10px}
 .st-firebase-note{flex:1 1 100%;font-size:.6rem;color:rgba(255,170,0,.65);line-height:1.6;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06)}
 .st-firebase-note strong{color:rgba(255,170,0,.85)}
+/* ── SETTINGS LAYOUT v2 (no-scroll) ── */
+#ap-settings{display:flex;flex-direction:column;height:calc(100vh - 126px);overflow:hidden}
+.st-page-hd{padding:.5rem .9rem;margin-bottom:.5rem}
+.st-page-hd-icon{width:34px;height:34px;font-size:1rem}
+.st-page-hd-title{font-size:1.15rem;letter-spacing:2px}
+.st-page-hd-sub{display:none}
+.st-main-grid{display:grid;grid-template-columns:310px 1fr;gap:.8rem;flex:1;min-height:0}
+@media(max-width:900px){.st-main-grid{grid-template-columns:1fr}}
+.st-left-col{display:flex;flex-direction:column;gap:.45rem;overflow-y:auto;padding-right:3px}
+.st-left-col::-webkit-scrollbar{width:3px}
+.st-left-col::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+.st-right-col{display:flex;flex-direction:column;min-height:0}
+.st-compact-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.st-card-sm .st-card-hd{padding:.42rem .7rem}
+.st-card-sm .st-card-body{padding:.45rem .7rem}
+.st-card-sm .st-desc{display:none}
+.st-card-sm .s-select{font-size:.67rem;padding:.25rem .45rem}
+.st-card-sm .s-toggle{font-size:.6rem;padding:.2rem .4rem}
+.st-card-sm .s-toggle-group{gap:.3rem}
+.st-preview-card{flex:1;display:flex;flex-direction:column;min-height:0}
+.st-preview-body{flex:1;padding:.7rem;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.color-preview-box{flex:1 !important;min-height:0 !important;overflow-y:auto}
+.st-save-row-c{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;padding:.55rem .7rem;background:rgba(161,240,0,.03);border:1px solid rgba(161,240,0,.12);border-radius:10px;margin-top:auto}
+/* Compact color pickers */
+.st-cp-row-c{display:flex;gap:.5rem;align-items:center}
+.st-cp-item-c{display:flex;align-items:center;gap:.4rem;flex:1}
+.st-cp-sw-c{width:30px;height:30px;border-radius:6px;border:1px solid var(--border2);overflow:hidden;cursor:pointer;flex-shrink:0;transition:border-color .2s}
+.st-cp-sw-c:hover{border-color:var(--neon)}
+.st-cp-sw-c input[type=color]{display:block;width:100%;height:100%;border:none;padding:0;cursor:pointer;border-radius:0}
+.st-cp-nm-c{font-size:.54rem;color:var(--gray);text-transform:uppercase;letter-spacing:.6px}
+.st-cp-hx-c{font-family:'Bebas Neue',sans-serif;font-size:.76rem;color:var(--neon);letter-spacing:1px}
+.s-preview-sm{font-size:.82rem;color:var(--text2);padding:.3rem .6rem;background:rgba(161,240,0,.04);border:1px solid var(--border2);border-radius:6px;text-align:center;transition:font-family .3s;margin-top:.3rem}
+.st-save-st{font-size:.7rem;color:var(--gray)}
 .st-firebase-note code{background:rgba(255,255,255,.07);padding:1px 5px;border-radius:3px;font-size:.57rem}
 /* Card gradient on/off */
 body.flat-cards .amc::before,
@@ -468,210 +501,195 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
     <!-- SETTINGS PANEL -->
     <div id="ap-settings" class="admin-panel">
 
-      <!-- Page header -->
+      <!-- Compact page header -->
       <div class="st-page-hd">
         <div class="st-page-hd-icon"><i class="fas fa-sliders"></i></div>
-        <div>
-          <div class="st-page-hd-title">Site Settings</div>
-          <div class="st-page-hd-sub">Timezone, language, font এবং color theme কাস্টমাইজ করো। Save করলে সকল ভিজিটরের জন্য সাথে সাথে প্রযোজ্য হবে।</div>
-        </div>
+        <div><div class="st-page-hd-title">Site Settings</div></div>
       </div>
 
-      <!-- Row 1: Timezone · Language · Font -->
-      <div class="st-row-3">
+      <!-- 2-col no-scroll grid -->
+      <div class="st-main-grid">
 
-        <!-- Timezone -->
-        <div class="st-card">
-          <div class="st-card-hd"><i class="fas fa-clock"></i><span>Timezone</span></div>
-          <div class="st-card-body">
-            <div class="st-desc">ম্যাচের সময় কোন timezone-এ দেখাবে তা নির্বাচন করো।</div>
-            <select class="s-select" id="cfg-tz">
-              <option value="6">GMT+6 · Bangladesh (BDT)</option>
-              <option value="5.5">GMT+5:30 · India (IST)</option>
-              <option value="0">GMT+0 · UTC</option>
-              <option value="1">GMT+1 · CET (Europe)</option>
-              <option value="2">GMT+2 · EET</option>
-              <option value="3">GMT+3 · AST (Gulf)</option>
-              <option value="-5">GMT-5 · EST (New York)</option>
-              <option value="-6">GMT-6 · CST (Chicago)</option>
-              <option value="-7">GMT-7 · MST (Denver)</option>
-              <option value="-8">GMT-8 · PST (LA)</option>
-            </select>
-          </div>
-        </div>
+        <!-- ── Left column ── -->
+        <div class="st-left-col">
 
-        <!-- Language -->
-        <div class="st-card">
-          <div class="st-card-hd"><i class="fas fa-globe"></i><span>Language</span></div>
-          <div class="st-card-body">
-            <div class="st-desc">নেভিগেশন, সেকশন টাইটেল এবং UI লেবেলের ভাষা নির্বাচন করো।</div>
-            <div class="s-toggle-group" id="cfg-lang">
-              <button type="button" class="s-toggle on" data-val="bn" onclick="setToggle('lang',this)">
-                <i class="fas fa-language st-lang-icon"></i>বাংলা
-              </button>
-              <button type="button" class="s-toggle" data-val="en" onclick="setToggle('lang',this)">
-                <i class="fas fa-language st-lang-icon"></i>English
-              </button>
-            </div>
-          </div>
-        </div>
+          <!-- 2×2 compact settings -->
+          <div class="st-compact-grid">
 
-        <!-- Font -->
-        <div class="st-card">
-          <div class="st-card-hd"><i class="fas fa-font"></i><span>Font</span></div>
-          <div class="st-card-body">
-            <div class="st-desc">সাইটের body font পরিবর্তন করো।</div>
-            <select class="s-select" id="cfg-font" onchange="setFont(this)">
-              <option value="barlow">Barlow Condensed</option>
-              <option value="hind">Hind Siliguri</option>
-              <option value="roboto">Roboto Condensed</option>
-              <option value="oswald">Oswald</option>
-              <option value="exo">Exo 2</option>
-              <option value="rajdhani">Rajdhani</option>
-              <option value="teko">Teko</option>
-              <option value="kanit">Kanit</option>
-              <option value="saira">Saira Condensed</option>
-              <option value="ubuntu">Ubuntu Condensed</option>
-              <option value="titillium">Titillium Web</option>
-              <option value="nunito">Nunito Sans</option>
-              <option value="ptsans">PT Sans Narrow</option>
-              <option value="cabin">Cabin Condensed</option>
-              <option value="maven">Maven Pro</option>
-              <option value="quantico">Quantico</option>
-              <option value="play">Play</option>
-              <option value="noto">Noto Sans</option>
-              <option value="source">Source Sans 3</option>
-              <option value="dm">DM Sans</option>
-              <option value="arial">Arial</option>
-            </select>
-            <div class="s-preview" id="fontPreview">FIFA World Cup 2026 · ২০২৬ বিশ্বকাপ</div>
-          </div>
-        </div>
-
-        <!-- Card Style -->
-        <div class="st-card">
-          <div class="st-card-hd"><i class="fas fa-layer-group"></i><span>Card Style</span></div>
-          <div class="st-card-body">
-            <div class="st-desc">ম্যাচ কার্ডের gradient strip ও header চালু/বন্ধ করো।</div>
-            <div class="s-toggle-group" id="cfg-cardgradient">
-              <button type="button" class="s-toggle on" data-val="true" onclick="setCardGradient(this)"><i class="fas fa-circle-check st-lang-icon"></i> চালু</button>
-              <button type="button" class="s-toggle" data-val="false" onclick="setCardGradient(this)"><i class="fas fa-circle-xmark st-lang-icon"></i> বন্ধ</button>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /st-row-3 -->
-
-      <!-- Row 2: Color Theme (full width) -->
-      <div class="st-card st-color-card">
-        <div class="st-card-hd"><i class="fas fa-palette"></i><span>Color Theme</span></div>
-        <div class="st-color-inner">
-
-          <!-- Left: pickers + presets -->
-          <div class="st-color-left">
-            <div class="st-desc st-color-desc">Background, accent এবং text রঙ কাস্টমাইজ করো অথবা নিচের preset থিম থেকে বেছে নাও।</div>
-
-            <!-- Color pickers -->
-            <div class="st-cp-row">
-              <div class="st-cp-item">
-                <label class="st-cp-swatch" for="cp-bg">
-                  <input type="color" id="cp-bg" value="#050f10" oninput="previewColor()">
-                </label>
-                <div class="st-cp-name">Background</div>
-                <div class="st-cp-hex" id="cp-bg-hex">#050f10</div>
-              </div>
-              <div class="st-cp-item">
-                <label class="st-cp-swatch" for="cp-accent">
-                  <input type="color" id="cp-accent" value="#A1F000" oninput="previewColor()">
-                </label>
-                <div class="st-cp-name">Accent</div>
-                <div class="st-cp-hex" id="cp-accent-hex">#A1F000</div>
-              </div>
-              <div class="st-cp-item">
-                <label class="st-cp-swatch" for="cp-text">
-                  <input type="color" id="cp-text" value="#ffffff" oninput="previewColor()">
-                </label>
-                <div class="st-cp-name">Text</div>
-                <div class="st-cp-hex" id="cp-text-hex">#ffffff</div>
+            <!-- Timezone -->
+            <div class="st-card st-card-sm">
+              <div class="st-card-hd"><i class="fas fa-clock"></i><span>Timezone</span></div>
+              <div class="st-card-body">
+                <select class="s-select" id="cfg-tz">
+                  <option value="6">GMT+6 · BDT</option>
+                  <option value="5.5">GMT+5:30 · IST</option>
+                  <option value="0">GMT+0 · UTC</option>
+                  <option value="1">GMT+1 · CET</option>
+                  <option value="2">GMT+2 · EET</option>
+                  <option value="3">GMT+3 · Gulf</option>
+                  <option value="-5">GMT-5 · EST</option>
+                  <option value="-6">GMT-6 · CST</option>
+                  <option value="-7">GMT-7 · MST</option>
+                  <option value="-8">GMT-8 · PST</option>
+                </select>
               </div>
             </div>
 
-            <!-- Preset themes -->
-            <div class="st-presets-label">Preset Themes</div>
-            <div class="st-preset-grid">
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#0a1628','#D4AF37','#ffffff')"><span class="st-preset-swatch psw-stadium"></span>🏟 Stadium Dark</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#daeaf5','#1a56db','#1a2840')"><span class="st-preset-swatch psw-stadium-light"></span>🌤 Stadium Light</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#0a0a0a','#D4AF37','#ffffff')"><span class="st-preset-swatch psw-crimgold"></span>Crimson Gold</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#050f10','#A1F000','#ffffff')"><span class="st-preset-swatch psw-neon"></span>Neon Green</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#0a0a0f','#FFD700','#ffffff')"><span class="st-preset-swatch psw-royalgold"></span>Royal Gold</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#080d18','#00d4ff','#ffffff')"><span class="st-preset-swatch psw-cyberblue"></span>Cyber Blue</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#0f0505','#ff3232','#ffffff')"><span class="st-preset-swatch psw-crimson"></span>Crimson Fire</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#0d0a1a','#b47cff','#ffffff')"><span class="st-preset-swatch psw-purple"></span>Purple Galaxy</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#04141a','#00e5cc','#ffffff')"><span class="st-preset-swatch psw-teal"></span>Ocean Teal</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#0f0800','#ff9500','#ffffff')"><span class="st-preset-swatch psw-amber"></span>Amber Sunset</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#f0f4f8','#1a56db','#1e3a5f')"><span class="st-preset-swatch psw-arctic"></span>Arctic White</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#111111','#e0e0e0','#ffffff')"><span class="st-preset-swatch psw-carbon"></span>Midnight Carbon</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#060f06','#39d353','#ffffff')"><span class="st-preset-swatch psw-forest"></span>Forest Green</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#120808','#ff9eb5','#ffffff')"><span class="st-preset-swatch psw-rosegold"></span>Rose Gold</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#1a1208','#deb887','#ffffff')"><span class="st-preset-swatch psw-desert"></span>Desert Sand</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#08101a','#a8d8ea','#ffffff')"><span class="st-preset-swatch psw-icestorm"></span>Ice Storm</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#120010','#ff2d78','#ffffff')"><span class="st-preset-swatch psw-neonpink"></span>Neon Pink</button>
-              <button type="button" class="st-preset-btn" onclick="applyPreset('#1c2333','#58a6ff','#c9d1d9')"><span class="st-preset-swatch psw-slate"></span>Slate Pro</button>
-            </div>
-          </div>
-
-          <!-- Right: live preview -->
-          <div class="st-color-right">
-            <div class="st-preview-label">Live Preview</div>
-            <div class="color-preview-box" id="colorPreviewBox">
-              <div class="cpb-hdr">
-                <span class="cpb-title" id="cpb-title">FIFA WORLD CUP 2026</span>
-                <span class="cpb-badge" id="cpb-badge">● LIVE</span>
-              </div>
-              <div class="cpb-card" id="cpb-card">
-                <div class="cpb-card-hdr" id="cpb-card-hdr">
-                  <span class="cpb-grp" id="cpb-grp">Group A · Match #1</span>
-                  <span class="cpb-md" id="cpb-md">Matchday 1</span>
+            <!-- Language -->
+            <div class="st-card st-card-sm">
+              <div class="st-card-hd"><i class="fas fa-globe"></i><span>Language</span></div>
+              <div class="st-card-body">
+                <div class="s-toggle-group" id="cfg-lang">
+                  <button type="button" class="s-toggle on" data-val="bn" onclick="setToggle('lang',this)"><i class="fas fa-language st-lang-icon"></i>বাংলা</button>
+                  <button type="button" class="s-toggle" data-val="en" onclick="setToggle('lang',this)"><i class="fas fa-language st-lang-icon"></i>EN</button>
                 </div>
-                <div class="cpb-card-body">
-                  <div class="cpb-team">
-                    <span class="cpb-flag">🇲🇽</span>
-                    <span id="cpb-team1">15. Mexico</span>
+              </div>
+            </div>
+
+            <!-- Font -->
+            <div class="st-card st-card-sm">
+              <div class="st-card-hd"><i class="fas fa-font"></i><span>Font</span></div>
+              <div class="st-card-body">
+                <select class="s-select" id="cfg-font" onchange="setFont(this)">
+                  <option value="barlow">Barlow Condensed</option>
+                  <option value="hind">Hind Siliguri</option>
+                  <option value="roboto">Roboto Condensed</option>
+                  <option value="oswald">Oswald</option>
+                  <option value="exo">Exo 2</option>
+                  <option value="rajdhani">Rajdhani</option>
+                  <option value="teko">Teko</option>
+                  <option value="kanit">Kanit</option>
+                  <option value="saira">Saira Condensed</option>
+                  <option value="ubuntu">Ubuntu Condensed</option>
+                  <option value="titillium">Titillium Web</option>
+                  <option value="nunito">Nunito Sans</option>
+                  <option value="ptsans">PT Sans Narrow</option>
+                  <option value="cabin">Cabin Condensed</option>
+                  <option value="maven">Maven Pro</option>
+                  <option value="quantico">Quantico</option>
+                  <option value="play">Play</option>
+                  <option value="noto">Noto Sans</option>
+                  <option value="source">Source Sans 3</option>
+                  <option value="dm">DM Sans</option>
+                  <option value="arial">Arial</option>
+                </select>
+                <div class="s-preview-sm" id="fontPreview">FIFA 2026 · বিশ্বকাপ</div>
+              </div>
+            </div>
+
+            <!-- Card Style -->
+            <div class="st-card st-card-sm">
+              <div class="st-card-hd"><i class="fas fa-layer-group"></i><span>Cards</span></div>
+              <div class="st-card-body">
+                <div class="s-toggle-group" id="cfg-cardgradient">
+                  <button type="button" class="s-toggle on" data-val="true" onclick="setCardGradient(this)"><i class="fas fa-circle-check st-lang-icon"></i> চালু</button>
+                  <button type="button" class="s-toggle" data-val="false" onclick="setCardGradient(this)"><i class="fas fa-circle-xmark st-lang-icon"></i> বন্ধ</button>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /st-compact-grid -->
+
+          <!-- Preset Theme dropdown -->
+          <div class="st-card st-card-sm">
+            <div class="st-card-hd"><i class="fas fa-palette"></i><span>Preset Theme</span></div>
+            <div class="st-card-body">
+              <select class="s-select" id="cfg-preset" onchange="applyPresetFromSelect(this)">
+                <option value="">— Custom —</option>
+                <option value="stadium-light" data-bg="#daeaf5" data-acc="#1a56db" data-txt="#1a2840">🌤 Stadium Light</option>
+                <option value="stadium-dark"  data-bg="#0a1628" data-acc="#D4AF37" data-txt="#ffffff">🏟 Stadium Dark</option>
+                <option value="neon"          data-bg="#050f10" data-acc="#A1F000" data-txt="#ffffff">⚡ Neon Green</option>
+                <option value="crimgold"      data-bg="#0a0a0a" data-acc="#D4AF37" data-txt="#ffffff">Crimson Gold</option>
+                <option value="royalgold"     data-bg="#0a0a0f" data-acc="#FFD700" data-txt="#ffffff">Royal Gold</option>
+                <option value="cyberblue"     data-bg="#080d18" data-acc="#00d4ff" data-txt="#ffffff">Cyber Blue</option>
+                <option value="crimson"       data-bg="#0f0505" data-acc="#ff3232" data-txt="#ffffff">Crimson Fire</option>
+                <option value="purple"        data-bg="#0d0a1a" data-acc="#b47cff" data-txt="#ffffff">Purple Galaxy</option>
+                <option value="teal"          data-bg="#04141a" data-acc="#00e5cc" data-txt="#ffffff">Ocean Teal</option>
+                <option value="amber"         data-bg="#0f0800" data-acc="#ff9500" data-txt="#ffffff">Amber Sunset</option>
+                <option value="arctic"        data-bg="#f0f4f8" data-acc="#1a56db" data-txt="#1e3a5f">Arctic White</option>
+                <option value="carbon"        data-bg="#111111" data-acc="#e0e0e0" data-txt="#ffffff">Midnight Carbon</option>
+                <option value="forest"        data-bg="#060f06" data-acc="#39d353" data-txt="#ffffff">Forest Green</option>
+                <option value="rosegold"      data-bg="#120808" data-acc="#ff9eb5" data-txt="#ffffff">Rose Gold</option>
+                <option value="desert"        data-bg="#1a1208" data-acc="#deb887" data-txt="#ffffff">Desert Sand</option>
+                <option value="icestorm"      data-bg="#08101a" data-acc="#a8d8ea" data-txt="#ffffff">Ice Storm</option>
+                <option value="neonpink"      data-bg="#120010" data-acc="#ff2d78" data-txt="#ffffff">Neon Pink</option>
+                <option value="slate"         data-bg="#1c2333" data-acc="#58a6ff" data-txt="#c9d1d9">Slate Pro</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Custom Colors -->
+          <div class="st-card st-card-sm">
+            <div class="st-card-hd"><i class="fas fa-droplet"></i><span>Custom Colors</span></div>
+            <div class="st-card-body">
+              <div class="st-cp-row-c">
+                <div class="st-cp-item-c">
+                  <label class="st-cp-sw-c" for="cp-bg"><input type="color" id="cp-bg" value="#050f10" oninput="previewColor()"></label>
+                  <div><div class="st-cp-nm-c">Background</div><div class="st-cp-hx-c" id="cp-bg-hex">#050f10</div></div>
+                </div>
+                <div class="st-cp-item-c">
+                  <label class="st-cp-sw-c" for="cp-accent"><input type="color" id="cp-accent" value="#A1F000" oninput="previewColor()"></label>
+                  <div><div class="st-cp-nm-c">Accent</div><div class="st-cp-hx-c" id="cp-accent-hex">#A1F000</div></div>
+                </div>
+                <div class="st-cp-item-c">
+                  <label class="st-cp-sw-c" for="cp-text"><input type="color" id="cp-text" value="#ffffff" oninput="previewColor()"></label>
+                  <div><div class="st-cp-nm-c">Text</div><div class="st-cp-hx-c" id="cp-text-hex">#ffffff</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save row -->
+          <div class="st-save-row-c">
+            <button type="button" class="bbtn bbtn-save" id="saveSettingsBtn" onclick="saveSettings()"><i class="fas fa-floppy-disk"></i> Save Settings</button>
+            <button type="button" class="bbtn bbtn-clear" onclick="resetSettings()"><i class="fas fa-rotate-left"></i> Reset</button>
+            <span id="settingSt" class="st-save-st"></span>
+          </div>
+
+        </div><!-- /st-left-col -->
+
+        <!-- ── Right column: Live Preview ── -->
+        <div class="st-right-col">
+          <div class="st-card st-preview-card">
+            <div class="st-card-hd"><i class="fas fa-eye"></i><span>Live Preview</span></div>
+            <div class="st-preview-body">
+              <div class="color-preview-box" id="colorPreviewBox">
+                <div class="cpb-hdr">
+                  <span class="cpb-title" id="cpb-title">FIFA WORLD CUP 2026</span>
+                  <span class="cpb-badge" id="cpb-badge">● LIVE</span>
+                </div>
+                <div class="cpb-card" id="cpb-card">
+                  <div class="cpb-card-hdr" id="cpb-card-hdr">
+                    <span class="cpb-grp" id="cpb-grp">Group A · Match #1</span>
+                    <span class="cpb-md" id="cpb-md">Matchday 1</span>
                   </div>
-                  <div class="cpb-score" id="cpb-score">2 – 0</div>
-                  <div class="cpb-team">
-                    <span class="cpb-flag">🇿🇦</span>
-                    <span id="cpb-team2">60. S. Africa</span>
+                  <div class="cpb-card-body">
+                    <div class="cpb-team"><span class="cpb-flag">🇲🇽</span><span id="cpb-team1">15. Mexico</span></div>
+                    <div class="cpb-score" id="cpb-score">2 – 0</div>
+                    <div class="cpb-team"><span class="cpb-flag">🇿🇦</span><span id="cpb-team2">60. S. Africa</span></div>
+                  </div>
+                  <div class="cpb-stat-row">
+                    <div class="cpb-stat">⚽ Hirving Lozano 23'</div>
+                    <div class="cpb-stat">⚽ Raúl Jiménez 67'</div>
                   </div>
                 </div>
-                <div class="cpb-stat-row">
-                  <div class="cpb-stat">⚽ Hirving Lozano 23'</div>
-                  <div class="cpb-stat">⚽ Raúl Jiménez 67'</div>
-                </div>
-              </div>
-              <div class="cpb-card cpb-card2" id="cpb-card2">
-                <div class="cpb-card-hdr">
-                  <span class="cpb-grp">Group C · Match #7</span>
-                  <span class="cpb-md">Matchday 1</span>
-                </div>
-                <div class="cpb-card-body">
-                  <div class="cpb-team"><span class="cpb-flag">🇧🇷</span>6. Brazil</div>
-                  <div class="cpb-vs">— vs —</div>
-                  <div class="cpb-team"><span class="cpb-flag">🇲🇦</span>8. Morocco</div>
+                <div class="cpb-card cpb-card2" id="cpb-card2">
+                  <div class="cpb-card-hdr">
+                    <span class="cpb-grp">Group C · Match #7</span>
+                    <span class="cpb-md">Matchday 1</span>
+                  </div>
+                  <div class="cpb-card-body">
+                    <div class="cpb-team"><span class="cpb-flag">🇧🇷</span>6. Brazil</div>
+                    <div class="cpb-vs">— vs —</div>
+                    <div class="cpb-team"><span class="cpb-flag">🇲🇦</span>8. Morocco</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div><!-- /st-right-col -->
 
-        </div><!-- /st-color-inner -->
-      </div><!-- /st-color-card -->
-
-      <!-- Save row -->
-      <div class="st-save-row">
-        <button class="bbtn bbtn-save bbtn-wide" id="saveSettingsBtn" onclick="saveSettings()"><i class="fas fa-floppy-disk"></i> Save Settings</button>
-        <button class="bbtn bbtn-clear bbtn-med" onclick="resetSettings()"><i class="fas fa-rotate-left"></i> Reset</button>
-        <span id="settingSt"></span>
-      </div>
+      </div><!-- /st-main-grid -->
 
     </div><!-- /ap-settings -->
   </div>
@@ -1697,6 +1715,7 @@ function populateSettingsUI(s){
   document.getElementById('cp-accent-hex').textContent=s.colors.accent;
   document.getElementById('cp-text-hex').textContent=s.colors.text;
   updateColorPreview(s.colors.bg, s.colors.accent, s.colors.text);
+  syncPresetDropdown(s.colors.bg, s.colors.accent);
 }
 
 // Toggle buttons (lang)
@@ -1741,6 +1760,7 @@ window.previewColor=function(){
   document.getElementById('cp-accent-hex').textContent=acc;
   document.getElementById('cp-text-hex').textContent=txt;
   updateColorPreview(bg, acc, txt);
+  syncPresetDropdown(bg, acc);
   // Live apply
   currentSettings.colors={bg,accent:acc,text:txt};
   applySettings(currentSettings);
@@ -1770,11 +1790,23 @@ function updateColorPreview(bg, acc, txt){
 }
 
 // Preset themes
+window.applyPresetFromSelect=function(sel){
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt.dataset.bg)return;
+  applyPreset(opt.dataset.bg,opt.dataset.acc,opt.dataset.txt);
+};
+function syncPresetDropdown(bg,acc){
+  const sel=document.getElementById('cfg-preset');
+  if(!sel)return;
+  const match=Array.from(sel.options).find(o=>o.dataset.bg===bg&&o.dataset.acc===acc);
+  sel.value=match?match.value:'';
+}
 window.applyPreset=function(bg, acc, txt){
   document.getElementById('cp-bg').value=bg;
   document.getElementById('cp-accent').value=acc;
   document.getElementById('cp-text').value=txt;
   document.getElementById('cp-bg-hex').textContent=bg;
+  syncPresetDropdown(bg,acc);
   document.getElementById('cp-accent-hex').textContent=acc;
   document.getElementById('cp-text-hex').textContent=txt;
   currentSettings.colors={bg,accent:acc,text:txt};
