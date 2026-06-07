@@ -1856,7 +1856,7 @@ window._stt=function(t){statsTeam=t;const grps=calcGroups();renderStats(grps);};
 // Third place
 function renderThirdPlace(grps){
   const thirds=Object.entries(grps).map(([g,teams])=>({...teams[2],group:g}))
-    .sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf);
+    .sort(b3Sort);
   const S=window._S;
   document.getElementById('thirdPlace').innerHTML=`
     <div class="tp-card">
