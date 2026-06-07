@@ -222,8 +222,9 @@ body::after{content:'';position:fixed;inset:0;
 .sym-center{
   display:flex;flex-direction:column;
   align-items:center;justify-content:space-between;
-  padding:0 4px;gap:6px;
+  padding:15% 4px 8%;gap:6px;
 }
+.sym-cen-top{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .sym-final-label{
   font-family:"Google Sans",sans-serif;
   font-size:.72rem;letter-spacing:2px;
@@ -242,8 +243,7 @@ body::after{content:'';position:fixed;inset:0;
   font-family:"Google Sans",sans-serif;
   font-size:.95rem;letter-spacing:1px;color:var(--neon);
 }
-/* 3rd place pushed to bottom */
-.sym-3rd-wrap{margin-top:auto;width:100%;padding-top:8px;border-top:1px solid var(--border2)}
+.sym-3rd-wrap{width:100%;padding-top:8px;border-top:1px solid var(--border2)}
 .sym-3rd-label{font-size:.6rem;letter-spacing:1px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:4px}
 
 /* Mobile tabs */
@@ -1080,11 +1080,14 @@ function renderMatches(grp){
     </div>`;
   }
 
-  // Group by date
+  // Group by date, sorted by time within each date
   const byDate={};
   for(const m of list){
     if(!byDate[m.date])byDate[m.date]=[];
     byDate[m.date].push(m);
+  }
+  for(const d of Object.keys(byDate)){
+    byDate[d].sort((a,b)=>a.time.localeCompare(b.time));
   }
   const sortedDates=Object.keys(byDate).sort();
   const S=window._S;
@@ -1314,6 +1317,24 @@ function drawBracketLines(){
     const mx=(x1+x2)/2;
     mkPath(`M${x1},${srcY} H${mx} V${tgtY} H${x2}`);
   }
+  // Dashed lines: SF losers → 3rd place
+  ['sf_1','sf_2'].forEach((sfId,i)=>{
+    const srcEl=getCard(sfId),tgtEl=getCard('third');
+    if(!srcEl||!tgtEl)return;
+    const srcR=srcEl.getBoundingClientRect(),tgtR=tgtEl.getBoundingClientRect();
+    const srcY=srcR.top-cr.top+srcR.height/2;
+    const slotEl=tgtEl.querySelector(i===0?'.sym-t1':'.sym-t2');
+    const tgtY=slotEl?slotEl.getBoundingClientRect().top-cr.top+slotEl.getBoundingClientRect().height/2:tgtR.top-cr.top+tgtR.height/2;
+    const isLeft=srcR.left-cr.left<cx;
+    const x1=isLeft?srcR.right-cr.left:srcR.left-cr.left;
+    const x2=isLeft?tgtR.left-cr.left:tgtR.right-cr.left;
+    const mx=(x1+x2)/2;
+    const p=document.createElementNS(NS,'path');
+    p.setAttribute('d',`M${x1},${srcY} H${mx} V${tgtY} H${x2}`);
+    p.setAttribute('stroke','#888');p.setAttribute('stroke-width','1.5');
+    p.setAttribute('stroke-dasharray','5,3');p.setAttribute('fill','none');
+    svg.appendChild(p);
+  });
   container.appendChild(svg);
 }
 function unrollBracket(){
@@ -1534,13 +1555,15 @@ function renderBracket(grps={}){
   html+=symCol(S.sf,[SF[0]],15,0,false);
 
   html+=`<div class="sym-center">
-    <div class="sym-final-label"><i class='fas fa-trophy'></i> ${S.final}</div>
-    <div class="sym-champion">
-      ${champFlagURL?`<img class="sym-champ-flag" src="${champFlagURL}" loading="lazy" onerror="this.style.display='none'">`
-        :`<div style="width:44px;height:33px;background:rgba(201,168,76,.15);border-radius:4px;margin:0 auto 5px"></div>`}
-      <div class="sym-champ-name">${champion?displayName(champion):'—'}</div>
+    <div class="sym-cen-top">
+      <div class="sym-final-label"><i class='fas fa-trophy'></i> ${S.final}</div>
+      <div class="sym-champion">
+        ${champFlagURL?`<img class="sym-champ-flag" src="${champFlagURL}" loading="lazy" onerror="this.style.display='none'">`
+          :`<div style="width:44px;height:33px;background:rgba(201,168,76,.15);border-radius:4px;margin:0 auto 5px"></div>`}
+        <div class="sym-champ-name">${champion?displayName(champion):'—'}</div>
+      </div>
+      <div data-mid="final" style="width:100%">${symMatch(FINAL,true)}</div>
     </div>
-    <div data-mid="final" style="width:100%">${symMatch(FINAL,true)}</div>
     <div class="sym-3rd-wrap">
       <div class="sym-3rd-label"><i class='fas fa-award'></i> ${S.third}</div>
       <div data-mid="third" style="width:100%">${symMatch(THIRD,true)}</div>

@@ -923,9 +923,10 @@ function renderTable(grp){
     </div>`;
   }
 
-  // Group by date
+  // Group by date, sorted by time within each date
   const byDate={};
   for(const m of list){if(!byDate[m.date])byDate[m.date]=[];byDate[m.date].push(m);}
+  for(const d of Object.keys(byDate)){byDate[d].sort((a,b)=>a.time.localeCompare(b.time));}
   const sortedDates=Object.keys(byDate).sort();
 
   document.getElementById('mTbody').innerHTML=sortedDates.map(date=>`
