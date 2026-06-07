@@ -216,11 +216,16 @@ body::after{content:'';position:fixed;inset:0;
 .sym-stadium{text-align:center;font-size:.55rem;color:rgba(255,255,255,.4);padding:2px 7px 4px;font-family:"Google Sans",sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;margin:0 auto}
 /* Connector lines */
 .smr{position:relative}
-.sym-col:not(.sym-col-r) .smr::after{content:'';position:absolute;right:-5px;top:50%;width:5px;height:1px;background:rgba(212,175,55,.55)}
-.sym-col-r .smr::after{content:'';position:absolute;left:-5px;top:50%;width:5px;height:1px;background:rgba(212,175,55,.55)}
+/* Outgoing stubs: left cols → right, right cols → left */
+.sym-col:not(.sym-col-r) .smr::after{content:'';position:absolute;right:-5px;top:calc(50% - 1px);width:5px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
+.sym-col-r .smr::after{content:'';position:absolute;left:-5px;top:calc(50% - 1px);width:5px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
+/* Incoming stubs: all cols except outermost R32 */
+.sym-col:not(.sym-col-r):not(:first-child) .smr::before{content:'';position:absolute;left:-5px;top:calc(50% - 1px);width:5px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
+.sym-col-r:not(:last-child) .smr::before{content:'';position:absolute;right:-5px;top:calc(50% - 1px);width:5px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
+/* Vertical connector between paired matches */
 .sym-con{position:relative}
-.sym-col:not(.sym-col-r) .sym-con::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:1px;background:rgba(212,175,55,.55)}
-.sym-col-r .sym-con::after{content:'';position:absolute;left:-5px;top:0;bottom:0;width:1px;background:rgba(212,175,55,.55)}
+.sym-col:not(.sym-col-r) .sym-con::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.5)}
+.sym-col-r .sym-con::after{content:'';position:absolute;left:-5px;top:0;bottom:0;width:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.5)}
 
 /* Center column */
 .sym-center{
