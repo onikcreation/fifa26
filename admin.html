@@ -898,8 +898,10 @@ function renderTable(grp){
 
   function cardHTML(m){
     const sc=dbSc[m.id]||{};
-    const s1=sc.s1!==undefined?sc.s1:'';
-    const s2=sc.s2!==undefined?sc.s2:'';
+    const domS1=document.getElementById('s1_'+m.id);
+    const domS2=document.getElementById('s2_'+m.id);
+    const s1=(pendingChanges.has(m.id)&&domS1)?domS1.value:(sc.s1!==undefined?sc.s1:'');
+    const s2=(pendingChanges.has(m.id)&&domS2)?domS2.value:(sc.s2!==undefined?sc.s2:'');
     const hg=(sc.goals1?.length||0)+(sc.goals2?.length||0);
     const isPending=pendingChanges.has(m.id);
     return`<div class="amc ${isPending?'changed-card':''}" id="tr-${m.id}">
@@ -1009,6 +1011,7 @@ window.saveOne=async function(id){
 };
 
 window.clearOne=async function(id){
+  if(!confirm(`Match #${id} এর সকল ডেটা মুছে দেবো?`))return;
   try{await remove(ref(db,'scores/'+id));pendingChanges.delete(id);updateChangedCount();toast(`Match #${id} clear ✓`,'ok');}
   catch(e){toast('Clear ব্যর্থ!','err');}
 };
