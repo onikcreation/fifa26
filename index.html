@@ -1281,6 +1281,23 @@ function friendlySlot(slot){
   if(lm){const id=normalizeWinKey(lm[1]);const n=KO_ID_NUM[id];return n?`L #${n}`:slot;}
   return slot;
 }
+function unrollBracket(){
+  const allKO={};
+  KO_ROUNDS.forEach(r=>r.matches.forEach(m=>{allKO[m.id]=m;}));
+  function prev(m){
+    if(!m)return[null,null];
+    const s1m=m.s1?.match(/^W\s+(.+)$/i),s2m=m.s2?.match(/^W\s+(.+)$/i);
+    return[s1m?allKO[normalizeWinKey(s1m[1])]||null:null,s2m?allKO[normalizeWinKey(s2m[1])]||null:null];
+  }
+  const fin=allKO['final'];
+  const[sf1,sf2]=prev(fin);
+  const[lqf1,lqf2]=prev(sf1);const[rqf1,rqf2]=prev(sf2);
+  const lR16=[...prev(lqf1),...prev(lqf2)].filter(Boolean);
+  const rR16=[...prev(rqf1),...prev(rqf2)].filter(Boolean);
+  const lR32=lR16.flatMap(r=>prev(r)).filter(Boolean);
+  const rR32=rR16.flatMap(r=>prev(r)).filter(Boolean);
+  return{lR32,lR16,rR16,rR32};
+}
 
 function buildWinnerMap(grps,b3map){
   const winners={};
@@ -1460,12 +1477,11 @@ function renderBracket(grps={}){
     h+=`</div>`;return h;
   }
 
-  const R32=KO_ROUNDS[0].matches;
-  const R16=KO_ROUNDS[1].matches;
   const QF=KO_ROUNDS[2].matches;
   const SF=KO_ROUNDS[3].matches;
   const THIRD=KO_ROUNDS[4].matches[0];
   const FINAL=KO_ROUNDS[5].matches[0];
+  const{lR32,lR16,rR16,rR32}=unrollBracket();
 
   const champion=getWinner(FINAL)||'';
   const champCode=TEAMS[champion]?.code||'';
@@ -1475,8 +1491,8 @@ function renderBracket(grps={}){
   // top/bottom spacer = midFlex/2 for visual centering
   const S=window._S;
   let html='';
-  html+=symCol(S.r32,R32.slice(0,8),1,2,false);
-  html+=symCol(S.r16,R16.slice(0,4),3,6,false);
+  html+=symCol(S.r32,lR32,1,2,false);
+  html+=symCol(S.r16,lR16,3,6,false);
   html+=symCol(S.qf,QF.slice(0,2),7,14,false);
   html+=symCol(S.sf,[SF[0]],15,0,false);
 
@@ -1496,8 +1512,8 @@ function renderBracket(grps={}){
 
   html+=symCol(S.sf,[SF[1]],15,0,true);
   html+=symCol(S.qf,QF.slice(2,4),7,14,true);
-  html+=symCol(S.r16,R16.slice(4,8),3,6,true);
-  html+=symCol(S.r32,R32.slice(8,16),1,2,true);
+  html+=symCol(S.r16,rR16,3,6,true);
+  html+=symCol(S.r32,rR32,1,2,true);
 
   document.getElementById('symDesktop').innerHTML=html;
 
