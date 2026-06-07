@@ -2048,10 +2048,28 @@ function clubFlagHTML(clubCountry){
   return`<img src="https://flagcdn.com/20x15/${code}.png" style="width:16px;height:12px;object-fit:cover;border-radius:1px" loading="lazy" title="${esc(clubCountry)}" onerror="this.style.display='none'">`;
 }
 
-// Firebase key → original TEAMS key (underscore back to dot)
+// Old Bengali key → new Bengali key (April 2026 rank update migration)
+const _TEAM_KEY_RENAMED={
+  "১. ফ্রান্স":"৩. ফ্রান্স","৩. আর্জেন্টিনা":"১. আর্জেন্টিনা",
+  "৭. নেদারল্যান্ডস":"৮. নেদারল্যান্ডস","৮. মরক্কো":"৭. মরক্কো",
+  "১৪. সেনেগাল":"১৫. সেনেগাল","১৫. মেক্সিকো":"১৪. মেক্সিকো",
+  "১৬. যুক্তরাষ্ট্র":"১৭. যুক্তরাষ্ট্র","১৭. উরুগুয়ে":"১৬. উরুগুয়ে",
+  "২১. ইরান":"২০. ইরান","২৩. ইকুয়েডর":"২৪. ইকুয়েডর","২৪. অস্ট্রিয়া":"২৩. অস্ট্রিয়া",
+  "৩৩. পানামা":"৩৪. পানামা","৩৪. আইভরি কোস্ট":"৩৩. আইভরি কোস্ট",
+  "৩৮. সুইডেন":"৩৯. সুইডেন","৪০. প্যারাগুয়ে":"৫৯. প্যারাগুয়ে",
+  "৪১. চেক প্রজাতন্ত্র":"৪৫. চেক প্রজাতন্ত্র","৪৩. স্কটল্যান্ড":"৪২. স্কটল্যান্ড",
+  "৪৪. তিউনিসিয়া":"৬০. তিউনিসিয়া","৪৬. ডিআর কঙ্গো":"৫৭. ডিআর কঙ্গো",
+  "৫০. উজবেকিস্তান":"১৩৮. উজবেকিস্তান","৫৫. কাতার":"৭৫. কাতার",
+  "৫৭. ইরাক":"৬১. ইরাক","৬০. দক্ষিণ আফ্রিকা":"৪৯. দক্ষিণ আফ্রিকা",
+  "৬১. সৌদি আরব":"১৩৬. সৌদি আরব","৬৩. জর্ডান":"৭৮. জর্ডান",
+  "৬৫. বসনিয়া ও হার্জেগোভিনা":"৭৬. বসনিয়া ও হার্জেগোভিনা",
+  "৬৯. কেপ ভার্দে":"৭২. কেপ ভার্দে","৭৪. ঘানা":"৫৩. ঘানা",
+  "৮২. কুরাসাও":"১২৯. কুরাসাও","৮৩. হাইতি":"১২৭. হাইতি","৮৫. নিউজিল্যান্ড":"৮০. নিউজিল্যান্ড",
+};
+// Firebase key → current TEAMS key (handles old rank keys via migration map)
 function fbKeyToTeamKey(fbKey){
-  // Firebase-এ "১৫_ মেক্সিকো" → TEAMS-এ "১৫. মেক্সিকো"
-  return fbKey.replace(/_/g,'.');
+  const dotKey=fbKey.replace(/_/g,'.');
+  return _TEAM_KEY_RENAMED[dotKey]||dotKey;
 }
 // TEAMS key → Firebase key
 function teamKeyToFbKey(teamKey){
