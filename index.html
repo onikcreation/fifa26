@@ -215,17 +215,17 @@ body::after{content:'';position:fixed;inset:0;
 .sym-date{text-align:center;font-size:.58rem;color:rgba(255,255,255,.5);padding:3px 7px;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.05);font-family:"Google Sans",sans-serif;letter-spacing:.5px}
 .sym-stadium{text-align:center;font-size:.55rem;color:rgba(255,255,255,.4);padding:2px 7px 4px;font-family:"Google Sans",sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;margin:0 auto}
 /* Connector lines */
-.smr{position:relative}
-/* Outgoing stubs: left cols → right, right cols → left */
-.sym-col:not(.sym-col-r) .smr::after{content:'';position:absolute;right:-14px;top:calc(50% - 1px);width:14px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
-.sym-col-r .smr::after{content:'';position:absolute;left:-14px;top:calc(50% - 1px);width:14px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
-/* Incoming stubs: all cols except outermost R32 */
-.sym-col:not(.sym-col-r):not(:first-child) .smr::before{content:'';position:absolute;left:-14px;top:calc(50% - 1px);width:14px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
-.sym-col-r:not(:last-child) .smr::before{content:'';position:absolute;right:-14px;top:calc(50% - 1px);width:14px;height:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.6)}
+.smr{position:relative;z-index:1}
+/* Outgoing stubs span full gap + 6px overlap to guarantee visual join */
+.sym-col:not(.sym-col-r) .smr::after{content:'';position:absolute;right:-20px;top:calc(50% - .75px);width:20px;height:1.5px;z-index:4;background:#D4AF37}
+.sym-col-r .smr::after{content:'';position:absolute;left:-20px;top:calc(50% - .75px);width:20px;height:1.5px;z-index:4;background:#D4AF37}
+/* Incoming stubs — mirror of outgoing, overlap ensures junction */
+.sym-col:not(.sym-col-r):not(:first-child) .smr::before{content:'';position:absolute;left:-20px;top:calc(50% - .75px);width:20px;height:1.5px;z-index:4;background:#D4AF37}
+.sym-col-r:not(:last-child) .smr::before{content:'';position:absolute;right:-20px;top:calc(50% - .75px);width:20px;height:1.5px;z-index:4;background:#D4AF37}
 /* Vertical connector between paired matches */
-.sym-con{position:relative}
-.sym-col:not(.sym-col-r) .sym-con::after{content:'';position:absolute;right:-14px;top:0;bottom:0;width:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.5)}
-.sym-col-r .sym-con::after{content:'';position:absolute;left:-14px;top:0;bottom:0;width:2px;background:rgba(212,175,55,.9);box-shadow:0 0 6px rgba(212,175,55,.5)}
+.sym-con{position:relative;z-index:3}
+.sym-col:not(.sym-col-r) .sym-con::after{content:'';position:absolute;right:-14px;top:0;bottom:0;width:1.5px;z-index:4;background:#D4AF37}
+.sym-col-r .sym-con::after{content:'';position:absolute;left:-14px;top:0;bottom:0;width:1.5px;z-index:4;background:#D4AF37}
 
 /* Center column */
 .sym-center{
