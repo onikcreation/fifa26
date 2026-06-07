@@ -153,6 +153,16 @@ body::after{content:'';position:fixed;inset:0;
 .mc-card.yellow{background:#ffc800}
 .mc-card.red{background:#ff3232}
 .mc-card.yr{background:linear-gradient(90deg,#ffc800 50%,#ff3232 50%);border:1px solid #cc5500}
+/* Stats card badges — matches admin panel style */
+.st-cards-wrap{display:flex;gap:.3rem;flex-shrink:0;flex-wrap:wrap}
+.st-card-badge{display:inline-flex;align-items:center;gap:.3rem;border:1px solid transparent;border-radius:4px;padding:.18rem .45rem;font-size:.72rem;font-family:"Google Sans",sans-serif}
+.st-card-badge.yellow{background:rgba(255,200,0,.08);border-color:rgba(255,200,0,.3);color:#ffc800}
+.st-card-badge.red{background:rgba(255,50,50,.08);border-color:rgba(255,50,50,.3);color:#ff5050}
+.st-card-badge.yr{background:rgba(255,100,0,.08);border-color:rgba(255,100,0,.3);color:#ff8c00}
+.st-card-rect{display:inline-block;width:8px;height:12px;border-radius:1px;flex-shrink:0}
+.st-card-badge.yellow .st-card-rect{background:#ffc800;border:1px solid #a88000}
+.st-card-badge.red .st-card-rect{background:#ff3232;border:1px solid #aa1010}
+.st-card-badge.yr .st-card-rect{background:linear-gradient(90deg,#ffc800 50%,#ff3232 50%);border:1px solid #cc5500}
 .goal-item .gpen{color:var(--orange);font-size:.68rem}
 
 @media(max-width:900px){.match-grid{grid-template-columns:repeat(2,1fr)}}
@@ -1645,21 +1655,23 @@ function renderStats(grps){
   const allMatches=[...MATCHES,...KO_ROUNDS.flatMap(r=>r.matches)];
 
   // ── Card data ──
-  const cardMap={}; // name||team → {yellow,red}
+  const cardMap={}; // name||team → {yellow,red,yr}
   for(const m of allMatches){
     const sc=scores[m.id]||{};
     const t1=m.t1||(sc.t1||''), t2=m.t2||(sc.t2||'');
     for(const c of(sc.cards1||[])){
       const k=`${c.name}||${t1}`;
-      if(!cardMap[k])cardMap[k]={name:c.name,team:t1,yellow:0,red:0};
-      if(c.type==='yellow'||c.type==='yr')cardMap[k].yellow++;
-      if(c.type==='red'||c.type==='yr')cardMap[k].red++;
+      if(!cardMap[k])cardMap[k]={name:c.name,team:t1,yellow:0,red:0,yr:0};
+      if(c.type==='yellow')cardMap[k].yellow++;
+      else if(c.type==='red')cardMap[k].red++;
+      else if(c.type==='yr')cardMap[k].yr++;
     }
     for(const c of(sc.cards2||[])){
       const k=`${c.name}||${t2}`;
-      if(!cardMap[k])cardMap[k]={name:c.name,team:t2,yellow:0,red:0};
-      if(c.type==='yellow'||c.type==='yr')cardMap[k].yellow++;
-      if(c.type==='red'||c.type==='yr')cardMap[k].red++;
+      if(!cardMap[k])cardMap[k]={name:c.name,team:t2,yellow:0,red:0,yr:0};
+      if(c.type==='yellow')cardMap[k].yellow++;
+      else if(c.type==='red')cardMap[k].red++;
+      else if(c.type==='yr')cardMap[k].yr++;
     }
   }
 
@@ -1699,7 +1711,7 @@ function renderStats(grps){
   else if(statsGrp!=='ALL') teamList=teamList.filter(([n])=>GROUPS[statsGrp]?.includes(n));
   const maxG=teamList[0]?teamList[0][1].goals:1;
 
-  let cardList=Object.values(cardMap).sort((a,b)=>b.red-a.red||b.yellow-a.yellow);
+  let cardList=Object.values(cardMap).sort((a,b)=>(b.red+b.yr)-(a.red+a.yr)||(b.yellow+b.yr)-(a.yellow+a.yr));
   if(statsTeam!=='ALL') cardList=cardList.filter(c=>c.team===statsTeam);
   else if(statsGrp!=='ALL') cardList=cardList.filter(c=>GROUPS[statsGrp]?.includes(c.team));
 
@@ -1858,9 +1870,10 @@ function renderStats(grps){
           <div class="scorer-row">
             ${fImg(c.team,26,19)}
             <div class="sr-info"><div class="sr-name">${esc(c.name)}</div><div class="sr-team">${tNameRanked(c.team)}</div></div>
-            <div style="display:flex;gap:.4rem;flex-shrink:0">
-              ${c.yellow?`<span style="background:rgba(255,200,0,.15);border:1px solid rgba(255,200,0,.4);border-radius:4px;padding:.1rem .45rem;font-size:.78rem;color:#ffc800">🟨 ${c.yellow}</span>`:''}
-              ${c.red?`<span style="background:rgba(255,50,50,.15);border:1px solid rgba(255,50,50,.4);border-radius:4px;padding:.1rem .45rem;font-size:.78rem;color:#ff5050">🟥 ${c.red}</span>`:''}
+            <div class="st-cards-wrap">
+              ${Array(c.yellow).fill(`<span class="st-card-badge yellow"><span class="st-card-rect"></span></span>`).join('')}
+              ${Array(c.yr).fill(`<span class="st-card-badge yr"><span class="st-card-rect"></span></span>`).join('')}
+              ${Array(c.red).fill(`<span class="st-card-badge red"><span class="st-card-rect"></span></span>`).join('')}
             </div>
           </div>`).join('')}
     </div>`;
