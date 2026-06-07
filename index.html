@@ -190,6 +190,7 @@ body::after{content:'';position:fixed;inset:0;
   grid-template-columns:repeat(4,1fr) 170px repeat(4,1fr);
   gap:0;
   min-width:1200px;
+  position:relative;
 }
 .sym-col{display:flex;flex-direction:column;padding:0 14px;min-height:600px}
 .sym-col-title{font-family:"Google Sans",sans-serif;font-size:.68rem;letter-spacing:1.5px;color:#ffffff;text-align:center;padding:.4rem .5rem .6rem;position:relative;z-index:1}
@@ -214,17 +215,8 @@ body::after{content:'';position:fixed;inset:0;
 .sym-extra{text-align:center;font-size:.58rem;color:var(--orange);padding:2px 7px;border-top:1px solid var(--border2)}
 .sym-date{text-align:center;font-size:.58rem;color:rgba(255,255,255,.5);padding:3px 7px;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.05);font-family:"Google Sans",sans-serif;letter-spacing:.5px}
 .sym-stadium{text-align:center;font-size:.55rem;color:rgba(255,255,255,.4);padding:2px 7px 4px;font-family:"Google Sans",sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;margin:0 auto}
-/* Connector lines */
-.smr{position:relative;z-index:1}
-/* Outgoing stub: each card → column edge */
-.sym-col:not(.sym-col-r) .smr::after{content:'';position:absolute;right:-14px;top:calc(50% - .75px);width:14px;height:1.5px;z-index:4;background:#D4AF37}
-.sym-col-r .smr::after{content:'';position:absolute;left:-14px;top:calc(50% - .75px);width:14px;height:1.5px;z-index:4;background:#D4AF37}
-/* Vertical connector + horizontal arm to next round (from midpoint of spacer) */
-.sym-con{position:relative;z-index:3}
-.sym-col:not(.sym-col-r) .sym-con::after{content:'';position:absolute;right:-14px;top:0;bottom:0;width:1.5px;z-index:4;background:#D4AF37}
-.sym-col-r .sym-con::after{content:'';position:absolute;left:-14px;top:0;bottom:0;width:1.5px;z-index:4;background:#D4AF37}
-.sym-col:not(.sym-col-r) .sym-con::before{content:'';position:absolute;right:-28px;top:calc(50% - .75px);width:14px;height:1.5px;z-index:4;background:#D4AF37}
-.sym-col-r .sym-con::before{content:'';position:absolute;left:-28px;top:calc(50% - .75px);width:14px;height:1.5px;z-index:4;background:#D4AF37}
+/* Connector lines — drawn by JS SVG overlay */
+.smr{position:relative}
 
 /* Center column */
 .sym-center{
@@ -1285,6 +1277,45 @@ function friendlySlot(slot){
   if(lm){const id=normalizeWinKey(lm[1]);const n=KO_ID_NUM[id];return n?`L #${n}`:slot;}
   return slot;
 }
+function drawBracketLines(){
+  const container=document.getElementById('symDesktop');
+  if(!container)return;
+  container.querySelector('.bk-svg-el')?.remove();
+  const cr=container.getBoundingClientRect();
+  if(!cr.width||!cr.height)return;
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(NS,'svg');
+  svg.classList.add('bk-svg-el');
+  svg.setAttribute('width',cr.width);
+  svg.setAttribute('height',cr.height);
+  svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;z-index:5';
+  function mkPath(d){
+    const p=document.createElementNS(NS,'path');
+    p.setAttribute('d',d);p.setAttribute('stroke','#D4AF37');
+    p.setAttribute('stroke-width','1.5');p.setAttribute('fill','none');
+    svg.appendChild(p);
+  }
+  function getCard(id){return container.querySelector(`[data-mid="${id}"]`);}
+  const ce=container.querySelector('.sym-center');
+  const cx=ce?(ce.getBoundingClientRect().left+ce.getBoundingClientRect().right)/2-cr.left:cr.width/2;
+  const allKO={};
+  KO_ROUNDS.forEach(r=>r.matches.forEach(m=>{allKO[m.id]=m;}));
+  for(const[id,match]of Object.entries(allKO)){
+    if(!match.next)continue;
+    const srcEl=getCard(id),tgtEl=getCard(match.next);
+    if(!srcEl||!tgtEl)continue;
+    const srcR=srcEl.getBoundingClientRect(),tgtR=tgtEl.getBoundingClientRect();
+    const srcY=srcR.top-cr.top+srcR.height/2;
+    const slotEl=match.nextSlot==='s1'?tgtEl.querySelector('.sym-t1'):tgtEl.querySelector('.sym-t2');
+    const tgtY=slotEl?slotEl.getBoundingClientRect().top-cr.top+slotEl.getBoundingClientRect().height/2:tgtR.top-cr.top+tgtR.height/2;
+    const isLeft=srcR.left-cr.left<cx;
+    const x1=isLeft?srcR.right-cr.left:srcR.left-cr.left;
+    const x2=isLeft?tgtR.left-cr.left:tgtR.right-cr.left;
+    const mx=(x1+x2)/2;
+    mkPath(`M${x1},${srcY} H${mx} V${tgtY} H${x2}`);
+  }
+  container.appendChild(svg);
+}
 function unrollBracket(){
   const allKO={};
   KO_ROUNDS.forEach(r=>r.matches.forEach(m=>{allKO[m.id]=m;}));
@@ -1456,11 +1487,11 @@ function renderBracket(grps={}){
         <span>${koNum(m)?`#${koNum(m)}`:''}</span>
         <span style="font-size:.55rem;color:rgba(255,255,255,.45)">${!compact&&m.date?fD(m.date):''}</span>
       </div>
-      <div class="sym-team ${w&&w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
+      <div class="sym-team sym-t1 ${w&&w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
         ${symFlag(t1)}<span class="sym-tname ${isTBDish(t1)?'tbd':''}">${isTBDish(t1)?friendlySlot(t1):displayName(t1)}</span>
         <span class="sym-score">${s1}</span>
       </div>
-      <div class="sym-team ${w&&w===t2?'win':''}" style="${auto2?'opacity:.82':''}">
+      <div class="sym-team sym-t2 ${w&&w===t2?'win':''}" style="${auto2?'opacity:.82':''}">
         ${symFlag(t2)}<span class="sym-tname ${isTBDish(t2)?'tbd':''}">${isTBDish(t2)?friendlySlot(t2):displayName(t2)}</span>
         <span class="sym-score">${s2}</span>
       </div>
@@ -1474,7 +1505,7 @@ function renderBracket(grps={}){
     let h=`<div class="sym-col${isRight?' sym-col-r':''}"><div class="sym-col-title">${title}</div>`;
     h+=`<div class="sym-spacer" style="flex:${topFlex}"></div>`;
     for(let i=0;i<matches.length;i++){
-      h+=`<div class="smr">${symMatch(matches[i])}</div>`;
+      h+=`<div class="smr" data-mid="${matches[i]?.id||''}">${symMatch(matches[i])}</div>`;
       if(i<matches.length-1)h+=`<div class="sym-spacer${i%2===0?' sym-con':''}" style="flex:${midFlex}"></div>`;
     }
     h+=`<div class="sym-spacer" style="flex:${topFlex}"></div>`;
@@ -1509,10 +1540,10 @@ function renderBracket(grps={}){
         :`<div style="width:44px;height:33px;background:rgba(201,168,76,.15);border-radius:4px;margin:0 auto 5px"></div>`}
       <div class="sym-champ-name">${champion?displayName(champion):'—'}</div>
     </div>
-    <div style="width:100%">${symMatch(FINAL,true)}</div>
+    <div data-mid="final" style="width:100%">${symMatch(FINAL,true)}</div>
     <div class="sym-3rd-wrap">
       <div class="sym-3rd-label"><i class='fas fa-award'></i> ${S.third}</div>
-      <div style="width:100%">${symMatch(THIRD,true)}</div>
+      <div data-mid="third" style="width:100%">${symMatch(THIRD,true)}</div>
     </div>
   </div>`;
 
@@ -1522,6 +1553,7 @@ function renderBracket(grps={}){
   html+=symCol(S.r32,rR32,1,2,true);
 
   document.getElementById('symDesktop').innerHTML=html;
+  requestAnimationFrame(drawBracketLines);
 
   // Mobile
   const mRounds=[
