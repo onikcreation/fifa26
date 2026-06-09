@@ -286,34 +286,6 @@ body::after{content:'';position:fixed;inset:0;
 .s-preview-sm{font-size:.82rem;color:var(--text2);padding:.3rem .6rem;background:rgba(161,240,0,.04);border:1px solid var(--border2);border-radius:6px;text-align:center;transition:font-family .3s;margin-top:.3rem}
 .st-save-st{font-size:.7rem;color:var(--gray)}
 .st-firebase-note code{background:rgba(255,255,255,.07);padding:1px 5px;border-radius:3px;font-size:.57rem}
-/* ══ SQUAD EDITOR ══ */
-.sq-panel-hd{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap}
-.sq-team-sel{background:var(--inp);border:1px solid var(--border);border-radius:8px;padding:.55rem 1rem;color:var(--text);font-family:"Google Sans",sans-serif;font-size:.88rem;min-width:260px;max-width:100%;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A1F000' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;padding-right:2rem}
-.sq-team-sel:focus{border-color:var(--neon)}
-.sq-table-wrap{overflow-x:auto;margin-bottom:.7rem}
-.sq-table{width:100%;border-collapse:separate;border-spacing:0 .25rem;min-width:680px}
-.sq-table th{font-family:"Google Sans",sans-serif;font-size:.58rem;letter-spacing:.8px;color:var(--gray);text-align:left;padding:.3rem .4rem;border-bottom:1px solid var(--border2);white-space:nowrap}
-.sq-table td{vertical-align:middle;padding:.2rem .25rem}
-.sq-row{background:rgba(255,255,255,.02);transition:background .15s}
-.sq-row:hover{background:rgba(255,255,255,.05)}
-.sq-inp{width:100%;background:var(--inp);border:1px solid var(--border2);border-radius:5px;padding:.3rem .4rem;color:var(--text);font-family:"Google Sans",sans-serif;font-size:.78rem;outline:none;box-sizing:border-box;min-width:0}
-.sq-inp:focus{border-color:var(--neon)}
-.sq-inp.num{width:46px;text-align:center}
-.sq-inp.mid{width:52px;text-align:center}
-.sq-pos-sel{width:58px;background:var(--inp);border:1px solid var(--border2);border-radius:5px;padding:.28rem .25rem;color:var(--text);font-size:.75rem;outline:none;cursor:pointer}
-.sq-pos-sel:focus{border-color:var(--neon)}
-.sq-cap-cb{accent-color:var(--neon);width:15px;height:15px;cursor:pointer;display:block;margin:0 auto}
-.sq-add-btn{font-family:"Google Sans",sans-serif;font-size:.82rem;letter-spacing:.5px;padding:.38rem .9rem;background:rgba(161,240,0,.08);border:1px solid rgba(161,240,0,.25);border-radius:7px;color:var(--neon);cursor:pointer;transition:all .2s}
-.sq-add-btn:hover{background:rgba(161,240,0,.18);border-color:var(--neon)}
-.sq-save-row{display:flex;align-items:center;gap:.7rem;margin-top:1rem;flex-wrap:wrap;padding:.75rem 1rem;background:rgba(161,240,0,.03);border:1px solid rgba(161,240,0,.12);border-radius:10px}
-.sq-save-btn{font-family:"Google Sans",sans-serif;font-size:.88rem;letter-spacing:1px;padding:.45rem 1.2rem;background:rgba(161,240,0,.15);border:1px solid var(--neon);border-radius:8px;color:#fff;cursor:pointer;transition:all .2s}
-.sq-save-btn:hover{background:rgba(161,240,0,.25)}
-.sq-del-btn{font-family:"Google Sans",sans-serif;font-size:.82rem;letter-spacing:.5px;padding:.42rem .9rem;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);border-radius:7px;color:var(--red);cursor:pointer;transition:all .2s}
-.sq-del-btn:hover{background:rgba(231,76,60,.18)}
-.sq-count{font-size:.72rem;color:var(--gray)}
-.sq-empty,.sq-no-sel,.sq-loading{text-align:center;padding:2.5rem 1rem;color:var(--gray);font-size:.85rem;line-height:1.8}
-.sq-no-sel i{display:block;font-size:2.5rem;opacity:.2;margin-bottom:.7rem}
-
 /* Card gradient on/off */
 body.flat-cards .amc::before,
 body.flat-cards .ko-card::before{display:none}
@@ -524,7 +496,6 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
   <nav class="admin-nav">
     <a class="admin-tab on"  href="#group"    onclick="switchAdminTab('group',this)"><i class="fas fa-chart-column"></i> Group Stage</a>
     <a class="admin-tab"     href="#knockout" onclick="switchAdminTab('knockout',this)"><i class="fas fa-medal"></i> Knockout</a>
-    <a class="admin-tab"     href="#squads"   onclick="switchAdminTab('squads',this);window.initSquadEditor()"><i class="fas fa-shirt"></i> Squads</a>
     <a class="admin-tab"     href="#settings" onclick="switchAdminTab('settings',this)"><i class="fas fa-gear"></i> Settings</a>
   </nav>
 
@@ -546,20 +517,6 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
     <div id="ap-knockout" class="admin-panel">
       <div class="sec-title">Knockout Round স্কোর</div>
       <div class="ko-grid" id="koGrid"></div>
-    </div>
-
-    <!-- SQUADS PANEL -->
-    <div id="ap-squads" class="admin-panel">
-      <div class="sec-title"><i class="fas fa-shirt"></i> Squad Management</div>
-      <div class="sq-panel-hd">
-        <select class="sq-team-sel" id="sqTeamSel" onchange="window.loadSquadEdit(this.value)">
-          <option value="">— দেশ বেছে নাও —</option>
-        </select>
-        <span class="sq-count" id="sqPlayerCount"></span>
-      </div>
-      <div id="sqEditorWrap">
-        <div class="sq-no-sel"><i class="fas fa-shirt"></i>উপরে একটি দেশ বেছে নিন</div>
-      </div>
     </div>
 
     <!-- SETTINGS PANEL -->
@@ -897,7 +854,7 @@ window.switchAdminTab=function(id,el){
 // Hash-on-load
 (function(){
   const h=(location.hash||'#group').replace('#','');
-  const valid=['group','knockout','squads','settings'];
+  const valid=['group','knockout','settings'];
   const id=valid.includes(h)?h:'group';
   if(id!=='group'&&sessionStorage.getItem('fa')==='1'){
     setTimeout(()=>{
@@ -905,7 +862,6 @@ window.switchAdminTab=function(id,el){
       document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('on'));
       document.getElementById('ap-'+id)?.classList.add('on');
       document.querySelector(`.admin-tab[href="#${id}"]`)?.classList.add('on');
-      if(id==='squads')window.initSquadEditor?.();
     },300);
   }
 })();
@@ -1508,167 +1464,6 @@ window.saveGoalsAndCards=async function(){
 };
 // Legacy alias
 window.saveGoals=window.saveGoalsAndCards;
-
-// ── SQUAD EDITOR ──
-let sqEditTeamKey='';
-let sqEditSafeKey='';
-let sqRowCounter=0;
-
-window.initSquadEditor=function(){
-  const sel=document.getElementById('sqTeamSel');
-  if(sel.options.length>1)return;
-  // Build sorted team list from all groups
-  const allTeams=Object.entries(GROUPS).flatMap(([g,teams])=>teams.map(t=>({t,g})));
-  allTeams.sort((a,b)=>{
-    const ra=parseInt(getRank(a.t)||999),rb=parseInt(getRank(b.t)||999);
-    return ra-rb||a.t.localeCompare(b.t);
-  });
-  allTeams.forEach(({t,g})=>{
-    const opt=document.createElement('option');
-    opt.value=t;
-    const en=TEAMS[t]?.en||'';
-    opt.textContent=(en?en+' · ':'')+t.replace(/^[\d০-৯]+[._]\s*/,'')+' (Group '+g+')';
-    sel.appendChild(opt);
-  });
-};
-
-window.loadSquadEdit=function(teamKey){
-  sqEditTeamKey='';sqEditSafeKey='';
-  const wrap=document.getElementById('sqEditorWrap');
-  const cntEl=document.getElementById('sqPlayerCount');
-  if(!teamKey){
-    wrap.innerHTML='<div class="sq-no-sel"><i class="fas fa-shirt"></i>উপরে একটি দেশ বেছে নিন</div>';
-    cntEl.textContent='';return;
-  }
-  sqEditTeamKey=teamKey;
-  sqEditSafeKey=teamKey.replace(/[.#$[\]]/g,'_');
-  wrap.innerHTML='<div class="sq-loading"><i class="fas fa-spinner fa-spin"></i> লোড হচ্ছে...</div>';
-  cntEl.textContent='';
-  onValue(ref(db,'squads/'+sqEditSafeKey),snap=>{
-    const data=snap.val()||{};
-    const players=data.players||[];
-    sqRowCounter=players.length;
-    renderSquadEditor(teamKey,players);
-  },{onlyOnce:true});
-};
-
-function renderSquadEditor(teamKey,players){
-  const cntEl=document.getElementById('sqPlayerCount');
-  cntEl.textContent=players.length+' জন খেলোয়াড়';
-  const rows=players.map((p,i)=>playerRow(i,p)).join('');
-  document.getElementById('sqEditorWrap').innerHTML=`
-    <div class="sq-table-wrap">
-      <table class="sq-table">
-        <thead><tr>
-          <th style="width:44px">#</th>
-          <th>নাম</th>
-          <th style="width:60px">পজিশন</th>
-          <th style="width:44px">বয়স</th>
-          <th style="width:52px">Caps</th>
-          <th style="width:52px">গোল</th>
-          <th>ক্লাব</th>
-          <th style="width:44px;text-align:center">ক্যাপ্টেন</th>
-          <th style="width:30px"></th>
-        </tr></thead>
-        <tbody id="sqTbody">${rows}</tbody>
-      </table>
-    </div>
-    <button type="button" class="sq-add-btn" onclick="window.addSqRow()"><i class="fas fa-plus"></i> খেলোয়াড় যোগ করো</button>
-    <div class="sq-save-row">
-      <button type="button" class="sq-save-btn" onclick="window.saveSquadEdit()"><i class="fas fa-floppy-disk"></i> Squad সেভ করো</button>
-      <button type="button" class="sq-del-btn" onclick="window.deleteSquad()"><i class="fas fa-trash"></i> পুরো Squad মুছো</button>
-      <span id="sqSaveSt" style="font-size:.75rem;color:var(--gray)"></span>
-    </div>`;
-}
-
-function playerRow(i,p={}){
-  const pos=p.pos||'FW';
-  return`<tr class="sq-row" id="sqr_${i}">
-    <td><input class="sq-inp num" type="number" min="1" max="99" placeholder="#" value="${p.no||''}" id="sqno_${i}"></td>
-    <td><input class="sq-inp" type="text" placeholder="খেলোয়াড়ের নাম" value="${esc(p.name||'')}" id="sqnm_${i}" style="min-width:130px"></td>
-    <td><select class="sq-pos-sel" id="sqpos_${i}">
-      ${['GK','DF','MF','FW'].map(v=>`<option value="${v}"${pos===v?' selected':''}>${v}</option>`).join('')}
-    </select></td>
-    <td><input class="sq-inp num" type="number" min="15" max="50" placeholder="বয়স" value="${p.age||''}" id="sqage_${i}"></td>
-    <td><input class="sq-inp mid" type="number" min="0" placeholder="Caps" value="${p.caps!==undefined?p.caps:''}" id="sqcaps_${i}"></td>
-    <td><input class="sq-inp mid" type="number" min="0" placeholder="গোল" value="${p.goals!==undefined?p.goals:''}" id="sqgoals_${i}"></td>
-    <td><input class="sq-inp" type="text" placeholder="ক্লাব" value="${esc(p.club||'')}" id="sqclub_${i}" style="min-width:110px"></td>
-    <td style="text-align:center"><input type="checkbox" class="sq-cap-cb" id="sqcap_${i}"${p.captain?' checked':''}></td>
-    <td><button type="button" class="rm-btn" onclick="window.delSqRow(${i})" title="মুছুন"><i class="fas fa-xmark"></i></button></td>
-  </tr>`;
-}
-
-window.addSqRow=function(){
-  const tbody=document.getElementById('sqTbody');
-  if(!tbody)return;
-  const i=sqRowCounter++;
-  const tmp=document.createElement('tbody');
-  tmp.innerHTML=playerRow(i);
-  tbody.appendChild(tmp.firstElementChild);
-  document.getElementById('sqnm_'+i)?.focus();
-  updateSqCount();
-};
-
-window.delSqRow=function(i){
-  document.getElementById('sqr_'+i)?.remove();
-  updateSqCount();
-};
-
-function updateSqCount(){
-  const n=document.getElementById('sqTbody')?.rows.length||0;
-  document.getElementById('sqPlayerCount').textContent=n+' জন খেলোয়াড়';
-}
-
-window.saveSquadEdit=async function(){
-  const tbody=document.getElementById('sqTbody');
-  if(!tbody||!sqEditSafeKey){toast('কোনো দল বেছে নেওয়া হয়নি!','err');return;}
-  const st=document.getElementById('sqSaveSt');
-  st.textContent='সেভ হচ্ছে...';
-
-  const players=Array.from(tbody.rows).map(row=>{
-    const i=row.id.replace('sqr_','');
-    const name=document.getElementById('sqnm_'+i)?.value?.trim()||'';
-    if(!name)return null;
-    const obj={
-      name,
-      no:parseInt(document.getElementById('sqno_'+i)?.value)||0,
-      pos:document.getElementById('sqpos_'+i)?.value||'FW',
-      age:parseInt(document.getElementById('sqage_'+i)?.value)||0,
-      caps:parseInt(document.getElementById('sqcaps_'+i)?.value)||0,
-      goals:parseInt(document.getElementById('sqgoals_'+i)?.value)||0,
-      club:document.getElementById('sqclub_'+i)?.value?.trim()||'',
-    };
-    if(document.getElementById('sqcap_'+i)?.checked)obj.captain=true;
-    return obj;
-  }).filter(Boolean);
-
-  try{
-    await set(ref(db,'squads/'+sqEditSafeKey),{players});
-    adminSquads[sqEditSafeKey]={players};
-    st.innerHTML='<span style="color:var(--neon)">✓ সেভ হয়েছে</span>';
-    toast('Squad সেভ হয়েছে ✓','ok');
-    document.getElementById('sqPlayerCount').textContent=players.length+' জন খেলোয়াড়';
-    setTimeout(()=>st.textContent='',3000);
-  }catch(e){
-    st.innerHTML='<span style="color:var(--red)">সেভ ব্যর্থ!</span>';
-    toast('সেভ ব্যর্থ: '+e.message,'err');
-  }
-};
-
-window.deleteSquad=async function(){
-  if(!sqEditTeamKey)return;
-  const name=TEAMS[sqEditTeamKey]?.en||sqEditTeamKey.replace(/^[\d০-৯]+[._]\s*/,'');
-  if(!confirm(name+'-এর পুরো squad মুছে দেবেন?'))return;
-  try{
-    await remove(ref(db,'squads/'+sqEditSafeKey));
-    delete adminSquads[sqEditSafeKey];
-    document.getElementById('sqTeamSel').value='';
-    document.getElementById('sqEditorWrap').innerHTML='<div class="sq-no-sel"><i class="fas fa-shirt"></i>উপরে একটি দেশ বেছে নিন</div>';
-    document.getElementById('sqPlayerCount').textContent='';
-    sqEditTeamKey='';sqEditSafeKey='';
-    toast('Squad মুছে গেছে ✓','ok');
-  }catch(e){toast('মুছতে ব্যর্থ!','err');}
-};
 
 // ── SETTINGS ──
 const FONT_MAP = {
