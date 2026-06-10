@@ -2622,10 +2622,11 @@ window.filterRanking=function(){
     const q=(document.getElementById('rankSearch')?.value||'').toLowerCase();
     const conf=document.getElementById('rankConfFilter')?.value||'';
     const wcEn=new Set(Object.values(TEAMS).map(t=>t.en));
+    const FIFA2WC={'IR Iran':'Iran','Türkiye':'Turkey','Korea Republic':'South Korea','Côte d\'Ivoire':'Ivory Coast','Congo DR':'DR Congo','Cabo Verde':'Cape Verde','Curaçao':'Curacao','Bosnia and Herzegovina':'Bosnia','Czechia':'Czech Rep.'};
     const list=FIFA_RANKING.filter(d=>(!q||d.n.toLowerCase().includes(q))&&(!conf||d.conf===conf));
     if(list.length===0){tbody.innerHTML='<tr><td colspan="5" class="rank-empty">কোনো ফলাফল নেই</td></tr>';return;}
     tbody.innerHTML=list.map(d=>{
-      const isWC=wcEn.has(d.n);
+      const isWC=wcEn.has(d.n)||wcEn.has(FIFA2WC[d.n]);
       const topCls=d.r<=3?' top3':'';
       const wcBadge=isWC?'<span class="rank-wc-badge">⚽ WC 2026</span>':'';
       return`<tr class="${isWC?'wc-team':''}"><td><span class="rank-num${topCls}">${d.r}</span></td><td><img class="rank-flag" src="https://flagcdn.com/28x21/${d.c}.png" loading="lazy" onerror="this.style.opacity='.3'" alt="${d.n}"></td><td class="rank-name">${d.n}</td><td class="rank-pts">${d.p.toFixed(2)}</td><td>${wcBadge}</td></tr>`;
