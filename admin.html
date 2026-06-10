@@ -464,18 +464,12 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
 @media(max-width:600px){
   .modal{padding:.9rem .8rem}
   .modal-title{font-size:.88rem;line-height:1.3}
-  /* Card entry: type buttons + min + × on row 1, player select full width on row 2 */
+  /* Row 1: type-btns + min + × | Row 2: player selector full width */
   .card-entry{flex-wrap:wrap;row-gap:.35rem;padding:.45rem .5rem}
-  .card-type-btns{order:1;flex:0 0 auto}
-  .cm-in{order:2;width:46px;flex-shrink:0}
-  .card-entry .rm-btn{order:3;margin-left:auto}
-  .card-entry .cn-in{order:4;flex:0 0 100%!important;width:100%!important;min-width:0}
-  /* Goal entry */
+  .card-entry .cn-in{flex:0 0 100%!important;width:100%!important;min-width:0}
+  /* Row 1: min + P + × | Row 2: player selector full width */
   .goal-entry{flex-wrap:wrap;row-gap:.3rem}
-  .goal-entry .gn-in{flex:0 0 100%;order:3}
-  .goal-entry .gm-in{order:1}
-  .goal-entry .pen-cb,.goal-entry .pen-lbl{order:2}
-  .goal-entry .rm-btn{order:4;margin-left:auto}
+  .goal-entry .gn-in{flex:0 0 100%!important;width:100%!important;min-width:0}
 }
 </style>
 </head>
@@ -1322,13 +1316,13 @@ window.openGoalModal=function(id,isKO){
     const players=side==='t1'?p1:p2;
     const hasSquad=players.length>0;
     return`<div class="goal-entry" id="ge_${side}_${i}">
-      ${hasSquad
-        ?`<select class="gn-in" id="gn_${side}_${i}" style="flex:1">${playerOptions(players,name)}</select>`
-        :`<input class="gn-in" placeholder="গোলদাতার নাম" value="${esc(name)}" id="gn_${side}_${i}">`
-      }
       <input class="gm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="gm_${side}_${i}">
       <input type="checkbox" class="pen-cb" id="gp_${side}_${i}" ${pen?'checked':''}><label class="pen-lbl" for="gp_${side}_${i}">P</label>
       <button class="rm-btn" onclick="rmGoal('${side}',${i})"><i class='fas fa-xmark'></i></button>
+      ${hasSquad
+        ?`<select class="gn-in" id="gn_${side}_${i}">${playerOptions(players,name)}</select>`
+        :`<input class="gn-in" placeholder="গোলদাতার নাম" value="${esc(name)}" id="gn_${side}_${i}">`
+      }
     </div>`;
   }
 
@@ -1362,13 +1356,13 @@ window.openGoalModal=function(id,isKO){
         <button class="card-type-btn red ${type==='red'?'on':''}" onclick="setCardType('${side}',${i},'red',this)"><span class="card-ic"></span>লাল</button>
         <button class="card-type-btn yr ${type==='yr'?'on':''}" onclick="setCardType('${side}',${i},'yr',this)"><span class="card-ic"></span>২য়</button>
       </div>
-      ${hasSquad
-        ?`<select class="cn-in" id="cn_${side}_${i}" style="flex:1">${playerOptions(players,name)}</select>`
-        :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" value="${esc(name)}" id="cn_${side}_${i}">`
-      }
       <input class="cm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="cm_${side}_${i}">
       <input type="hidden" id="ct_${side}_${i}" value="${type}">
       <button class="rm-btn" onclick="rmCard('${side}',${i})"><i class='fas fa-xmark'></i></button>
+      ${hasSquad
+        ?`<select class="cn-in" id="cn_${side}_${i}">${playerOptions(players,name)}</select>`
+        :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" value="${esc(name)}" id="cn_${side}_${i}">`
+      }
     </div>`;
   }
   function cardSection(side,teamName,cards){
@@ -1401,13 +1395,13 @@ window.addGoal=function(side){
   const d=document.createElement('div');
   const opts=hasSquad?players.map(p=>`<option value="${esc(p.name)}">#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join(''):'';
   d.innerHTML=`<div class="goal-entry" id="ge_${side}_${i}">
-    ${hasSquad
-      ?`<select class="gn-in" id="gn_${side}_${i}" style="flex:1"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
-      :`<input class="gn-in" placeholder="গোলদাতার নাম" id="gn_${side}_${i}">`
-    }
     <input class="gm-in" type="number" min="1" max="130" placeholder="মি." id="gm_${side}_${i}">
     <input type="checkbox" class="pen-cb" id="gp_${side}_${i}"><label class="pen-lbl" for="gp_${side}_${i}">P</label>
     <button class="rm-btn" onclick="rmGoal('${side}',${i})"><i class='fas fa-xmark'></i></button>
+    ${hasSquad
+      ?`<select class="gn-in" id="gn_${side}_${i}"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
+      :`<input class="gn-in" placeholder="গোলদাতার নাম" id="gn_${side}_${i}">`
+    }
   </div>`;
   c.appendChild(d.firstElementChild);
 };
@@ -1426,13 +1420,13 @@ window.addCard=function(side){
       <button class="card-type-btn red" onclick="setCardType('${side}',${i},'red',this)"><span class="card-ic"></span>লাল</button>
       <button class="card-type-btn yr" onclick="setCardType('${side}',${i},'yr',this)"><span class="card-ic"></span>২য়</button>
     </div>
-    ${hasSquad
-      ?`<select class="cn-in" id="cn_${side}_${i}" style="flex:1"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
-      :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" id="cn_${side}_${i}">`
-    }
     <input class="cm-in" type="number" min="1" max="130" placeholder="মি." id="cm_${side}_${i}">
     <input type="hidden" id="ct_${side}_${i}" value="yellow">
     <button class="rm-btn" onclick="rmCard('${side}',${i})"><i class='fas fa-xmark'></i></button>
+    ${hasSquad
+      ?`<select class="cn-in" id="cn_${side}_${i}"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
+      :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" id="cn_${side}_${i}">`
+    }
   </div>`;
   c.appendChild(d.firstElementChild);
 };
