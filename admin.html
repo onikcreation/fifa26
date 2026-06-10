@@ -152,6 +152,18 @@ body::after{content:'';position:fixed;inset:0;
 /* Modal score inputs */
 .asc{width:36px;height:30px;background:var(--inp);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:"Google Sans",sans-serif;font-size:1.05rem;text-align:center;outline:none;transition:border .15s}
 .asc:focus{border-color:var(--neon)}
+/* Card score inputs (V2-D style) */
+.mc-score-inputs{display:flex;align-items:center;gap:.28rem}
+.mc-si{width:42px;height:42px;background:rgba(255,255,255,.04);border:1px solid rgba(212,175,55,.25);border-radius:7px;color:var(--text);font-family:"Google Sans",sans-serif;font-size:1.5rem;text-align:center;outline:none;transition:all .2s;-moz-appearance:textfield;appearance:textfield}
+.mc-si::-webkit-outer-spin-button,.mc-si::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none}
+.mc-si:focus{border-color:rgba(161,240,0,.6);background:rgba(161,240,0,.04)}
+.mc-si.filled{border-color:rgba(212,175,55,.5);color:var(--neon)}
+.mc-si-sep{font-family:"Google Sans",sans-serif;font-size:1.4rem;color:rgba(212,175,55,.5);font-weight:700;line-height:1}
+/* Save button on card */
+.sv-btn{font-family:"Google Sans",sans-serif;font-size:.7rem;letter-spacing:.5px;padding:.28rem .65rem;background:rgba(161,240,0,.1);border:1px solid rgba(161,240,0,.25);border-radius:6px;color:var(--neon);cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.sv-btn:hover{background:rgba(161,240,0,.22)}
+.sv-btn.saving{background:rgba(243,156,18,.15);border-color:var(--orange);color:var(--orange);pointer-events:none}
+.sv-btn.saved{background:rgba(161,240,0,.08);border-color:var(--neon);color:var(--neon);pointer-events:none}
 /* Modal score section */
 .mss-wrap{display:none;margin:.5rem 0 .75rem;padding:.6rem .9rem;background:rgba(161,240,0,.04);border:1px solid rgba(161,240,0,.15);border-radius:8px}
 .mss-lbl{font-size:.6rem;letter-spacing:1.5px;color:var(--gray);margin-bottom:.5rem;text-transform:uppercase}
@@ -934,10 +946,7 @@ function renderTable(grp){
     const s2=sc.s2!==undefined?sc.s2:'';
     const hg=(sc.goals1?.length||0)+(sc.goals2?.length||0);
     const hc=(sc.cards1?.length||0)+(sc.cards2?.length||0);
-    const hasData=s1!==''||hg>0||hc>0;
-    const scoreHTML=s1!==''
-      ?`<span class="mc-sc">${s1}</span><span class="mc-sc-sep">:</span><span class="mc-sc">${s2}</span>`
-      :`<span class="mc-vs">VS</span>`;
+    const hasDetail=hg>0||hc>0;
     return`<div class="mc" id="tr-${m.id}">
       <div class="mc-hdr">
         <span class="mc-grp-badge">Group ${m.grp}</span>
@@ -948,17 +957,23 @@ function renderTable(grp){
           <img class="mc-flag-big" src="https://flagcdn.com/72x54/${TEAMS[m.t1]?.code||'un'}.png" loading="lazy" onerror="this.style.display='none'">
           <span class="mc-tname">${tNameRankedA(m.t1)}</span>
         </div>
-        <div class="mc-score-center">${scoreHTML}</div>
+        <div class="mc-score-center">
+          <div class="mc-score-inputs">
+            <input class="mc-si${s1!==''?' filled':''}" type="number" min="0" max="30" id="s1_${m.id}" value="${s1}" placeholder="-" oninput="markChanged(${m.id});this.classList.toggle('filled',this.value!=='')">
+            <span class="mc-si-sep">:</span>
+            <input class="mc-si${s2!==''?' filled':''}" type="number" min="0" max="30" id="s2_${m.id}" value="${s2}" placeholder="-" oninput="markChanged(${m.id});this.classList.toggle('filled',this.value!=='')">
+          </div>
+        </div>
         <div class="mc-team">
           <img class="mc-flag-big" src="https://flagcdn.com/72x54/${TEAMS[m.t2]?.code||'un'}.png" loading="lazy" onerror="this.style.display='none'">
           <span class="mc-tname">${tNameRankedA(m.t2)}</span>
         </div>
       </div>
       <div class="mc-footer">
-        <span class="mc-footer-date"><i class='fas fa-clock'></i> ${fT(m.time)}</span>
         <span class="mc-footer-stadium"><i class='fas fa-landmark'></i> ${m.stadium||''}</span>
-        <button class="entry-btn ${hasData?'has-data':''}" onclick="openGoalModal(${m.id},false)">
-          ${hasData?`<i class='fas fa-pen'></i> Edit`:`<i class='fas fa-plus'></i> Entry`}
+        <button class="sv-btn" id="sb_${m.id}" onclick="window.saveOne(${m.id})"><i class='fas fa-floppy-disk'></i> Save</button>
+        <button class="entry-btn ${hasDetail?'has-data':''}" onclick="openGoalModal(${m.id},false)">
+          ${hasDetail?`<i class='fas fa-pen'></i> Edit`:`<i class='fas fa-futbol'></i> Entry`}
         </button>
       </div>
     </div>`;
@@ -1298,19 +1313,9 @@ window.openGoalModal=function(id,isKO){
   const en2=tNameRankedA(t2);
   const matchNum=koNum({id,num:undefined});
   document.getElementById('modalTitle').innerHTML=`<i class='fas fa-futbol'></i> ${en1} vs ${en2} — Match #${matchNum||id}`;
-  // Populate score section
+  // Score section hidden — score entered directly on card
   const scoreSection=document.getElementById('modalScoreSection');
-  const ms1=document.getElementById('modalS1');
-  const ms2=document.getElementById('modalS2');
-  if(!isKO&&scoreSection&&ms1&&ms2){
-    ms1.value=sc.s1!==undefined?sc.s1:'';
-    ms2.value=sc.s2!==undefined?sc.s2:'';
-    document.getElementById('mScoreName1').textContent=en1;
-    document.getElementById('mScoreName2').textContent=en2;
-    scoreSection.style.display='';
-  }else if(scoreSection){
-    scoreSection.style.display='none';
-  }
+  if(scoreSection)scoreSection.style.display='none';
 
   // Reset tab to goals
   document.querySelectorAll('.modal-tab').forEach((b,i)=>b.classList.toggle('on',i===0));
@@ -1478,10 +1483,10 @@ window.saveGoalsAndCards=async function(){
     const ex=dbSc[modalMatchId]||{};
     const scoreExtra={};
     if(!modalIsKO){
-      const ms1=document.getElementById('modalS1')?.value;
-      const ms2=document.getElementById('modalS2')?.value;
-      if(ms1!==undefined&&ms1!=='')scoreExtra.s1=Number(ms1);
-      if(ms2!==undefined&&ms2!=='')scoreExtra.s2=Number(ms2);
+      const cs1=document.getElementById('s1_'+modalMatchId)?.value;
+      const cs2=document.getElementById('s2_'+modalMatchId)?.value;
+      if(cs1!==undefined&&cs1!=='')scoreExtra.s1=Number(cs1);
+      if(cs2!==undefined&&cs2!=='')scoreExtra.s2=Number(cs2);
     }
     await set(ref(db,'scores/'+modalMatchId),{
       ...ex,
