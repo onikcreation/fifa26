@@ -101,6 +101,8 @@ body::after{content:'';position:fixed;inset:0;
 .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-primary)}
 .sc:hover{border-color:rgba(212,175,55,0.3);box-shadow:0 0 20px rgba(139,21,56,0.2),0 4px 18px var(--shadow);transform:translateY(-2px)}
 .sc-n{font-family:"Google Sans",sans-serif;font-size:2.1rem;color:var(--neon);line-height:1;text-shadow:0 0 16px rgba(212,175,55,0.3)}
+.sc-yellow{color:#ffc800!important;text-shadow:0 0 16px rgba(255,200,0,.3)!important}
+.sc-red{color:#ff4444!important;text-shadow:0 0 16px rgba(255,68,68,.3)!important}
 .sc-l{font-size:.6rem;letter-spacing:1px;color:var(--gray);margin-top:2px}
 
 /* FILTERS — hidden, replaced by select dropdowns */
@@ -776,8 +778,8 @@ const STRINGS={
     secStats:"<i class='fas fa-chart-line'></i> পরিসংখ্যান",
     secSquads:"<i class='fas fa-shirt'></i> দল তালিকা",
     expandAll:'▼ সব খুলুন',collapseAll:'▲ সব বন্ধ করুন',sqAll:'সকল',
-    played:'খেলা হয়েছে',remaining:'বাকি ম্যাচ',totalMatches:'মোট ম্যাচ',
-    totalGoals:'মোট গোল',avgGoals:'গড় গোল',teams:'দেশ',yellowCards:'হলুদ কার্ড',redCards:'লাল কার্ড',
+    played:'ম্যাচ খেলা হয়েছে',remaining:'বাকি ম্যাচ',totalMatches:'মোট ম্যাচ',
+    totalGoals:'মোট গোল',avgGoals:'গড় গোল/ম্যাচ',teams:'মোট দেশ',yellowCards:'হলুদ কার্ড',redCards:'লাল কার্ড',
     allMatches:'সকল ম্যাচ',allTeams:'সকল দল',allGroups:'সকল',
     days:['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'],
     months:['জানু','ফেব','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'],
@@ -813,8 +815,8 @@ const STRINGS={
     secStats:"<i class='fas fa-chart-line'></i> Stats",
     secSquads:"<i class='fas fa-shirt'></i> Squads",
     expandAll:'▼ Expand All',collapseAll:'▲ Collapse All',sqAll:'All',
-    played:'Played',remaining:'Remaining',totalMatches:'Total',
-    totalGoals:'Goals',avgGoals:'Avg Goals',teams:'Teams',yellowCards:'Yellow Cards',redCards:'Red Cards',
+    played:'Matches Played',remaining:'Remaining Matches',totalMatches:'Total Matches',
+    totalGoals:'Total Goals',avgGoals:'Goals/Match',teams:'Total Teams',yellowCards:'Yellow Cards',redCards:'Red Cards',
     allMatches:'All Matches',allTeams:'All Teams',allGroups:'All',
     days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
     months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
@@ -1152,14 +1154,14 @@ function renderStrip(){
   }
   const S=window._S;
   document.getElementById('statStrip').innerHTML=
-    `<div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">${S.played}</div></div>
+    `<div class="sc"><div class="sc-n">${total}</div><div class="sc-l">${S.totalMatches}</div></div>
+     <div class="sc"><div class="sc-n">48</div><div class="sc-l">${S.teams}</div></div>
+     <div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">${S.played}</div></div>
      <div class="sc"><div class="sc-n">${total-pl}</div><div class="sc-l">${S.remaining}</div></div>
-     <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">${S.totalMatches}</div></div>
      <div class="sc"><div class="sc-n">${gl}</div><div class="sc-l">${S.totalGoals}</div></div>
      <div class="sc"><div class="sc-n">${pl?(gl/pl).toFixed(1):'0.0'}</div><div class="sc-l">${S.avgGoals}</div></div>
-     <div class="sc"><div class="sc-n">48</div><div class="sc-l">${S.teams}</div></div>
-     <div class="sc" title="${S.yellowCards}"><div class="sc-n" style="color:#ffc800">${yc}</div><div class="sc-l">${S.yellowCards}</div></div>
-     <div class="sc" title="${S.redCards}"><div class="sc-n" style="color:#ff4444">${rc}</div><div class="sc-l">${S.redCards}</div></div>`;
+     <div class="sc"><div class="sc-n sc-yellow">${yc}</div><div class="sc-l">${S.yellowCards}</div></div>
+     <div class="sc"><div class="sc-n sc-red">${rc}</div><div class="sc-l">${S.redCards}</div></div>`;
 }
 
 // Schedule

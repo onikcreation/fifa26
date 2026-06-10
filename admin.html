@@ -152,10 +152,6 @@ body::after{content:'';position:fixed;inset:0;
 /* Clear button on card */
 .cl-btn{font-size:.7rem;padding:.28rem .45rem;background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-radius:6px;color:var(--red);cursor:pointer;transition:all .2s;flex-shrink:0}
 .cl-btn:hover{background:rgba(231,76,60,.2);border-color:rgba(231,76,60,.45)}
-/* Goal name: squad dropdown + custom text input */
-.gn-wrap{flex:0 0 100%;display:flex;flex-direction:column;gap:.2rem;min-width:0;margin-top:.25rem}
-.gn-sel{width:100%;background:var(--inp);border:1px solid var(--border2);border-radius:5px;color:var(--text);padding:.28rem .45rem;font-size:.78rem;outline:none}
-.gn-sel:focus{border-color:var(--neon)}
 /* Modal score inputs */
 .asc{width:36px;height:30px;background:var(--inp);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:"Google Sans",sans-serif;font-size:1.05rem;text-align:center;outline:none;transition:border .15s}
 .asc:focus{border-color:var(--neon)}
@@ -1347,20 +1343,16 @@ window.openGoalModal=function(id,isKO){
   function goalEntry(side,i,name='',min='',pen=false){
     const players=side==='t1'?p1:p2;
     const hasSquad=players.length>0;
-    const selHTML=hasSquad
-      ?`<select class="gn-sel" id="gnsel_${side}_${i}" onchange="const t=document.getElementById('gn_${side}_${i}');if(this.value)t.value=this.value">
-          <option value="">— স্কোয়াড থেকে বাছাই —</option>
-          ${players.map(p=>`<option value="${esc(p.name)}" ${p.name===name?'selected':''}>#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join('')}
-        </select>`
+    const listId=`gnlist_${side}_${i}`;
+    const dlHTML=hasSquad
+      ?`<datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
       :'';
     return`<div class="goal-entry" id="ge_${side}_${i}">
       <input class="gm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="gm_${side}_${i}">
       <input type="checkbox" class="pen-cb" id="gp_${side}_${i}" ${pen?'checked':''}><label class="pen-lbl" for="gp_${side}_${i}">P</label>
       <button class="rm-btn" onclick="rmGoal('${side}',${i})"><i class='fas fa-xmark'></i></button>
-      <div class="gn-wrap">
-        ${selHTML}
-        <input class="gn-in" placeholder="গোলদাতার নাম লিখুন" value="${esc(name)}" id="gn_${side}_${i}">
-      </div>
+      <input class="gn-in" ${hasSquad?`list="${listId}"`:''}placeholder="গোলদাতার নাম" value="${esc(name)}" id="gn_${side}_${i}">
+      ${dlHTML}
     </div>`;
   }
 
@@ -1397,10 +1389,8 @@ window.openGoalModal=function(id,isKO){
       <input class="cm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="cm_${side}_${i}">
       <input type="hidden" id="ct_${side}_${i}" value="${type}">
       <button class="rm-btn" onclick="rmCard('${side}',${i})"><i class='fas fa-xmark'></i></button>
-      ${hasSquad
-        ?`<select class="cn-in" id="cn_${side}_${i}">${playerOptions(players,name)}</select>`
-        :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" value="${esc(name)}" id="cn_${side}_${i}">`
-      }
+      <input class="cn-in" ${hasSquad?`list="cnlist_${side}_${i}"`:''}placeholder="খেলোয়াড়ের নাম" value="${esc(name)}" id="cn_${side}_${i}">
+      ${hasSquad?`<datalist id="cnlist_${side}_${i}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`:''}
     </div>`;
   }
   function cardSection(side,teamName,cards){
@@ -1445,19 +1435,17 @@ window.addGoal=function(side){
   const i=c.children.length;
   const players=side==='t1'?modalP1:modalP2;
   const hasSquad=players.length>0;
-  const opts=hasSquad?players.map(p=>`<option value="${esc(p.name)}">#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join(''):'';
-  const selHTML=hasSquad
-    ?`<select class="gn-sel" id="gnsel_${side}_${i}" onchange="const t=document.getElementById('gn_${side}_${i}');if(this.value)t.value=this.value"><option value="">— স্কোয়াড থেকে বাছাই —</option>${opts}</select>`
+  const listId=`gnlist_${side}_${i}`;
+  const dlHTML=hasSquad
+    ?`<datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
     :'';
   const d=document.createElement('div');
   d.innerHTML=`<div class="goal-entry" id="ge_${side}_${i}">
     <input class="gm-in" type="number" min="1" max="130" placeholder="মি." id="gm_${side}_${i}">
     <input type="checkbox" class="pen-cb" id="gp_${side}_${i}"><label class="pen-lbl" for="gp_${side}_${i}">P</label>
     <button class="rm-btn" onclick="rmGoal('${side}',${i})"><i class='fas fa-xmark'></i></button>
-    <div class="gn-wrap">
-      ${selHTML}
-      <input class="gn-in" placeholder="গোলদাতার নাম লিখুন" id="gn_${side}_${i}">
-    </div>
+    <input class="gn-in" ${hasSquad?`list="${listId}"`:''}placeholder="গোলদাতার নাম" id="gn_${side}_${i}">
+    ${dlHTML}
   </div>`;
   c.appendChild(d.firstElementChild);
 };
@@ -1468,7 +1456,10 @@ window.addCard=function(side){
   const i=c.children.length;
   const players=side==='t1'?modalP1:modalP2;
   const hasSquad=players.length>0;
-  const opts=hasSquad?players.map(p=>`<option value="${esc(p.name)}">#${p.no} ${p.pos} — ${esc(p.name)} (${esc(p.club)})</option>`).join(''):'';
+  const listId=`cnlist_${side}_${i}`;
+  const dlHTML=hasSquad
+    ?`<datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
+    :'';
   const d=document.createElement('div');
   d.innerHTML=`<div class="card-entry" id="ce_${side}_${i}">
     <div class="card-type-btns">
@@ -1479,10 +1470,8 @@ window.addCard=function(side){
     <input class="cm-in" type="number" min="1" max="130" placeholder="মি." id="cm_${side}_${i}">
     <input type="hidden" id="ct_${side}_${i}" value="yellow">
     <button class="rm-btn" onclick="rmCard('${side}',${i})"><i class='fas fa-xmark'></i></button>
-    ${hasSquad
-      ?`<select class="cn-in" id="cn_${side}_${i}"><option value="">— খেলোয়াড় বেছে নাও —</option>${opts}</select>`
-      :`<input class="cn-in" placeholder="খেলোয়াড়ের নাম" id="cn_${side}_${i}">`
-    }
+    <input class="cn-in" ${hasSquad?`list="${listId}"`:''}placeholder="খেলোয়াড়ের নাম" id="cn_${side}_${i}">
+    ${dlHTML}
   </div>`;
   c.appendChild(d.firstElementChild);
 };
