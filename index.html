@@ -2379,13 +2379,13 @@ window.toggleTheme=function(){
   const html=document.documentElement;
   const dark=html.getAttribute('data-theme')==='dark';
   html.setAttribute('data-theme',dark?'light':'dark');
-  document.getElementById('themeBtn').textContent=dark?'☀️':'🌙';
+  document.getElementById('themeBtn')?.textContent=dark?'☀️':'🌙';
   localStorage.setItem('theme',dark?'light':'dark');
 };
 (function(){
   const t=localStorage.getItem('theme')||'dark';
   document.documentElement.setAttribute('data-theme',t);
-  document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️';
+  document.getElementById('themeBtn')?.textContent=t==='dark'?'🌙':'☀️';
 })();
 
 function hideLoader(){
