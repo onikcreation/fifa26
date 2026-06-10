@@ -101,9 +101,17 @@ body::after{content:'';position:fixed;inset:0;
 .filters{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem}
 .fb{font-size:.72rem;letter-spacing:.5px;padding:.3rem .75rem;background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;transition:all .2s;white-space:nowrap}
 .fb:hover,.fb.on{background:rgba(212,175,55,0.12);border-color:var(--neon);color:var(--neon);box-shadow:0 0 10px rgba(212,175,55,0.15)}
+/* Mobile dropdown select */
+.mob-select{display:none;width:100%;padding:.5rem .9rem;margin-bottom:.6rem;
+  background:rgba(20,20,20,0.95);border:1px solid rgba(212,175,55,0.3);border-radius:8px;
+  color:var(--neon);font-family:"Google Sans",sans-serif;font-size:.82rem;letter-spacing:.5px;
+  cursor:pointer;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D4AF37' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .9rem center}
+.mob-select option{background:#141414;color:#fff}
 @media(max-width:600px){
-  .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:.3rem}
-  .filters::-webkit-scrollbar{display:none}
+  .filters{display:none!important}
+  .mob-select{display:block!important}
 }
 
 /* ══ MATCH CARD — CRIMSON GOLD ══ */
@@ -435,10 +443,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 .sq-pos-row{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;background:rgba(139,21,56,0.04);border:1px solid var(--border2);border-radius:8px;margin-bottom:.8rem}
 .sq-pos-row::before{content:'포지션';font-family:"Google Sans",sans-serif;font-size:.68rem;letter-spacing:1px;color:var(--gray);white-space:nowrap;display:none}
 .sq-team-scroll{display:flex;gap:.35rem;flex-wrap:wrap;padding-bottom:.3rem}
-@media(max-width:600px){
-  .sq-team-scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-  .sq-team-scroll::-webkit-scrollbar{display:none}
-}
+@media(max-width:600px){.sq-team-scroll{display:none!important}}
 .sq-team-btn{display:inline-flex;align-items:center;gap:.35rem;font-family:"Google Sans",sans-serif;font-size:.78rem;letter-spacing:1px;padding:.3rem .7rem;background:var(--neon-glow2);border:1px solid var(--border2);border-radius:20px;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all .2s}
 .sq-team-btn:hover{border-color:var(--border);color:var(--text)}
 .sq-team-btn.on{background:rgba(161,240,0,.15);border-color:var(--neon);color:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
@@ -611,7 +616,9 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
   <div id="p-stats" class="panel">
     <div class="sec-title"><i class="fas fa-chart-line"></i> Stats</div>
     <div class="filters" id="statsGrpFilters"></div>
+    <select class="mob-select" id="statsGrpSelect" onchange="window._stg(this.value)"></select>
     <div class="filters" id="statsTeamFilters"></div>
+    <select class="mob-select" id="statsTeamSelect" onchange="window._stt(this.value)"></select>
     <div class="stats-grid" id="statsGrid"></div>
   </div>
 
@@ -620,7 +627,9 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
     <div class="sec-title"><i class="fas fa-shirt"></i> Squads</div>
     <div class="sq-controls">
       <div class="filters" id="sqGrpFilters"></div>
+      <select class="mob-select" id="sqGrpSelect" onchange="window._sqg(this.value)"></select>
       <div class="sq-team-scroll" id="sqTeamBtns"></div>
+      <select class="mob-select" id="sqTeamSelect" onchange="window._sqt(this.value)"></select>
     </div>
     <div id="sqHeader"></div>
     <div class="sq-pos-row" id="sqPosRow" style="display:none">
@@ -1646,6 +1655,8 @@ function renderStats(grps){
   document.getElementById('statsGrpFilters').innerHTML=gs.map(g=>
     `<button class="fb ${statsGrp===g?'on':''}" onclick="window._stg('${g}')">${g==='ALL'?S.allGroups:'Group '+g}</button>`
   ).join('');
+  const grpSel=document.getElementById('statsGrpSelect');
+  if(grpSel){grpSel.innerHTML=gs.map(g=>`<option value="${g}" ${statsGrp===g?'selected':''}>${g==='ALL'?S.allGroups:'Group '+g}</option>`).join('');}
 
   // ── Team filter ──
   const teamPool=statsGrp==='ALL'?Object.keys(TEAMS):GROUPS[statsGrp]||[];
@@ -1659,6 +1670,8 @@ function renderStats(grps){
         ${tNameRanked(n)}
       </button>`;
     }).join('');
+  const teamSel=document.getElementById('statsTeamSelect');
+  if(teamSel){teamSel.innerHTML=`<option value="ALL" ${statsTeam==='ALL'?'selected':''}>${S.allTeams}</option>`+sortedTeams.map(n=>`<option value="${n.replace(/"/g,'&quot;')}" ${statsTeam===n?'selected':''}>${tNameRanked(n)}</option>`).join('');}
 
   // ── Collect all match data ──
   const allMatches=[...MATCHES,...KO_ROUNDS.flatMap(r=>r.matches)];
@@ -2143,10 +2156,11 @@ function buildSqGrpBtns(){
   const S=window._S;
   const gs=['ALL','A','B','C','D','E','F','G','H','I','J','K','L'];
   const el=document.getElementById('sqGrpFilters');
-  if(!el)return;
-  el.innerHTML=gs.map(g=>
+  if(el)el.innerHTML=gs.map(g=>
     `<button class="fb ${sqGrp===g?'on':''}" onclick="window._sqg('${g}')">${g==='ALL'?S.allGroups:'Group '+g}</button>`
   ).join('');
+  const sel=document.getElementById('sqGrpSelect');
+  if(sel)sel.innerHTML=gs.map(g=>`<option value="${g}" ${sqGrp===g?'selected':''}>${g==='ALL'?S.allGroups:'Group '+g}</option>`).join('');
 }
 window._sqg=function(g){
   sqGrp=g;sqTeam='';sqPos='ALL';
@@ -2173,19 +2187,26 @@ function buildSqTeamBtns(){
     const teamKey=fbKeyToTeamKey(fbKey);
     const t=TEAMS[teamKey];
     const code=t?.code||'';
-    const rank=getRank(teamKey);
     const flagHtml=code?`<img src="https://flagcdn.com/20x15/${code}.png" loading="lazy" onerror="this.style.display='none'">`:'';
     return`<button class="sq-team-btn ${sqTeam===fbKey?'on':''}" onclick="setSqTeam('${fbKey.replace(/'/g,"\\'")}')" data-key="${esc(fbKey)}">
       ${flagHtml}
       ${esc(tNameRanked(teamKey)||fbKey)}
     </button>`;
   }).join('');
+  const sel=document.getElementById('sqTeamSelect');
+  if(sel)sel.innerHTML=`<option value="">-- দেশ বেছে নিন --</option>`+sorted.map(fbKey=>{
+    const teamKey=fbKeyToTeamKey(fbKey);
+    return`<option value="${esc(fbKey)}" ${sqTeam===fbKey?'selected':''}>${tNameRanked(teamKey)||fbKey}</option>`;
+  }).join('');
 }
 
+window._sqt=function(fbKey){if(fbKey)window.setSqTeam(fbKey);};
 window.setSqTeam=function(fbKey){
   sqTeam=fbKey;sqPos='ALL';
-  // Update team buttons
+  // Update team buttons & select
   document.querySelectorAll('.sq-team-btn').forEach(b=>b.classList.toggle('on',b.dataset.key===fbKey));
+  const sel=document.getElementById('sqTeamSelect');
+  if(sel)sel.value=fbKey;
   // Reset position buttons
   document.querySelectorAll('.sq-pos-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
   // Show position filter row
