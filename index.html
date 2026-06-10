@@ -260,6 +260,7 @@ body::after{content:'';position:fixed;inset:0;
   padding:200px 4px 380px;gap:6px;
 }
 .sym-cen-top{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.sym-emblem{width:140px;height:auto;display:block;margin:0 auto 10px;filter:drop-shadow(0 0 18px rgba(212,175,55,0.5));opacity:.9}
 .sym-final-label{
   font-family:"Google Sans",sans-serif;
   font-size:.72rem;letter-spacing:2px;
@@ -1708,6 +1709,7 @@ function renderBracket(grps={}){
 
   html+=`<div class="sym-center">
     <div class="sym-cen-top">
+      <img class="sym-emblem" src="2026_FIFA_World_Cup_Emblem.png" alt="FIFA WC 2026">
       <div class="sym-final-label"><i class='fas fa-trophy'></i> ${S.final}</div>
       <div class="sym-champion">
         ${champFlagURL?`<img class="sym-champ-flag" src="${champFlagURL}" loading="lazy" onerror="this.style.display='none'">`
