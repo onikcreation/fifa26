@@ -543,6 +543,38 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 .sq-empty{text-align:center;padding:2rem;color:var(--gray);font-size:.8rem}
 @media(max-width:600px){.sq-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.sq-grid{grid-template-columns:1fr}}
+
+/* ══ FIFA RANKING PAGE ══ */
+.rank-meta{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem;font-size:.75rem;color:var(--text2)}
+.rank-meta span{display:flex;align-items:center;gap:.35rem}
+.rank-meta i{color:var(--neon);font-size:.7rem}
+.rank-search-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.9rem;flex-wrap:wrap}
+.rank-search{flex:1;min-width:0;padding:.5rem .9rem;background:rgba(20,20,20,0.95);border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:"Google Sans",sans-serif;font-size:.82rem;outline:none}
+.rank-search:focus{border-color:var(--neon);box-shadow:0 0 8px rgba(212,175,55,0.2)}
+.rank-conf-select{width:auto;margin-bottom:0;flex-shrink:0}
+.rank-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border2)}
+.rank-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.rank-table thead tr{background:linear-gradient(135deg,rgba(139,21,56,0.5),rgba(20,20,20,0.98))}
+.rank-table th{padding:.55rem .8rem;text-align:left;font-size:.65rem;letter-spacing:1px;color:rgba(255,255,255,.85);white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.08)}
+.rank-table th:first-child,.rank-table td:first-child{text-align:center;width:48px}
+.rank-table th:nth-child(2),.rank-table td:nth-child(2){width:44px;text-align:center}
+.rank-table th:last-child,.rank-table td:last-child{text-align:center}
+.rank-table td{padding:.45rem .8rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.rank-table tbody tr:last-child td{border-bottom:none}
+.rank-table tbody tr:hover{background:rgba(255,255,255,.03)}
+.rank-table tbody tr.wc-team{background:rgba(139,21,56,.07)}
+.rank-table tbody tr.wc-team td:first-child{border-left:3px solid var(--maroon)}
+.rank-num{font-family:"Google Sans",sans-serif;font-size:.95rem;color:var(--gray)}
+.rank-num.top3{color:var(--neon);font-size:1.05rem}
+.rank-flag{width:28px;height:21px;object-fit:cover;border-radius:2px;display:block;margin:0 auto}
+.rank-name{font-family:"Google Sans",sans-serif;font-size:.83rem;color:var(--text)}
+.rank-pts{font-family:"Google Sans",sans-serif;font-size:.9rem;color:var(--neon)}
+.rank-wc-badge{font-size:.6rem;padding:.12rem .45rem;border-radius:10px;background:rgba(139,21,56,.25);border:1px solid rgba(212,175,55,.3);color:var(--neon);white-space:nowrap;letter-spacing:.5px}
+.rank-empty{text-align:center;padding:2rem;color:var(--gray);font-size:.8rem}
+#rankConfFilter{width:auto;margin-bottom:0;flex-shrink:0}
+@media(max-width:500px){
+  .rank-table th:nth-child(4),.rank-table td:nth-child(4){display:none}
+}
 </style>
 </head>
 <body>
@@ -575,6 +607,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
   <a class="nav-btn"     href="#stats"      onclick="goTab('stats',this)"><i class="fas fa-chart-line"></i> Stats</a>
   <a class="nav-btn"     href="#squads"     onclick="goTab('squads',this)"><i class="fas fa-shirt"></i> Squads</a>
   <a class="nav-btn"     href="#venues"     onclick="goTab('venues',this)"><i class="fas fa-location-dot"></i> Venues</a>
+  <a class="nav-btn"     href="#ranking"    onclick="goTab('ranking',this)"><i class="fas fa-ranking-star"></i> FIFA Ranking</a>
 </nav>
 
 <main class="main">
@@ -648,6 +681,34 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
       </div>
     </div>
     <div class="sq-grid" id="sqGrid"></div>
+  </div>
+
+  <!-- FIFA RANKING -->
+  <div id="p-ranking" class="panel">
+    <div class="sec-title"><i class="fas fa-ranking-star"></i> FIFA World Ranking</div>
+    <div class="rank-meta">
+      <span><i class="fas fa-calendar-day"></i> June 10, 2026</span>
+      <span><i class="fas fa-globe"></i> <span id="rankTotal"></span> দেশ</span>
+      <span><i class="fas fa-trophy"></i> #1: <span id="rankTop"></span></span>
+    </div>
+    <div class="rank-search-row">
+      <input type="text" id="rankSearch" class="rank-search" placeholder="🔍 দেশের নাম খুঁজুন..." oninput="filterRanking()">
+      <select class="mob-select rank-conf-select" id="rankConfFilter" onchange="filterRanking()">
+        <option value="">সব কনফেডারেশন</option>
+        <option value="UEFA">UEFA</option>
+        <option value="CONMEBOL">CONMEBOL</option>
+        <option value="CONCACAF">CONCACAF</option>
+        <option value="CAF">CAF</option>
+        <option value="AFC">AFC</option>
+        <option value="OFC">OFC</option>
+      </select>
+    </div>
+    <div class="rank-table-wrap">
+      <table class="rank-table" id="rankTable">
+        <thead><tr><th>#</th><th>পতাকা</th><th>দেশ</th><th>পয়েন্ট</th><th>WC 2026</th></tr></thead>
+        <tbody id="rankBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- VENUES -->
@@ -2028,7 +2089,7 @@ function renderVenues(){
 window._vnf=function(c){_vnFilter=c;renderVenues();};
 
 // Tab
-const VALID_TABS=['schedule','groups','thirdplace','knockout','stats','squads','venues'];
+const VALID_TABS=['schedule','groups','thirdplace','knockout','stats','squads','venues','ranking'];
 
 window.goTab=function(id,el){
   if(!VALID_TABS.includes(id))id='schedule';
@@ -2044,6 +2105,7 @@ window.goTab=function(id,el){
   if(id==='squads'&&!sqLoaded)loadSquads();
   if(id==='venues')renderVenues();
   if(id==='knockout')setTimeout(drawBracketLines,0);
+  if(id==='ranking')renderRanking();
 };
 
 // On page load — read hash and activate correct tab
@@ -2328,6 +2390,260 @@ window.toggleTheme=function(){
 function hideLoader(){
   setTimeout(()=>{const l=document.getElementById('loader');l.classList.add('gone');setTimeout(()=>l.remove(),400);},500);
 }
+
+// ══ FIFA RANKING ══
+const FIFA_RANKING=[
+  {r:1,n:"Argentina",c:"ar",p:1877.27,conf:"CONMEBOL"},
+  {r:2,n:"Spain",c:"es",p:1874.71,conf:"UEFA"},
+  {r:3,n:"France",c:"fr",p:1870.7,conf:"UEFA"},
+  {r:4,n:"England",c:"gb-eng",p:1827.05,conf:"UEFA"},
+  {r:5,n:"Portugal",c:"pt",p:1766.18,conf:"UEFA"},
+  {r:6,n:"Brazil",c:"br",p:1765.86,conf:"CONMEBOL"},
+  {r:7,n:"Morocco",c:"ma",p:1755.1,conf:"CAF"},
+  {r:8,n:"Netherlands",c:"nl",p:1753.57,conf:"UEFA"},
+  {r:9,n:"Belgium",c:"be",p:1742.24,conf:"UEFA"},
+  {r:10,n:"Germany",c:"de",p:1735.77,conf:"UEFA"},
+  {r:11,n:"Croatia",c:"hr",p:1714.87,conf:"UEFA"},
+  {r:12,n:"Italy",c:"it",p:1704.73,conf:"UEFA"},
+  {r:13,n:"Colombia",c:"co",p:1698.35,conf:"CONMEBOL"},
+  {r:14,n:"Mexico",c:"mx",p:1687.48,conf:"CONCACAF"},
+  {r:15,n:"Senegal",c:"sn",p:1684.07,conf:"CAF"},
+  {r:16,n:"Uruguay",c:"uy",p:1673.07,conf:"CONMEBOL"},
+  {r:17,n:"USA",c:"us",p:1671.23,conf:"CONCACAF"},
+  {r:18,n:"Japan",c:"jp",p:1661.58,conf:"AFC"},
+  {r:19,n:"Switzerland",c:"ch",p:1650.06,conf:"UEFA"},
+  {r:20,n:"IR Iran",c:"ir",p:1619.58,conf:"AFC"},
+  {r:21,n:"Denmark",c:"dk",p:1619.47,conf:"UEFA"},
+  {r:22,n:"Türkiye",c:"tr",p:1605.73,conf:"UEFA"},
+  {r:23,n:"Ecuador",c:"ec",p:1598.52,conf:"CONMEBOL"},
+  {r:24,n:"Austria",c:"at",p:1597.4,conf:"UEFA"},
+  {r:25,n:"Korea Republic",c:"kr",p:1591.63,conf:"AFC"},
+  {r:26,n:"Nigeria",c:"ng",p:1586.69,conf:"CAF"},
+  {r:27,n:"Australia",c:"au",p:1579.34,conf:"AFC"},
+  {r:28,n:"Algeria",c:"dz",p:1571.03,conf:"CAF"},
+  {r:29,n:"Egypt",c:"eg",p:1562.37,conf:"CAF"},
+  {r:30,n:"Canada",c:"ca",p:1559.48,conf:"CONCACAF"},
+  {r:31,n:"Norway",c:"no",p:1557.44,conf:"UEFA"},
+  {r:32,n:"Ukraine",c:"ua",p:1549.29,conf:"UEFA"},
+  {r:33,n:"Côte d'Ivoire",c:"ci",p:1540.87,conf:"CAF"},
+  {r:34,n:"Panama",c:"pa",p:1539.16,conf:"CONCACAF"},
+  {r:35,n:"Russia",c:"ru",p:1529.6,conf:"UEFA"},
+  {r:36,n:"Poland",c:"pl",p:1526.18,conf:"UEFA"},
+  {r:37,n:"Wales",c:"gb-wls",p:1516.95,conf:"UEFA"},
+  {r:38,n:"Sweden",c:"se",p:1509.79,conf:"UEFA"},
+  {r:39,n:"Hungary",c:"hu",p:1506.39,conf:"UEFA"},
+  {r:40,n:"Czechia",c:"cz",p:1505.74,conf:"UEFA"},
+  {r:41,n:"Paraguay",c:"py",p:1505.35,conf:"CONMEBOL"},
+  {r:42,n:"Scotland",c:"gb-sct",p:1503.34,conf:"UEFA"},
+  {r:43,n:"Serbia",c:"rs",p:1502.13,conf:"UEFA"},
+  {r:44,n:"Cameroon",c:"cm",p:1481.24,conf:"CAF"},
+  {r:45,n:"Tunisia",c:"tn",p:1476.41,conf:"CAF"},
+  {r:46,n:"Congo DR",c:"cd",p:1474.43,conf:"CAF"},
+  {r:47,n:"Slovakia",c:"sk",p:1473.66,conf:"UEFA"},
+  {r:48,n:"Greece",c:"gr",p:1473.19,conf:"UEFA"},
+  {r:49,n:"Venezuela",c:"ve",p:1469.18,conf:"CONMEBOL"},
+  {r:50,n:"Uzbekistan",c:"uz",p:1458.73,conf:"AFC"},
+  {r:51,n:"Chile",c:"cl",p:1458.2,conf:"CONMEBOL"},
+  {r:52,n:"Peru",c:"pe",p:1457.69,conf:"CONMEBOL"},
+  {r:53,n:"Costa Rica",c:"cr",p:1457.0,conf:"CONCACAF"},
+  {r:54,n:"Romania",c:"ro",p:1455.89,conf:"UEFA"},
+  {r:55,n:"Mali",c:"ml",p:1455.59,conf:"CAF"},
+  {r:56,n:"Qatar",c:"qa",p:1450.31,conf:"AFC"},
+  {r:57,n:"Iraq",c:"iq",p:1446.28,conf:"AFC"},
+  {r:58,n:"Republic of Ireland",c:"ie",p:1441.1,conf:"UEFA"},
+  {r:59,n:"Slovenia",c:"si",p:1441.09,conf:"UEFA"},
+  {r:60,n:"South Africa",c:"za",p:1428.38,conf:"CAF"},
+  {r:61,n:"Saudi Arabia",c:"sa",p:1423.88,conf:"AFC"},
+  {r:62,n:"Burkina Faso",c:"bf",p:1406.99,conf:"CAF"},
+  {r:63,n:"Jordan",c:"jo",p:1387.74,conf:"AFC"},
+  {r:64,n:"Bosnia and Herzegovina",c:"ba",p:1387.22,conf:"UEFA"},
+  {r:65,n:"Honduras",c:"hn",p:1378.97,conf:"CONCACAF"},
+  {r:66,n:"Albania",c:"al",p:1376.03,conf:"UEFA"},
+  {r:67,n:"Cabo Verde",c:"cv",p:1371.11,conf:"CAF"},
+  {r:68,n:"United Arab Emirates",c:"ae",p:1370.47,conf:"AFC"},
+  {r:69,n:"North Macedonia",c:"mk",p:1369.16,conf:"UEFA"},
+  {r:70,n:"Northern Ireland",c:"gb-nir",p:1365.3,conf:"UEFA"},
+  {r:71,n:"Jamaica",c:"jm",p:1357.84,conf:"CONCACAF"},
+  {r:72,n:"Georgia",c:"ge",p:1355.26,conf:"UEFA"},
+  {r:73,n:"Ghana",c:"gh",p:1346.88,conf:"CAF"},
+  {r:74,n:"Iceland",c:"is",p:1342.77,conf:"UEFA"},
+  {r:75,n:"Finland",c:"fi",p:1341.92,conf:"UEFA"},
+  {r:76,n:"Israel",c:"il",p:1333.9,conf:"UEFA"},
+  {r:77,n:"Bolivia",c:"bo",p:1326.0,conf:"CONMEBOL"},
+  {r:78,n:"Kosovo",c:"xk",p:1319.12,conf:"UEFA"},
+  {r:79,n:"Oman",c:"om",p:1306.9,conf:"AFC"},
+  {r:80,n:"Montenegro",c:"me",p:1301.98,conf:"UEFA"},
+  {r:81,n:"Guinea",c:"gn",p:1295.6,conf:"CAF"},
+  {r:82,n:"Curaçao",c:"cw",p:1294.77,conf:"CONCACAF"},
+  {r:83,n:"Haiti",c:"ht",p:1293.1,conf:"CONCACAF"},
+  {r:84,n:"Syria",c:"sy",p:1283.05,conf:"AFC"},
+  {r:85,n:"New Zealand",c:"nz",p:1275.58,conf:"OFC"},
+  {r:86,n:"Gabon",c:"ga",p:1272.51,conf:"CAF"},
+  {r:87,n:"Bulgaria",c:"bg",p:1271.68,conf:"UEFA"},
+  {r:88,n:"Angola",c:"ao",p:1265.58,conf:"CAF"},
+  {r:89,n:"Uganda",c:"ug",p:1264.09,conf:"CAF"},
+  {r:90,n:"Zambia",c:"zm",p:1255.82,conf:"CAF"},
+  {r:91,n:"China PR",c:"cn",p:1254.81,conf:"AFC"},
+  {r:92,n:"Bahrain",c:"bh",p:1254.41,conf:"AFC"},
+  {r:93,n:"Benin",c:"bj",p:1252.17,conf:"CAF"},
+  {r:94,n:"Thailand",c:"th",p:1250.8,conf:"AFC"},
+  {r:95,n:"Palestine",c:"ps",p:1243.71,conf:"AFC"},
+  {r:96,n:"Belarus",c:"by",p:1242.88,conf:"UEFA"},
+  {r:97,n:"Guatemala",c:"gt",p:1238.74,conf:"CONCACAF"},
+  {r:98,n:"Luxembourg",c:"lu",p:1232.82,conf:"UEFA"},
+  {r:99,n:"Vietnam",c:"vn",p:1225.68,conf:"AFC"},
+  {r:100,n:"El Salvador",c:"sv",p:1225.34,conf:"CONCACAF"},
+  {r:101,n:"Tajikistan",c:"tj",p:1224.19,conf:"AFC"},
+  {r:102,n:"Trinidad and Tobago",c:"tt",p:1219.59,conf:"CONCACAF"},
+  {r:103,n:"Mozambique",c:"mz",p:1218.62,conf:"CAF"},
+  {r:104,n:"Madagascar",c:"mg",p:1202.69,conf:"CAF"},
+  {r:105,n:"Equatorial Guinea",c:"gq",p:1195.2,conf:"CAF"},
+  {r:106,n:"Kyrgyz Republic",c:"kg",p:1192.16,conf:"AFC"},
+  {r:107,n:"Armenia",c:"am",p:1189.63,conf:"UEFA"},
+  {r:108,n:"Comoros",c:"km",p:1187.91,conf:"CAF"},
+  {r:109,n:"Kenya",c:"ke",p:1185.08,conf:"CAF"},
+  {r:110,n:"Libya",c:"ly",p:1182.08,conf:"CAF"},
+  {r:111,n:"Kazakhstan",c:"kz",p:1180.78,conf:"UEFA"},
+  {r:112,n:"Tanzania",c:"tz",p:1180.27,conf:"CAF"},
+  {r:113,n:"Mauritania",c:"mr",p:1176.68,conf:"CAF"},
+  {r:114,n:"Niger",c:"ne",p:1175.33,conf:"CAF"},
+  {r:115,n:"Lebanon",c:"lb",p:1172.22,conf:"AFC"},
+  {r:116,n:"The Gambia",c:"gm",p:1159.64,conf:"CAF"},
+  {r:117,n:"Sudan",c:"sd",p:1157.22,conf:"CAF"},
+  {r:118,n:"Indonesia",c:"id",p:1157.14,conf:"AFC"},
+  {r:119,n:"Togo",c:"tg",p:1152.76,conf:"CAF"},
+  {r:120,n:"Korea DPR",c:"kp",p:1151.05,conf:"AFC"},
+  {r:121,n:"Namibia",c:"na",p:1148.84,conf:"CAF"},
+  {r:122,n:"Sierra Leone",c:"sl",p:1147.56,conf:"CAF"},
+  {r:123,n:"Faroe Islands",c:"fo",p:1136.59,conf:"UEFA"},
+  {r:124,n:"Cyprus",c:"cy",p:1133.25,conf:"UEFA"},
+  {r:125,n:"Suriname",c:"sr",p:1132.43,conf:"CONCACAF"},
+  {r:126,n:"Azerbaijan",c:"az",p:1132.0,conf:"UEFA"},
+  {r:127,n:"Estonia",c:"ee",p:1130.64,conf:"UEFA"},
+  {r:128,n:"Rwanda",c:"rw",p:1126.62,conf:"CAF"},
+  {r:129,n:"Malawi",c:"mw",p:1122.05,conf:"CAF"},
+  {r:130,n:"Zimbabwe",c:"zw",p:1119.78,conf:"CAF"},
+  {r:131,n:"Nicaragua",c:"ni",p:1114.63,conf:"CONCACAF"},
+  {r:132,n:"Guinea-Bissau",c:"gw",p:1108.38,conf:"CAF"},
+  {r:133,n:"Kuwait",c:"kw",p:1106.47,conf:"AFC"},
+  {r:134,n:"Congo",c:"cg",p:1105.96,conf:"CAF"},
+  {r:135,n:"Philippines",c:"ph",p:1100.95,conf:"AFC"},
+  {r:136,n:"Malaysia",c:"my",p:1086.22,conf:"AFC"},
+  {r:137,n:"Latvia",c:"lv",p:1085.66,conf:"UEFA"},
+  {r:138,n:"India",c:"in",p:1084.93,conf:"AFC"},
+  {r:139,n:"Central African Republic",c:"cf",p:1080.82,conf:"CAF"},
+  {r:140,n:"Liberia",c:"lr",p:1080.44,conf:"CAF"},
+  {r:141,n:"Turkmenistan",c:"tm",p:1078.65,conf:"AFC"},
+  {r:142,n:"Burundi",c:"bi",p:1078.01,conf:"CAF"},
+  {r:143,n:"Ethiopia",c:"et",p:1077.52,conf:"CAF"},
+  {r:144,n:"Dominican Republic",c:"do",p:1076.5,conf:"CONCACAF"},
+  {r:145,n:"Yemen",c:"ye",p:1065.24,conf:"AFC"},
+  {r:146,n:"Lesotho",c:"ls",p:1064.29,conf:"CAF"},
+  {r:147,n:"Botswana",c:"bw",p:1063.63,conf:"CAF"},
+  {r:148,n:"Singapore",c:"sg",p:1057.95,conf:"AFC"},
+  {r:149,n:"Lithuania",c:"lt",p:1056.85,conf:"UEFA"},
+  {r:150,n:"Guyana",c:"gy",p:1049.32,conf:"CONCACAF"},
+  {r:151,n:"New Caledonia",c:"nc",p:1036.95,conf:"OFC"},
+  {r:152,n:"St Kitts and Nevis",c:"kn",p:1036.33,conf:"CONCACAF"},
+  {r:153,n:"Solomon Islands",c:"sb",p:1031.89,conf:"OFC"},
+  {r:154,n:"Puerto Rico",c:"pr",p:1024.3,conf:"CONCACAF"},
+  {r:155,n:"Fiji",c:"fj",p:1024.17,conf:"OFC"},
+  {r:156,n:"Hong Kong",c:"hk",p:1024.16,conf:"AFC"},
+  {r:157,n:"Tahiti",c:"pf",p:1019.04,conf:"OFC"},
+  {r:158,n:"Myanmar",c:"mm",p:1010.91,conf:"AFC"},
+  {r:159,n:"Moldova",c:"md",p:1008.24,conf:"UEFA"},
+  {r:160,n:"Vanuatu",c:"vu",p:1002.53,conf:"OFC"},
+  {r:161,n:"Malta",c:"mt",p:992.79,conf:"UEFA"},
+  {r:162,n:"Antigua and Barbuda",c:"ag",p:986.58,conf:"CONCACAF"},
+  {r:163,n:"Grenada",c:"gd",p:981.82,conf:"CONCACAF"},
+  {r:164,n:"Cuba",c:"cu",p:981.42,conf:"CONCACAF"},
+  {r:165,n:"Eswatini",c:"sz",p:979.01,conf:"CAF"},
+  {r:166,n:"St Lucia",c:"lc",p:976.71,conf:"CONCACAF"},
+  {r:167,n:"Bermuda",c:"bm",p:975.05,conf:"CONCACAF"},
+  {r:168,n:"Papua New Guinea",c:"pg",p:974.9,conf:"OFC"},
+  {r:169,n:"Afghanistan",c:"af",p:971.2,conf:"AFC"},
+  {r:170,n:"South Sudan",c:"ss",p:970.94,conf:"CAF"},
+  {r:171,n:"St Vincent and the Grenadines",c:"vc",p:968.27,conf:"CONCACAF"},
+  {r:172,n:"Andorra",c:"ad",p:946.43,conf:"UEFA"},
+  {r:173,n:"Maldives",c:"mv",p:943.92,conf:"AFC"},
+  {r:174,n:"Chinese Taipei",c:"tw",p:923.78,conf:"AFC"},
+  {r:175,n:"Cambodia",c:"kh",p:922.32,conf:"AFC"},
+  {r:176,n:"Montserrat",c:"ms",p:916.75,conf:"CONCACAF"},
+  {r:177,n:"Nepal",c:"np",p:914.54,conf:"AFC"},
+  {r:178,n:"Mauritius",c:"mu",p:911.49,conf:"CAF"},
+  {r:179,n:"Barbados",c:"bb",p:909.89,conf:"CONCACAF"},
+  {r:180,n:"Belize",c:"bz",p:907.0,conf:"CONCACAF"},
+  {r:181,n:"Bangladesh",c:"bd",p:902.93,conf:"AFC"},
+  {r:182,n:"Dominica",c:"dm",p:897.69,conf:"CONCACAF"},
+  {r:183,n:"Chad",c:"td",p:896.85,conf:"CAF"},
+  {r:184,n:"Eritrea",c:"er",p:887.06,conf:"CAF"},
+  {r:185,n:"Laos",c:"la",p:885.03,conf:"AFC"},
+  {r:186,n:"Cook Islands",c:"ck",p:877.53,conf:"OFC"},
+  {r:187,n:"Sri Lanka",c:"lk",p:876.86,conf:"AFC"},
+  {r:188,n:"Samoa",c:"ws",p:876.41,conf:"OFC"},
+  {r:189,n:"Aruba",c:"aw",p:875.61,conf:"CONCACAF"},
+  {r:190,n:"Mongolia",c:"mn",p:874.47,conf:"AFC"},
+  {r:191,n:"American Samoa",c:"as",p:871.61,conf:"OFC"},
+  {r:192,n:"Bhutan",c:"bt",p:870.81,conf:"AFC"},
+  {r:193,n:"Macau",c:"mo",p:858.03,conf:"AFC"},
+  {r:194,n:"Brunei Darussalam",c:"bn",p:857.73,conf:"AFC"},
+  {r:195,n:"São Tomé and Príncipe",c:"st",p:855.44,conf:"CAF"},
+  {r:196,n:"Djibouti",c:"dj",p:853.58,conf:"CAF"},
+  {r:197,n:"Cayman Islands",c:"ky",p:850.06,conf:"CONCACAF"},
+  {r:198,n:"Somalia",c:"so",p:839.17,conf:"CAF"},
+  {r:199,n:"Pakistan",c:"pk",p:837.15,conf:"AFC"},
+  {r:200,n:"Tonga",c:"to",p:835.64,conf:"OFC"},
+  {r:201,n:"Timor-Leste",c:"tl",p:831.0,conf:"AFC"},
+  {r:202,n:"Gibraltar",c:"gi",p:820.26,conf:"UEFA"},
+  {r:203,n:"Guam",c:"gu",p:819.54,conf:"AFC"},
+  {r:204,n:"Seychelles",c:"sc",p:804.16,conf:"CAF"},
+  {r:205,n:"Turks and Caicos Islands",c:"tc",p:803.98,conf:"CONCACAF"},
+  {r:206,n:"Liechtenstein",c:"li",p:797.7,conf:"UEFA"},
+  {r:207,n:"Bahamas",c:"bs",p:786.82,conf:"CONCACAF"},
+  {r:208,n:"US Virgin Islands",c:"vi",p:779.76,conf:"CONCACAF"},
+  {r:209,n:"British Virgin Islands",c:"vg",p:777.41,conf:"CONCACAF"},
+  {r:210,n:"Anguilla",c:"ai",p:760.25,conf:"CONCACAF"},
+  {r:211,n:"San Marino",c:"sm",p:721.2,conf:"UEFA"},
+];
+
+// WC 2026 teams set (English names)
+const WC_TEAMS_EN=new Set(Object.values(TEAMS).map(t=>t.en));
+
+let _rankFiltered=FIFA_RANKING;
+
+function renderRanking(){
+  const el=document.getElementById('rankTotal');
+  const el2=document.getElementById('rankTop');
+  if(el)el.textContent=FIFA_RANKING.length;
+  if(el2)el2.innerHTML=`<img src="https://flagcdn.com/20x15/${FIFA_RANKING[0].c}.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:3px">${FIFA_RANKING[0].n}`;
+  _rankFiltered=FIFA_RANKING;
+  filterRanking();
+}
+
+window.filterRanking=function(){
+  const q=(document.getElementById('rankSearch')?.value||'').toLowerCase();
+  const conf=document.getElementById('rankConfFilter')?.value||'';
+  _rankFiltered=FIFA_RANKING.filter(d=>{
+    const matchQ=!q||d.n.toLowerCase().includes(q);
+    const matchC=!conf||d.conf===conf;
+    return matchQ&&matchC;
+  });
+  const tbody=document.getElementById('rankBody');
+  if(!tbody)return;
+  if(_rankFiltered.length===0){tbody.innerHTML=`<tr><td colspan="5" class="rank-empty">কোনো ফলাফল নেই</td></tr>`;return;}
+  tbody.innerHTML=_rankFiltered.map(d=>{
+    const isWC=WC_TEAMS_EN.has(d.n);
+    const topCls=d.r<=3?' top3':'';
+    const wcBadge=isWC?`<span class="rank-wc-badge">⚽ WC 2026</span>`:'';
+    return`<tr class="${isWC?'wc-team':''}">
+      <td><span class="rank-num${topCls}">${d.r}</span></td>
+      <td><img class="rank-flag" src="https://flagcdn.com/28x21/${d.c}.png" loading="lazy" onerror="this.style.opacity='.3'" alt="${d.n}"></td>
+      <td class="rank-name">${d.n}</td>
+      <td class="rank-pts">${d.p.toFixed(2)}</td>
+      <td>${wcBadge}</td>
+    </tr>`;
+  }).join('');
+};
 </script>
 </body>
 </html>
