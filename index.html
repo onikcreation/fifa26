@@ -438,7 +438,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 /* Loader */
 .loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:9999;transition:opacity .4s}
 .loader.gone{opacity:0;pointer-events:none}
-.loader-ic{font-size:3rem;animation:fl 1s ease-in-out infinite}
+.loader-ic{animation:fl 1s ease-in-out infinite}.loader-ic img{width:110px;height:auto;filter:drop-shadow(0 0 18px rgba(212,175,55,.6))}
 @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 .loader-txt{font-family:"Google Sans",sans-serif;letter-spacing:3px;color:var(--neon);font-size:1rem}
 .loader-bar{width:200px;height:3px;background:rgba(161,240,0,.15);border-radius:2px;overflow:hidden}
@@ -615,7 +615,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 <body>
 
 <div class="loader" id="loader">
-  <div class="loader-ic"><i class="fas fa-trophy"></i></div>
+  <div class="loader-ic"><img src="2026_FIFA_World_Cup_Emblem.png" alt="FIFA World Cup 2026"></div>
   <div class="loader-txt">লোড হচ্ছে...</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
