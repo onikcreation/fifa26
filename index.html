@@ -436,13 +436,13 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 .vn-country-canada .vn-card-hdr{background:linear-gradient(135deg,rgba(180,20,20,0.45),rgba(15,15,15,0.95))}
 .vn-country-mexico .vn-card-hdr{background:linear-gradient(135deg,rgba(0,104,56,0.45),rgba(15,15,15,0.95))}
 /* Loader */
-.loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:9999;transition:opacity .4s}
+.loader{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;z-index:9999;transition:opacity .4s}
 .loader.gone{opacity:0;pointer-events:none}
-.loader-ic{animation:fl 1s ease-in-out infinite}.loader-ic img{width:110px;height:auto;filter:drop-shadow(0 0 18px rgba(212,175,55,.6))}
+.loader-ic{animation:fl 1s ease-in-out infinite}.loader-ic img{width:120px;height:auto;filter:drop-shadow(0 0 22px rgba(212,175,55,.75))}
 @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.loader-txt{font-family:"Google Sans",sans-serif;letter-spacing:3px;color:var(--neon);font-size:1rem}
-.loader-bar{width:200px;height:3px;background:rgba(161,240,0,.15);border-radius:2px;overflow:hidden}
-.loader-fill{height:100%;background:linear-gradient(90deg,transparent,var(--neon),transparent);animation:lb 1.5s infinite;box-shadow:0 0 12px var(--neon)}
+.loader-txt{font-family:"Google Sans",sans-serif;letter-spacing:4px;color:#D4AF37;font-size:1rem;text-shadow:0 0 12px rgba(212,175,55,.6)}
+.loader-bar{width:220px;height:4px;background:rgba(212,175,55,.2);border-radius:2px;overflow:hidden}
+.loader-fill{height:100%;background:linear-gradient(90deg,transparent,#D4AF37,transparent);animation:lb 1.5s infinite;box-shadow:0 0 14px #D4AF37}
 @keyframes lb{0%{width:0;margin-left:0}50%{width:60%}100%{width:0;margin-left:100%}}
 
 /* Responsive */
