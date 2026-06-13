@@ -302,7 +302,8 @@ body::after{content:'';position:fixed;inset:0;
 .st-firebase-note{flex:1 1 100%;font-size:.6rem;color:rgba(255,170,0,.65);line-height:1.6;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.06)}
 .st-firebase-note strong{color:rgba(255,170,0,.85)}
 /* ── SETTINGS LAYOUT v2 (no-scroll) ── */
-#ap-settings{display:flex;flex-direction:column;height:calc(100vh - 126px);overflow:hidden}
+#ap-settings{flex-direction:column;height:calc(100vh - 126px);overflow:hidden}
+#ap-settings.on{display:flex}
 .st-page-hd{padding:.5rem .9rem;margin-bottom:.5rem}
 .st-page-hd-icon{width:34px;height:34px;font-size:1rem}
 .st-page-hd-title{font-size:1.15rem;letter-spacing:2px}
@@ -1039,23 +1040,22 @@ function renderTable(grp){
     </div>`;
   }
 
-  // Group by date, sorted by time within each date
+  // Filter matches individually by past flag
+  const filteredList=admSchedView==='past'
+    ?list.filter(m=>dbSc[m.id]?.past===true)
+    :admSchedView==='upcoming'
+      ?list.filter(m=>!dbSc[m.id]?.past)
+      :list;
   const byDate={};
-  for(const m of list){if(!byDate[m.date])byDate[m.date]=[];byDate[m.date].push(m);}
-  for(const d of Object.keys(byDate)){byDate[d].sort((a,b)=>a.time.localeCompare(b.time));}
-  const isAdmPast=d=>byDate[d].every(m=>dbSc[m.id]?.past===true);
-  function isDateAllDone(date){return isAdmPast(date);}
-  function getDoneCount(date){return byDate[date].filter(m=>dbSc[m.id]?.past===true).length;}
+  for(const m of filteredList){if(!byDate[m.date])byDate[m.date]=[];byDate[m.date].push(m);}
   for(const d of Object.keys(byDate)){
     if(admSchedView==='past') byDate[d].sort((a,b)=>b.time.localeCompare(a.time));
     else byDate[d].sort((a,b)=>a.time.localeCompare(b.time));
   }
+  function isDateAllDone(date){return byDate[date].every(m=>dbSc[m.id]?.past===true);}
+  function getDoneCount(date){return byDate[date].filter(m=>dbSc[m.id]?.past===true).length;}
   const allAdmDates=Object.keys(byDate).sort();
-  const sortedDates=admSchedView==='past'
-    ?allAdmDates.filter(isAdmPast).reverse()
-    :admSchedView==='upcoming'
-      ?allAdmDates.filter(d=>!isAdmPast(d))
-      :allAdmDates;
+  const sortedDates=admSchedView==='past'?[...allAdmDates].reverse():allAdmDates;
 
   document.getElementById('mTbody').innerHTML=sortedDates.map(date=>{
     const allDone=isDateAllDone(date);
