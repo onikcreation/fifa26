@@ -321,9 +321,13 @@ body::after{content:'';position:fixed;inset:0;
 
 /* Stats */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:680px){.stats-grid{grid-template-columns:1fr}}
 .stats-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;overflow:hidden}
-.stats-card-title{font-family:"Google Sans",sans-serif;font-size:.95rem;letter-spacing:2px;color:var(--neon);padding:.65rem 1rem;background:rgba(139,21,56,0.12);border-bottom:1px solid rgba(212,175,55,0.15)}
+.stats-card-title{font-family:"Google Sans",sans-serif;font-size:.95rem;letter-spacing:2px;color:var(--neon);padding:.65rem 1rem;background:rgba(139,21,56,0.12);border-bottom:1px solid rgba(212,175,55,0.15);display:flex;justify-content:space-between;align-items:center}
+.sc-chev{font-size:.7rem;opacity:.5;transition:transform .3s;display:none}
+.stats-card-body{max-height:350px;overflow-y:auto}
+.stats-card-body::-webkit-scrollbar{width:3px}
+.stats-card-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+@media(max-width:680px){.stats-grid{grid-template-columns:1fr}.stats-card-title{cursor:pointer;-webkit-user-select:none;user-select:none}.sc-chev{display:block}.stats-card-body{max-height:600px;overflow:hidden;transition:max-height .35s ease}.stats-card.sc-closed .stats-card-body{max-height:0}.stats-card.sc-closed .sc-chev{transform:rotate(-90deg)}}
 .scorer-row{display:flex;align-items:center;gap:.65rem;padding:.5rem .9rem;border-bottom:1px solid var(--border2)}
 .scorer-row:last-child{border-bottom:none}
 .scorer-row:hover{background:rgba(255,255,255,.03)}
@@ -2022,8 +2026,8 @@ function renderStats(grps){
 
     matchHistoryHTML=`
       <div class="stats-card" style="grid-column:1/-1">
-        <div class="stats-card-title"><i class='fas fa-list'></i> ${S.matchHistory} · ${tNameRanked(statsTeam)}</div>
-        <div class="mh-cols">
+        <div class="stats-card-title" onclick="window._tsc(this)"><span><i class='fas fa-list'></i> ${S.matchHistory} · ${tNameRanked(statsTeam)}</span><i class="fas fa-chevron-down sc-chev"></i></div>
+        <div class="stats-card-body"><div class="mh-cols">
           <div>
             <div class="mh-header"><i class='fas fa-check'></i> ${S.playedH} (${played.length})</div>
             ${played.length?played.map(r=>matchRow(r,true)).join(''):`<div class="stats-empty">${S.noPlayedYet}</div>`}
@@ -2032,37 +2036,37 @@ function renderStats(grps){
             <div class="mh-header"><i class='fas fa-clock'></i> ${S.upcomingH} (${upcoming.length})</div>
             ${upcoming.length?upcoming.map(r=>matchRow(r,false)).join(''):`<div class="stats-empty">${S.allDone}</div>`}
           </div>
-        </div>
+        </div></div>
       </div>`;
   }
 
   document.getElementById('statsGrid').innerHTML=`
     ${matchHistoryHTML}
     <div class="stats-card">
-      <div class="stats-card-title"><i class='fas fa-futbol'></i> ${S.topScorers} ${titleSuffix}</div>
-      ${scorers.length===0?`<div class="stats-empty">${S.noGoalData}</div>`
+      <div class="stats-card-title" onclick="window._tsc(this)"><span><i class='fas fa-futbol'></i> ${S.topScorers} ${titleSuffix}</span><i class="fas fa-chevron-down sc-chev"></i></div>
+      <div class="stats-card-body">${scorers.length===0?`<div class="stats-empty">${S.noGoalData}</div>`
         :scorers.slice(0,20).map((s,i)=>`
           <div class="scorer-row">
             <div class="sr-rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</div>
             ${fImg(s.team,26,19)}
             <div class="sr-info"><div class="sr-name">${esc(s.name)}</div><div class="sr-team">${tNameRanked(s.team)}</div></div>
             <div class="sr-goals">${s.goals}${s.pens>0?`<span style="font-size:.75rem;color:var(--orange);margin-left:3px">(${s.pens})</span>`:''}</div>
-          </div>`).join('')}
+          </div>`).join('')}</div>
     </div>
     <div class="stats-card">
-      <div class="stats-card-title"><i class='fas fa-flag'></i> ${S.teamGoals} ${titleSuffix}</div>
-      ${teamList.length===0?`<div class="stats-empty">${S.noGoalData}</div>`
+      <div class="stats-card-title" onclick="window._tsc(this)"><span><i class='fas fa-flag'></i> ${S.teamGoals} ${titleSuffix}</span><i class="fas fa-chevron-down sc-chev"></i></div>
+      <div class="stats-card-body">${teamList.length===0?`<div class="stats-empty">${S.noGoalData}</div>`
         :teamList.map(([name,v])=>`
           <div class="team-row">
             ${fImg(name,28,21)}
             <div class="tr-name">${tNameRanked(name)}</div>
             <div class="tr-bar-wrap"><div class="tr-bar" style="width:${Math.round(v.goals/maxG*100)}%"></div></div>
             <div class="tr-goals">${v.goals}${v.pens>0?`<span style="font-size:.65rem;color:var(--orange);margin-left:2px">(${v.pens})</span>`:''}</div>
-          </div>`).join('')}
+          </div>`).join('')}</div>
     </div>
     <div class="stats-card">
-      <div class="stats-card-title"><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.playerWiseCard} ${titleSuffix}</div>
-      ${cardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
+      <div class="stats-card-title" onclick="window._tsc(this)"><span><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.playerWiseCard} ${titleSuffix}</span><i class="fas fa-chevron-down sc-chev"></i></div>
+      <div class="stats-card-body">${cardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
         :cardList.map(c=>`
           <div class="scorer-row">
             ${fImg(c.team,26,19)}
@@ -2072,11 +2076,11 @@ function renderStats(grps){
               ${Array(c.yr).fill(`<span class="st-card-badge yr"><span class="st-card-rect"></span></span>`).join('')}
               ${Array(c.red).fill(`<span class="st-card-badge red"><span class="st-card-rect"></span></span>`).join('')}
             </div>
-          </div>`).join('')}
+          </div>`).join('')}</div>
     </div>
     <div class="stats-card">
-      <div class="stats-card-title"><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.teamWiseCard} ${titleSuffix}</div>
-      ${teamCardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
+      <div class="stats-card-title" onclick="window._tsc(this)"><span><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.teamWiseCard} ${titleSuffix}</span><i class="fas fa-chevron-down sc-chev"></i></div>
+      <div class="stats-card-body">${teamCardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
         :teamCardList.map(([name,v])=>`
           <div class="scorer-row">
             ${fImg(name,26,19)}
@@ -2086,22 +2090,23 @@ function renderStats(grps){
               ${v.yr>0?`<span class="st-card-badge yr"><span class="st-card-rect"></span> ${v.yr}</span>`:''}
               ${v.red>0?`<span class="st-card-badge red"><span class="st-card-rect"></span> ${v.red}</span>`:''}
             </div>
-          </div>`).join('')}
+          </div>`).join('')}</div>
     </div>
     <div class="stats-card">
-      <div class="stats-card-title"><i class='fas fa-circle-dot'></i> ${S.penGoals} ${titleSuffix}</div>
-      ${penList.length===0?`<div class="stats-empty">${S.noPenData}</div>`
+      <div class="stats-card-title" onclick="window._tsc(this)"><span><i class='fas fa-circle-dot'></i> ${S.penGoals} ${titleSuffix}</span><i class="fas fa-chevron-down sc-chev"></i></div>
+      <div class="stats-card-body">${penList.length===0?`<div class="stats-empty">${S.noPenData}</div>`
         :penList.map(([name,v])=>`
           <div class="team-row">
             ${fImg(name,28,21)}
             <div class="tr-name">${tNameRanked(name)}</div>
             <div class="tr-bar-wrap"><div class="tr-bar" style="width:${Math.round(v.pens/maxP*100)}%;background:linear-gradient(90deg,#8B1538,#D4AF37)"></div></div>
             <div class="tr-goals">${v.pens}</div>
-          </div>`).join('')}
+          </div>`).join('')}</div>
     </div>`;
 }
 window._stg=function(g){statsGrp=g;statsTeam='ALL';const grps=calcGroups();renderStats(grps);};
 window._stt=function(t){statsTeam=t;const grps=calcGroups();renderStats(grps);};
+window._tsc=function(el){if(window.innerWidth>680)return;el.closest('.stats-card').classList.toggle('sc-closed');};
 
 // Third place
 function renderThirdPlace(grps){
