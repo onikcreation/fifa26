@@ -824,7 +824,7 @@ const STRINGS={
     team:'দল',pl:'খে',won:'জ',draw:'ড্র',lost:'হা',grpLabel:g=>`গ্রুপ ${g}`,
     r32:'শেষ বত্রিশ',r16:'শেষ ষোলো',qf:'কোয়ার্টার',sf:'সেমি ফাইনাল',
     sfShort:'সেমি',final:'ফাইনাল',third:'তৃতীয় স্থান',
-    topScorers:'সর্বোচ্চ গোলদাতা',teamGoals:'দলীয় গোল',penGoals:'পেনাল্টি গোল',cards:'কার্ড',
+    topScorers:'সর্বোচ্চ গোলদাতা',teamGoals:'দলীয় গোল',penGoals:'পেনাল্টি গোল',playerWiseCard:'খেলোয়াড়ভিত্তিক কার্ড',teamWiseCard:'দলভিত্তিক কার্ড',
     noGoalData:'এখনো গোলের তথ্য নেই',noCardData:'এখনো কার্ডের তথ্য নেই',noPenData:'এখনো পেনাল্টি গোলের তথ্য নেই',
     matchHistory:'ম্যাচ ইতিহাস',playedH:'খেলা হয়েছে',upcomingH:'বাকি আছে',
     noPlayedYet:'এখনো কোনো ম্যাচ খেলা হয়নি',allDone:'সব ম্যাচ খেলা হয়ে গেছে',
@@ -861,7 +861,7 @@ const STRINGS={
     team:'Team',pl:'P',won:'W',draw:'D',lost:'L',grpLabel:g=>`Group ${g}`,
     r32:'Round of 32',r16:'Round of 16',qf:'Quarter',sf:'Semi Final',
     sfShort:'Semi',final:'Final',third:'3rd Place',
-    topScorers:'Top Scorers',teamGoals:'Team Goals',penGoals:'Penalty Goals',cards:'Cards',
+    topScorers:'Top Scorers',teamGoals:'Team Goals',penGoals:'Penalty Goals',playerWiseCard:'PlayerWise Card',teamWiseCard:'TeamWise Card',
     noGoalData:'No goal data yet',noCardData:'No card data yet',noPenData:'No penalty goal data yet',
     matchHistory:'Match History',playedH:'Played',upcomingH:'Upcoming',
     noPlayedYet:'No matches played yet',allDone:'All matches completed',
@@ -1900,6 +1900,18 @@ function renderStats(grps){
   if(statsTeam!=='ALL') cardList=cardList.filter(c=>c.team===statsTeam);
   else if(statsGrp!=='ALL') cardList=cardList.filter(c=>GROUPS[statsGrp]?.includes(c.team));
 
+  // ── TeamWise cards ──
+  const teamCardMap={};
+  for(const v of Object.values(cardMap)){
+    if(!teamCardMap[v.team])teamCardMap[v.team]={yellow:0,red:0,yr:0};
+    teamCardMap[v.team].yellow+=v.yellow;
+    teamCardMap[v.team].red+=v.red;
+    teamCardMap[v.team].yr+=v.yr;
+  }
+  let teamCardList=Object.entries(teamCardMap).sort((a,b)=>(b[1].red+b[1].yr)-(a[1].red+a[1].yr)||(b[1].yellow+b[1].yr)-(a[1].yellow+a[1].yr));
+  if(statsTeam!=='ALL') teamCardList=teamCardList.filter(([n])=>n===statsTeam);
+  else if(statsGrp!=='ALL') teamCardList=teamCardList.filter(([n])=>GROUPS[statsGrp]?.includes(n));
+
   const titleSuffix=statsTeam!=='ALL'?`· ${tNameRanked(statsTeam)}`:statsGrp!=='ALL'?`· Group ${statsGrp}`:'';
 
   // ── Match history (only when a specific team is selected) ──
@@ -2060,7 +2072,7 @@ function renderStats(grps){
           </div>`).join('')}
     </div>
     <div class="stats-card">
-      <div class="stats-card-title"><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.cards} ${titleSuffix}</div>
+      <div class="stats-card-title"><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.playerWiseCard} ${titleSuffix}</div>
       ${cardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
         :cardList.map(c=>`
           <div class="scorer-row">
@@ -2070,6 +2082,20 @@ function renderStats(grps){
               ${Array(c.yellow).fill(`<span class="st-card-badge yellow"><span class="st-card-rect"></span></span>`).join('')}
               ${Array(c.yr).fill(`<span class="st-card-badge yr"><span class="st-card-rect"></span></span>`).join('')}
               ${Array(c.red).fill(`<span class="st-card-badge red"><span class="st-card-rect"></span></span>`).join('')}
+            </div>
+          </div>`).join('')}
+    </div>
+    <div class="stats-card">
+      <div class="stats-card-title"><svg width="12" height="16" viewBox="0 0 12 16" style="vertical-align:middle"><rect x="0" y="0" width="5" height="16" rx="1" fill="#ffc800"/><rect x="6" y="0" width="6" height="16" rx="1" fill="#ff3232"/></svg> ${S.teamWiseCard} ${titleSuffix}</div>
+      ${teamCardList.length===0?`<div class="stats-empty">${S.noCardData}</div>`
+        :teamCardList.map(([name,v])=>`
+          <div class="scorer-row">
+            ${fImg(name,26,19)}
+            <div class="sr-info" style="flex:1"><div class="sr-name">${tNameRanked(name)}</div></div>
+            <div class="st-cards-wrap">
+              ${v.yellow>0?`<span class="st-card-badge yellow"><span class="st-card-rect"></span> ${v.yellow}</span>`:''}
+              ${v.yr>0?`<span class="st-card-badge yr"><span class="st-card-rect"></span> ${v.yr}</span>`:''}
+              ${v.red>0?`<span class="st-card-badge red"><span class="st-card-rect"></span> ${v.red}</span>`:''}
             </div>
           </div>`).join('')}
     </div>`;
