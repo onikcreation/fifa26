@@ -327,7 +327,7 @@ body::after{content:'';position:fixed;inset:0;
 .stats-card-body{max-height:350px;overflow-y:auto}
 .stats-card-body::-webkit-scrollbar{width:3px}
 .stats-card-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-@media(max-width:680px){.stats-grid{grid-template-columns:1fr}.stats-card-title{cursor:pointer;-webkit-user-select:none;user-select:none}.sc-chev{display:block}.stats-card-body{max-height:600px;overflow:hidden;transition:max-height .35s ease}.stats-card.sc-closed .stats-card-body{max-height:0}.stats-card.sc-closed .sc-chev{transform:rotate(-90deg)}}
+@media(max-width:680px){.stats-grid{grid-template-columns:1fr}.stats-card-title{cursor:pointer;-webkit-user-select:none;user-select:none}.sc-chev{display:block}.stats-card-body{max-height:350px;overflow-y:auto;transition:max-height .35s ease}.stats-card.sc-closed .stats-card-body{max-height:0;overflow:hidden}.stats-card.sc-closed .sc-chev{transform:rotate(-90deg)}}
 .scorer-row{display:flex;align-items:center;gap:.65rem;padding:.5rem .9rem;border-bottom:1px solid var(--border2)}
 .scorer-row:last-child{border-bottom:none}
 .scorer-row:hover{background:rgba(255,255,255,.03)}
