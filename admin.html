@@ -445,6 +445,8 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
 .gm-in:focus{border-color:var(--neon)}
 .pen-cb{width:13px;height:13px;cursor:pointer;accent-color:var(--orange)}
 .pen-lbl{font-size:.65rem;color:var(--orange)}
+.custom-cb{width:13px;height:13px;cursor:pointer;accent-color:#ff4444}
+.custom-lbl{font-size:.65rem;color:#ff4444;title:"Stats থেকে বাদ"}
 .add-goal-btn{font-size:.68rem;padding:.28rem .55rem;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:5px;color:var(--neon);cursor:pointer;margin-top:.25rem}
 .rm-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:.9rem;padding:0 .15rem;line-height:1}
 .modal-save{width:100%;margin-top:1rem;font-family:"Google Sans",sans-serif;font-size:1rem;letter-spacing:2px;padding:.55rem;background:rgba(161,240,0,.2);color:var(--neon);border:1px solid var(--border);border-radius:8px;color:#fff;cursor:pointer}
@@ -1439,7 +1441,7 @@ window.openGoalModal=function(id,isKO){
     return`<option value="">— খেলোয়াড় বেছে নাও —</option>${opts}`;
   }
 
-  function goalEntry(side,i,name='',min='',pen=false){
+  function goalEntry(side,i,name='',min='',pen=false,custom=false){
     const players=side==='t1'?p1:p2;
     const hasSquad=players.length>0;
     const listId=`gnlist_${side}_${i}`;
@@ -1450,6 +1452,7 @@ window.openGoalModal=function(id,isKO){
     return`<div class="goal-entry" id="ge_${side}_${i}">
       <input class="gm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="gm_${side}_${i}">
       <input type="checkbox" class="pen-cb" id="gp_${side}_${i}" ${pen?'checked':''}><label class="pen-lbl" for="gp_${side}_${i}">P</label>
+      <input type="checkbox" class="custom-cb" id="gc_${side}_${i}" ${custom?'checked':''}><label class="custom-lbl" for="gc_${side}_${i}" title="Stats থেকে বাদ দাও">C</label>
       <button class="rm-btn" onclick="rmGoal('${side}',${i})"><i class='fas fa-xmark'></i></button>
       <div class="gn-wrap">
         ${squadRow}
@@ -1470,7 +1473,7 @@ window.openGoalModal=function(id,isKO){
           ${pc?`· ${pc} জন স্কোয়াড`:'· স্কোয়াড নেই'}
         </span>
       </div>
-      <div id="glist_${side}">${goals.map((g,i)=>goalEntry(side,i,g.name,g.min,g.pen)).join('')}</div>
+      <div id="glist_${side}">${goals.map((g,i)=>goalEntry(side,i,g.name,g.min,g.pen,g.custom)).join('')}</div>
       <button class="add-goal-btn" onclick="addGoal('${side}')">+ গোল যোগ</button>
     </div>`;
   }
@@ -1549,6 +1552,7 @@ window.addGoal=function(side){
   d.innerHTML=`<div class="goal-entry" id="ge_${side}_${i}">
     <input class="gm-in" type="number" min="1" max="130" placeholder="মি." id="gm_${side}_${i}">
     <input type="checkbox" class="pen-cb" id="gp_${side}_${i}"><label class="pen-lbl" for="gp_${side}_${i}">P</label>
+    <input type="checkbox" class="custom-cb" id="gc_${side}_${i}"><label class="custom-lbl" for="gc_${side}_${i}" title="Stats থেকে বাদ দাও">C</label>
     <button class="rm-btn" onclick="rmGoal('${side}',${i})"><i class='fas fa-xmark'></i></button>
     <div class="gn-wrap">
       ${squadRow}
@@ -1597,13 +1601,10 @@ window.saveGoalsAndCards=async function(){
       const parts=row.id.split('_');const i=parts[parts.length-1];const s=parts[1];
       const gnEl=document.getElementById(`gn_${s}_${i}`);
       const gnselEl=document.getElementById(`gnsel_${s}_${i}`);
-      const nameFromGnsel=gnselEl?.value?.trim()||'';
-      const nameFromGn=gnEl?.value?.trim()||'';
-      const name=nameFromGn||nameFromGnsel||'';
-      // custom=true when squad exists but squad selector wasn't used
-      const custom=!!gnselEl&&!nameFromGnsel;
+      const name=(gnEl?.value?.trim()||gnselEl?.value?.trim()||'');
       const min=Number(document.getElementById(`gm_${s}_${i}`)?.value||0);
       const pen=document.getElementById(`gp_${s}_${i}`)?.checked||false;
+      const custom=document.getElementById(`gc_${s}_${i}`)?.checked||false;
       return name?{name,min,pen,custom}:null;
     }).filter(Boolean);
   }
