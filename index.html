@@ -824,8 +824,8 @@ const STRINGS={
     team:'দল',pl:'খে',won:'জ',draw:'ড্র',lost:'হা',grpLabel:g=>`গ্রুপ ${g}`,
     r32:'শেষ বত্রিশ',r16:'শেষ ষোলো',qf:'কোয়ার্টার',sf:'সেমি ফাইনাল',
     sfShort:'সেমি',final:'ফাইনাল',third:'তৃতীয় স্থান',
-    topScorers:'সর্বোচ্চ গোলদাতা',teamGoals:'দলীয় গোল',cards:'কার্ড',
-    noGoalData:'এখনো গোলের তথ্য নেই',noCardData:'এখনো কার্ডের তথ্য নেই',
+    topScorers:'সর্বোচ্চ গোলদাতা',teamGoals:'দলীয় গোল',penGoals:'পেনাল্টি গোল',cards:'কার্ড',
+    noGoalData:'এখনো গোলের তথ্য নেই',noCardData:'এখনো কার্ডের তথ্য নেই',noPenData:'এখনো পেনাল্টি গোলের তথ্য নেই',
     matchHistory:'ম্যাচ ইতিহাস',playedH:'খেলা হয়েছে',upcomingH:'বাকি আছে',
     noPlayedYet:'এখনো কোনো ম্যাচ খেলা হয়নি',allDone:'সব ম্যাচ খেলা হয়ে গেছে',
     upcomingScore:'বাকি',
@@ -861,8 +861,8 @@ const STRINGS={
     team:'Team',pl:'P',won:'W',draw:'D',lost:'L',grpLabel:g=>`Group ${g}`,
     r32:'Round of 32',r16:'Round of 16',qf:'Quarter',sf:'Semi Final',
     sfShort:'Semi',final:'Final',third:'3rd Place',
-    topScorers:'Top Scorers',teamGoals:'Team Goals',cards:'Cards',
-    noGoalData:'No goal data yet',noCardData:'No card data yet',
+    topScorers:'Top Scorers',teamGoals:'Team Goals',penGoals:'Penalty Goals',cards:'Cards',
+    noGoalData:'No goal data yet',noCardData:'No card data yet',noPenData:'No penalty goal data yet',
     matchHistory:'Match History',playedH:'Played',upcomingH:'Upcoming',
     noPlayedYet:'No matches played yet',allDone:'All matches completed',
     upcomingScore:'Upcoming',
@@ -1891,6 +1891,11 @@ function renderStats(grps){
   else if(statsGrp!=='ALL') teamList=teamList.filter(([n])=>GROUPS[statsGrp]?.includes(n));
   const maxG=teamList[0]?teamList[0][1].goals:1;
 
+  let penList=Object.entries(teamGoals).filter(([,v])=>v.pens>0).sort((a,b)=>b[1].pens-a[1].pens);
+  if(statsTeam!=='ALL') penList=penList.filter(([n])=>n===statsTeam);
+  else if(statsGrp!=='ALL') penList=penList.filter(([n])=>GROUPS[statsGrp]?.includes(n));
+  const maxP=penList[0]?penList[0][1].pens:1;
+
   let cardList=Object.values(cardMap).sort((a,b)=>(b.red+b.yr)-(a.red+a.yr)||(b.yellow+b.yr)-(a.yellow+a.yr));
   if(statsTeam!=='ALL') cardList=cardList.filter(c=>c.team===statsTeam);
   else if(statsGrp!=='ALL') cardList=cardList.filter(c=>GROUPS[statsGrp]?.includes(c.team));
@@ -2041,6 +2046,17 @@ function renderStats(grps){
             <div class="tr-name">${tNameRanked(name)}</div>
             <div class="tr-bar-wrap"><div class="tr-bar" style="width:${Math.round(v.goals/maxG*100)}%"></div></div>
             <div class="tr-goals">${v.goals}${v.pens>0?`<span style="font-size:.65rem;color:var(--orange);margin-left:2px">(${v.pens})</span>`:''}</div>
+          </div>`).join('')}
+    </div>
+    <div class="stats-card">
+      <div class="stats-card-title"><i class='fas fa-circle-dot'></i> ${S.penGoals} ${titleSuffix}</div>
+      ${penList.length===0?`<div class="stats-empty">${S.noPenData}</div>`
+        :penList.map(([name,v])=>`
+          <div class="team-row">
+            ${fImg(name,28,21)}
+            <div class="tr-name">${tNameRanked(name)}</div>
+            <div class="tr-bar-wrap"><div class="tr-bar" style="width:${Math.round(v.pens/maxP*100)}%;background:linear-gradient(90deg,#8B1538,#D4AF37)"></div></div>
+            <div class="tr-goals">${v.pens}</div>
           </div>`).join('')}
     </div>
     <div class="stats-card">
