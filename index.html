@@ -2153,9 +2153,9 @@ function renderStats(grps){
             ${fImg(c.team,26,19)}
             <div class="sr-info"><div class="sr-name">${esc(c.name)}</div><div class="sr-team">${tNameRanked(c.team)}</div></div>
             <div class="st-cards-wrap">
-              ${Array(c.yellow).fill(`<span class="st-card-badge yellow"><span class="st-card-rect"></span></span>`).join('')}
-              ${Array(c.yr).fill(`<span class="st-card-badge yr"><span class="st-card-rect"></span></span>`).join('')}
-              ${Array(c.red).fill(`<span class="st-card-badge red"><span class="st-card-rect"></span></span>`).join('')}
+              ${c.yellow>0?`<span class="st-card-badge yellow"><span class="st-card-rect"></span> ${c.yellow}</span>`:''}
+              ${c.yr>0?`<span class="st-card-badge yr"><span class="st-card-rect"></span> ${c.yr}</span>`:''}
+              ${c.red>0?`<span class="st-card-badge red"><span class="st-card-rect"></span> ${c.red}</span>`:''}
             </div>
           </div>`).join('')}</div>
     </div>`;
