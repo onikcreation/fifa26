@@ -1158,7 +1158,7 @@ function calcGroups(){
     }
   }
   const s={};
-  for(const[g,tbl]of Object.entries(t)){s[g]=Object.entries(tbl).map(([n,v])=>({name:n,...v,gd:v.gf-v.ga})).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||a.fp-b.fp);}
+  for(const[g,tbl]of Object.entries(t)){s[g]=Object.entries(tbl).map(([n,v])=>({name:n,...v,gd:v.gf-v.ga})).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf||b.fp-a.fp);}
   return s;
 }
 
