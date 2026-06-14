@@ -1452,10 +1452,6 @@ window.openGoalModal=function(id,isKO){
       ?`<input class="gn-sq" list="${listId}" placeholder="স্কোয়াড থেকে বাছাই করুন..." id="gnsel_${side}_${i}" oninput="const t=document.getElementById('gn_${side}_${i}');t.value=this.value">
         <datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
       :'';
-    const assistRow=hasSquad
-      ?`<input class="gn-sq" list="${aListId}" placeholder="স্কোয়াড থেকে..." id="gasel_${side}_${i}" oninput="const t=document.getElementById('ga_${side}_${i}');t.value=this.value">
-        <datalist id="${aListId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
-      :'';
     return`<div class="goal-entry" id="ge_${side}_${i}">
       <input class="gm-in" type="number" min="1" max="130" placeholder="মি." value="${min}" id="gm_${side}_${i}">
       <input type="checkbox" class="pen-cb" id="gp_${side}_${i}" ${pen?'checked':''}><label class="pen-lbl" for="gp_${side}_${i}">P</label>
@@ -1464,11 +1460,11 @@ window.openGoalModal=function(id,isKO){
       <div class="gn-wrap">
         ${squadRow}
         <input class="gn-in" placeholder="গোলদাতার নাম লিখুন" value="${esc(name)}" id="gn_${side}_${i}">
-        <div class="assist-row">
+        ${hasSquad?`<div class="assist-row">
           <span class="assist-lbl"><i class='fas fa-shoe-prints'></i> Assist</span>
-          ${assistRow}
-          <input class="gn-in" placeholder="অ্যাসিস্ট (ঐচ্ছিক)" value="${esc(assist)}" id="ga_${side}_${i}">
-        </div>
+          <input class="gn-sq" style="flex:1" list="${aListId}" placeholder="অ্যাসিস্টকারী বাছাই করুন..." value="${esc(assist)}" id="ga_${side}_${i}">
+          <datalist id="${aListId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>
+        </div>`:''}
       </div>
     </div>`;
   }
@@ -1561,10 +1557,6 @@ window.addGoal=function(side){
       <datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
     :'';
   const aListId=`gnalist_${side}_${i}`;
-  const assistRow=hasSquad
-    ?`<input class="gn-sq" list="${aListId}" placeholder="স্কোয়াড থেকে..." id="gasel_${side}_${i}" oninput="const t=document.getElementById('ga_${side}_${i}');t.value=this.value">
-      <datalist id="${aListId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`
-    :'';
   const d=document.createElement('div');
   d.innerHTML=`<div class="goal-entry" id="ge_${side}_${i}">
     <input class="gm-in" type="number" min="1" max="130" placeholder="মি." id="gm_${side}_${i}">
@@ -1574,11 +1566,11 @@ window.addGoal=function(side){
     <div class="gn-wrap">
       ${squadRow}
       <input class="gn-in" placeholder="গোলদাতার নাম লিখুন" id="gn_${side}_${i}">
-      <div class="assist-row">
+      ${hasSquad?`<div class="assist-row">
         <span class="assist-lbl"><i class='fas fa-shoe-prints'></i> Assist</span>
-        ${assistRow}
-        <input class="gn-in" placeholder="অ্যাসিস্ট (ঐচ্ছিক)" id="ga_${side}_${i}">
-      </div>
+        <input class="gn-sq" style="flex:1" list="${aListId}" placeholder="অ্যাসিস্টকারী বাছাই করুন..." id="ga_${side}_${i}">
+        <datalist id="${aListId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>
+      </div>`:''}
     </div>
   </div>`;
   c.appendChild(d.firstElementChild);
