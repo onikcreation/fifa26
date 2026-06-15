@@ -99,6 +99,8 @@ body::after{content:'';position:fixed;inset:0;
 
 /* STATS STRIP */
 .stats-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.7rem;margin-bottom:1.2rem}
+.stats-strip-desktop{display:none}
+@media(min-width:681px){.stats-strip-desktop{display:grid}}
 @media(max-width:600px){
   .stats-strip{grid-template-columns:repeat(4,1fr);gap:.3rem;margin-bottom:.8rem}
   .sc{padding:.45rem .25rem;border-radius:7px}
@@ -718,6 +720,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 
   <!-- STATS -->
   <div id="p-stats" class="panel">
+    <div class="stats-strip stats-strip-desktop" id="statStripStats"></div>
     <div class="sec-title"><i class="fas fa-chart-line"></i> Stats</div>
     <div class="filters" id="statsGrpFilters"></div>
     <select class="mob-select" id="statsGrpSelect" onchange="window._stg(this.value)"></select>
@@ -1222,7 +1225,7 @@ function renderStrip(){
     }
   }
   const S=window._S;
-  document.getElementById('statStrip').innerHTML=
+  const stripHTML=
     `<div class="sc"><div class="sc-n">${total}</div><div class="sc-l">${S.totalMatches}</div></div>
      <div class="sc"><div class="sc-n">48</div><div class="sc-l">${S.teams}</div></div>
      <div class="sc"><div class="sc-n">${pl}</div><div class="sc-l">${S.played}</div></div>
@@ -1231,6 +1234,8 @@ function renderStrip(){
      <div class="sc"><div class="sc-n">${pl?(gl/pl).toFixed(1):'0.0'}</div><div class="sc-l">${S.avgGoals}</div></div>
      <div class="sc"><div class="sc-n sc-yellow">${yc}</div><div class="sc-l">${S.yellowCards}</div></div>
      <div class="sc"><div class="sc-n sc-red">${rc}</div><div class="sc-l">${S.redCards}</div></div>`;
+  document.getElementById('statStrip').innerHTML=stripHTML;
+  const ss=document.getElementById('statStripStats');if(ss)ss.innerHTML=stripHTML;
 }
 
 // Schedule
