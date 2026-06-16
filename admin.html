@@ -1288,11 +1288,10 @@ function renderKO(){
   if(!allGrpDone){
     if(lockEl)lockEl.innerHTML=`<div style="background:rgba(139,21,56,.2);border:1px solid rgba(139,21,56,.5);border-radius:10px;padding:1.2rem;margin-bottom:1rem;text-align:center"><i class="fas fa-lock" style="color:#D4AF37;font-size:1.6rem;display:block;margin-bottom:.5rem"></i><div style="font-size:.9rem;color:#D4AF37;font-family:'Google Sans',sans-serif;margin-bottom:.3rem">গ্রুপ পর্ব শেষ হয়নি</div><div style="font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:.7rem">${doneGrp}/${totalGrp} ম্যাচ সম্পন্ন হয়েছে</div><div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;max-width:220px;margin:0 auto"><div style="height:100%;width:${Math.round(doneGrp/totalGrp*100)}%;background:linear-gradient(90deg,#8B1538,#D4AF37);border-radius:3px"></div></div></div>`;
     if(toggleEl)toggleEl.style.display='none';
-    document.getElementById('koGrid').innerHTML='';
-    return;
+  } else {
+    if(lockEl)lockEl.innerHTML='';
+    if(toggleEl)toggleEl.style.display='';
   }
-  if(lockEl)lockEl.innerHTML='';
-  if(toggleEl)toggleEl.style.display='';
 
   const grps=calcGroupsAdmin();
   const b3map=buildB3MapAdmin(grps);

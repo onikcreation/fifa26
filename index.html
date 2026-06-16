@@ -1198,7 +1198,7 @@ function renderAll(){
   const grps=calcGroups();
   renderStrip(grps);
   renderSchedFilters();
-  renderMatches(schedGrp);
+  renderMatches(schedGrp,grps);
   renderGroups(grps);
   renderBracket(grps);
   renderStats(grps);
@@ -1254,11 +1254,14 @@ window.setPGTab=function(v){
   renderMatches(schedGrp);
 };
 
-function renderMatches(grp){
+function renderMatches(grp,grps=null){
   const grpList=grp==='KO'?[]:grp==='ALL'?MATCHES:MATCHES.filter(m=>m.grp===grp);
   const koAll=KO_ROUNDS.flatMap(r=>r.matches.map(m=>({...m,_ko:true,_rs:r.short,_rn:r.name})));
   const koList=(grp==='ALL'||grp==='KO')?koAll:[];
   const list=[...grpList,...koList];
+  // KO slot resolution maps
+  let _grps=grps,_b3={},_wmap={winners:{},losers:{}};
+  if(koList.length>0){if(!_grps)_grps=calcGroups();_b3=buildBest3rdMap(_grps);_wmap=buildWinnerMap(_grps,_b3);}
 
   function bigFlag(name){
     const t=TEAMS[name];
@@ -1315,8 +1318,9 @@ function renderMatches(grp){
   function koCardHTML(m){
     const sc=scores[m.id]||{};
     const done=sc.s1!==undefined&&sc.s1!==null;
-    const t1=sc.t1||m.s1||'';
-    const t2=sc.t2||m.s2||'';
+    let t1=sc.t1||'';let t2=sc.t2||'';
+    if(!t1){if(m.s1?.startsWith('3rd '))t1=_b3[`${m.id}_s1`]||m.s1||'';else t1=resolveKOSlot(m.s1,_grps,_b3,_wmap)||m.s1||'';}
+    if(!t2){if(m.s2?.startsWith('3rd '))t2=_b3[`${m.id}_s2`]||m.s2||'';else t2=resolveKOSlot(m.s2,_grps,_b3,_wmap)||m.s2||'';}
     const g1=sc.goals1||[],g2=sc.goals2||[];
     const c1=sc.cards1||[],c2=sc.cards2||[];
     const hasGoals=g1.length>0||g2.length>0;
