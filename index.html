@@ -140,6 +140,10 @@ body::after{content:'';position:fixed;inset:0;
 .ctrl-btn{font-family:"Google Sans",sans-serif;font-size:.78rem;letter-spacing:1.5px;padding:.35rem .9rem;background:rgba(139,21,56,0.1);border:1px solid rgba(212,175,55,0.2);border-radius:20px;color:var(--neon);cursor:pointer;transition:all .2s}
 .ctrl-btn:hover{background:rgba(139,21,56,0.22);border-color:var(--neon);box-shadow:0 0 8px rgba(139,21,56,0.3)}
 .date-section{overflow:hidden}
+.ko-rd-divider{display:flex;align-items:center;gap:.7rem;margin:1.2rem 0 .5rem}
+.ko-rd-divider::before,.ko-rd-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(212,175,55,.35),transparent)}
+.ko-rd-divider::before{background:linear-gradient(90deg,transparent,rgba(212,175,55,.35))}
+.ko-rd-label{font-family:"Google Sans",sans-serif;font-size:.8rem;letter-spacing:2px;color:var(--neon);white-space:nowrap;padding:.25rem .7rem;border:1px solid rgba(212,175,55,.3);border-radius:20px;background:rgba(212,175,55,.06)}
 .date-section-title{font-family:"Google Sans",sans-serif;font-size:1rem;letter-spacing:2px;color:var(--neon);margin-bottom:.7rem;display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;background:rgba(139,21,56,0.08);border-left:3px solid var(--maroon);border-radius:0 6px 6px 0;cursor:pointer;-webkit-user-select:none;user-select:none;transition:all .2s}
 .date-section-title:hover{background:rgba(139,21,56,0.14)}
 .date-section-title .ds-arrow{margin-left:auto;font-size:.75rem;transition:transform .25s;display:inline-block}
@@ -1359,74 +1363,56 @@ function renderMatches(grp,grps=null){
     </div>`;
   }
 
-  // Filter matches individually by past flag
-  const filteredList=schedView==='past'
-    ?list.filter(m=>scores[m.id]?.past===true)
-    :schedView==='upcoming'
-      ?list.filter(m=>!scores[m.id]?.past)
-      :list;
-  // Group by date
-  const byDate={};
-  for(const m of filteredList){
-    if(!byDate[m.date])byDate[m.date]=[];
-    byDate[m.date].push(m);
-  }
-  for(const d of Object.keys(byDate)){
-    if(schedView==='past') byDate[d].sort((a,b)=>b.time.localeCompare(a.time));
-    else byDate[d].sort((a,b)=>a.time.localeCompare(b.time));
-  }
-  const allDates=Object.keys(byDate).sort();
+  function filterByView(m){return schedView==='past'?scores[m.id]?.past===true:schedView==='upcoming'?!scores[m.id]?.past:true;}
+  const filteredGrp=grpList.filter(filterByView);
+  const filteredKO=koList.filter(filterByView);
   const now=new Date();
   const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  const sortedDates=schedView==='past'?[...allDates].reverse():allDates;
   const S=window._S;
-
-  function dateTitle(d){
-    const dt=new Date(d+'T00:00:00');
-    return`${S.days[dt.getDay()]}, ${dt.getDate()} ${S.months[dt.getMonth()]} ${dt.getFullYear()}`;
+  function dateTitle(d){const dt=new Date(d+'T00:00:00');return`${S.days[dt.getDay()]}, ${dt.getDate()} ${S.months[dt.getMonth()]} ${dt.getFullYear()}`;}
+  function buildDateSections(matches,cardFn){
+    const bd={};
+    for(const m of matches){if(!bd[m.date])bd[m.date]=[];bd[m.date].push(m);}
+    for(const d of Object.keys(bd)){if(schedView==='past')bd[d].sort((a,b)=>b.time.localeCompare(a.time));else bd[d].sort((a,b)=>a.time.localeCompare(b.time));}
+    const sorted=Object.keys(bd).sort();
+    const dates=schedView==='past'?[...sorted].reverse():sorted;
+    return dates.map(date=>{
+      const allDone=bd[date].every(m=>scores[m.id]?.past===true);
+      const doneCount=bd[date].filter(m=>scores[m.id]?.past===true).length;
+      const total=bd[date].length;
+      const isToday=date===todayStr;
+      const statusBadge=allDone?`<span class="ds-done">${S.doneBadge(doneCount,total)}</span>`:doneCount>0?`<span class="ds-done">${S.partBadge(doneCount,total)}</span>`:`<span class="ds-past">${S.matchesBadge(total)}</span>`;
+      const todayBadge=isToday?`<span style="background:rgba(161,240,0,.2);border:1px solid var(--neon);border-radius:10px;font-size:.6rem;padding:.1rem .5rem;color:var(--neon);font-family:'Google Sans',sans-serif">${S.today}</span>`:'';
+      return`<div class="date-section" data-date="${date}">
+        <div class="date-section-title" onclick="toggleSection(this)">
+          <i class='fas fa-calendar-days'></i>
+          <span>${dateTitle(date)}</span>
+          ${todayBadge}
+          ${statusBadge}
+          <span class="ds-arrow">▼</span>
+        </div>
+        <div class="date-section-body">
+          <div class="match-grid">${bd[date].map(cardFn).join('')}</div>
+        </div>
+      </div>`;
+    }).join('');
   }
-
-  function isDatePast(date){return date<todayStr;}
-  function isDateAllDone(date){return byDate[date].every(m=>scores[m.id]?.past===true);}
-  function getDoneCount(date){return byDate[date].filter(m=>scores[m.id]?.past===true).length;}
-
-  document.getElementById('matchList').innerHTML=sortedDates.map(date=>{
-    const past=isDatePast(date);
-    const allDone=isDateAllDone(date);
-    const doneCount=getDoneCount(date);
-    const total=byDate[date].length;
-    // Auto-collapse past dates where all matches done
-    const collapsed=false;
-    const isToday=date===todayStr;
-
-    const statusBadge=allDone
-      ?`<span class="ds-done">${S.doneBadge(doneCount,total)}</span>`
-      :doneCount>0
-        ?`<span class="ds-done">${S.partBadge(doneCount,total)}</span>`
-        :`<span class="ds-past">${S.matchesBadge(total)}</span>`;
-
-    const todayBadge=isToday?`<span style="background:rgba(161,240,0,.2);border:1px solid var(--neon);border-radius:10px;font-size:.6rem;padding:.1rem .5rem;color:var(--neon);font-family:"Google Sans",sans-serif">${S.today}</span>`:'';
-
-    return`<div class="date-section" data-date="${date}">
-      <div class="date-section-title" onclick="toggleSection(this)">
-        <i class='fas fa-calendar-days'></i>
-        <span>${dateTitle(date)}</span>
-        ${todayBadge}
-        ${statusBadge}
-        <span class="ds-arrow" style="${collapsed?'transform:rotate(-90deg)':''}">▼</span>
-      </div>
-      <div class="date-section-body ${collapsed?'collapsed':''}">
-        <div class="match-grid">${byDate[date].map(m=>m._ko?koCardHTML(m):cardHTML(m)).join('')}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Update expand info
-  const total=sortedDates.length;
+  let html='';
+  if(filteredGrp.length>0)html+=buildDateSections(filteredGrp,cardHTML);
+  if(filteredKO.length>0){
+    for(const r of KO_ROUNDS){
+      const rm=filteredKO.filter(m=>m._rs===r.short);
+      if(rm.length===0)continue;
+      html+=`<div class="ko-rd-divider"><span class="ko-rd-label">${r.name}</span></div>`;
+      html+=buildDateSections(rm,koCardHTML);
+    }
+  }
+  if(!html)html=`<div class="stats-empty">${schedView==='past'?S.noPlayedYet:S.allDone}</div>`;
+  document.getElementById('matchList').innerHTML=html;
+  const total=document.querySelectorAll('.date-section-body').length;
   const collapsed=document.querySelectorAll('.date-section-body.collapsed').length;
   const info=document.getElementById('expandInfo');
-  const _S=window._S;
-  if(info)info.textContent=_S.openClosed(total-collapsed,collapsed);
+  if(info)info.textContent=S.openClosed(total-collapsed,collapsed);
 }
 
 // Toggle individual section

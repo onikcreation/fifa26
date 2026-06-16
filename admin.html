@@ -494,6 +494,9 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
 .ko-sv:hover{background:rgba(161,240,0,.22)}
 .ko-goal-btn{font-size:.68rem;padding:.3rem .6rem;background:rgba(161,240,0,.1);border:1px solid var(--border);border-radius:5px;color:var(--neon);cursor:pointer;white-space:nowrap}
 .ko-goal-btn:hover{background:rgba(161,240,0,.15)}
+.ko-clr-btn{font-size:.68rem;padding:.3rem .55rem;background:rgba(255,50,50,.08);border:1px solid rgba(255,50,50,.25);border-radius:5px;color:#ff6060;cursor:pointer}
+.ko-clr-btn:hover{background:rgba(255,50,50,.18)}
+.ko-sv:disabled,.ko-goal-btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
 .preset-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid rgba(255,255,255,.25)}
 .pd-neon{background:#A1F000}.pd-gold{background:#c9a84c}.pd-blue{background:#00d4ff}.pd-volcano{background:#ff6b35}.pd-github{background:#58a6ff}
 .pd-royalgold{background:#FFD700}.pd-crimson{background:#ff3232}.pd-purple{background:#b47cff}.pd-teal{background:#00e5cc}.pd-amber{background:#ff9500}
@@ -1297,10 +1300,11 @@ function renderKO(){
   const b3map=buildB3MapAdmin(grps);
   const winnerMap=buildWinnerMapAdmin(grps,b3map);
 
-  function cardHTML(m){
+  function cardHTML(m,locked=false){
     const sc=dbSc[m.id]||{};
     const hg=(sc.goals1?.length||0)+(sc.goals2?.length||0);
     const hc=(sc.cards1?.length||0)+(sc.cards2?.length||0);
+    const hasData=sc.s1!==undefined||hg>0||hc>0;
     let autoT1='',autoT2='';
     if(!sc.t1){
       if(m.s1?.startsWith('3rd '))autoT1=b3map[`${m.id}_s1`]||'';
@@ -1345,9 +1349,10 @@ function renderKO(){
         </table>
       </div>
       <div class="ko-actions">
-        <button class="ko-sv" onclick="window.saveKO('${m.id}')"><i class='fas fa-floppy-disk'></i> Save</button>
-        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true)"><i class='fas fa-futbol'></i>${hg?' '+hg:' '+(window._L||LABELS.bn).koGoals}</button>
-        <button class="ko-goal-btn" onclick="openGoalModal('${m.id}',true);setTimeout(()=>switchModalTab('cards',document.querySelector('.modal-tab:nth-child(2)')),50)"><svg width="11" height="15" viewBox="0 0 11 15" style="vertical-align:middle;margin-right:3px"><rect x="0" y="0" width="5" height="15" rx="1" fill="#ffc800"/><rect x="5.5" y="0" width="5.5" height="15" rx="1" fill="#ff3232"/></svg>${hc?' '+hc:' '+(window._L||LABELS.bn).koCards}</button>
+        <button class="ko-sv" ${locked?'disabled title="গ্রুপ পর্ব শেষ হয়নি"':''} onclick="window.saveKO('${m.id}')"><i class='fas fa-floppy-disk'></i> Save</button>
+        <button class="ko-goal-btn" ${locked?'disabled':''} onclick="openGoalModal('${m.id}',true)"><i class='fas fa-futbol'></i>${hg?' '+hg:' '+(window._L||LABELS.bn).koGoals}</button>
+        <button class="ko-goal-btn" ${locked?'disabled':''} onclick="openGoalModal('${m.id}',true);setTimeout(()=>switchModalTab('cards',document.querySelector('.modal-tab:nth-child(2)')),50)"><svg width="11" height="15" viewBox="0 0 11 15" style="vertical-align:middle;margin-right:3px"><rect x="0" y="0" width="5" height="15" rx="1" fill="#ffc800"/><rect x="5.5" y="0" width="5.5" height="15" rx="1" fill="#ff3232"/></svg>${hc?' '+hc:' '+(window._L||LABELS.bn).koCards}</button>
+        ${hasData?`<button class="ko-clr-btn" onclick="window.clearKO('${m.id}')"><i class='fas fa-trash-can'></i></button>`:''}
       </div>
     </div>`;
   }
@@ -1370,12 +1375,18 @@ function renderKO(){
     ?`<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.4);font-size:.85rem">${admKOView==='past'?'কোনো সম্পন্ন ম্যাচ নেই':'কোনো আসন্ন ম্যাচ নেই'}</div>`
     :filteredSections.map(sec=>`
     <div class="ko-section-title">${sec.icon} ${sec.name} <span style="font-size:.65rem;opacity:.5">(${sec.matches.length}${cs})</span></div>
-    ${sec.matches.map(m=>cardHTML({...m,roundName:sec.name})).join('')}
+    ${sec.matches.map(m=>cardHTML({...m,roundName:sec.name},!allGrpDone)).join('')}
   `).join('');
 }
 
 window.toggleET=function(id,on){document.getElementById('etS_'+id).style.display=on?'block':'none';};
 window.togglePen=function(id,on){document.getElementById('penS_'+id).style.display=on?'block':'none';};
+
+window.clearKO=async function(id){
+  if(!confirm('এই ম্যাচের সব ডাটা মুছে দেবেন?'))return;
+  try{await set(ref(db,'scores/'+id),null);toast(`Match #${id} ক্লিয়ার ✓`,'ok');}
+  catch(e){toast('Error: '+e.message,'err');}
+};
 
 window.saveKO=async function(id){
   const t1=document.getElementById('kt1_'+id)?.value?.trim();
