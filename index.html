@@ -231,6 +231,7 @@ body::after{content:'';position:fixed;inset:0;
 .grp-hd{background:linear-gradient(135deg,rgba(139,21,56,0.3),rgba(20,20,20,0.98));padding:.55rem .9rem;display:flex;align-items:center;gap:.55rem;border-bottom:1px solid rgba(255,255,255,0.06)}
 .grp-let{font-family:"Google Sans",sans-serif;font-size:1.6rem;color:var(--neon);line-height:1}
 .grp-lbl{font-size:.62rem;color:var(--gray);letter-spacing:1px}
+.grp-r32-label{margin-left:auto;font-size:.58rem;color:var(--neon);letter-spacing:.8px;opacity:.75;white-space:nowrap;font-family:"Google Sans",sans-serif;text-transform:uppercase}
 .gt{width:100%;border-collapse:collapse;font-size:.77rem}
 .gt th{padding:.4rem .4rem;text-align:center;font-size:.57rem;letter-spacing:1px;color:rgba(255,255,255,0.85);background:var(--maroon);border-bottom:1px solid rgba(255,255,255,0.08)}
 .gt th:first-child{text-align:left;padding-left:.65rem}
@@ -1453,9 +1454,10 @@ window.collapseAll=function(){
 function renderGroups(grps){
   const S=window._S;
   const GRP_COLORS={A:'linear-gradient(135deg,#2e7d32,#43a047)',B:'linear-gradient(135deg,#1565c0,#1976d2)',C:'linear-gradient(135deg,#b8860b,#DAA520)',D:'linear-gradient(135deg,#6a1b9a,#7b1fa2)',E:'linear-gradient(135deg,#e65100,#f57c00)',F:'linear-gradient(135deg,#00695c,#00796b)',G:'linear-gradient(135deg,#b71c1c,#c62828)',H:'linear-gradient(135deg,#0277bd,#0288d1)',I:'linear-gradient(135deg,#6a1b9a,#8e24aa)',J:'linear-gradient(135deg,#b8860b,#c9a227)',K:'linear-gradient(135deg,#2e7d32,#388e3c)',L:'linear-gradient(135deg,#1565c0,#1e88e5)'};
+  const R32_WITH={A:'B',B:'A',C:'F',D:'G',E:'I',F:'C',G:'D',H:'J',I:'E',J:'H',K:'L',L:'K'};
   document.getElementById('grpGrid').innerHTML=Object.entries(grps).map(([g,teams])=>`
     <div class="grp-card">
-      <div class="grp-hd" style="--gc:${GRP_COLORS[g]||''}"><div class="grp-let">${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div></div>
+      <div class="grp-hd" style="--gc:${GRP_COLORS[g]||''}"><div class="grp-let">${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div><div class="grp-r32-label">R32 With ${R32_WITH[g]||''}</div></div>
       <div class="gt-wrap"><table class="gt">
         <thead><tr><th>${S.team}</th><th>${S.pl}</th><th>${S.won}</th><th>${S.draw}</th><th>${S.lost}</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
