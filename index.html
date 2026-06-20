@@ -696,6 +696,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
     <div class="stats-strip" id="statStrip"></div>
     <div class="sec-title">ম্যাচ সূচি</div>
     <div class="filters" id="schedFilters"></div>
+    <select class="mob-select" id="schedSelect" title="Group Filter" onchange="window._sfg(this.value)"></select>
     <div class="pg-toggle-wrap">
       <div class="pg-toggle">
         <button type="button" class="pg-tab" id="pgPast" onclick="setPGTab('past')"><i class="fas fa-clock-rotate-left"></i> Past Games</button>
@@ -1276,6 +1277,8 @@ function renderSchedFilters(){
   document.getElementById('schedFilters').innerHTML=gs.map(g=>
     `<button class="fb ${schedGrp===g?'on':''}" onclick="window._sfg('${g}')">${g==='ALL'?S.allMatches:g==='KO'?'Knockout':'Group '+g}</button>`
   ).join('');
+  const sel=document.getElementById('schedSelect');
+  if(sel){sel.innerHTML=gs.map(g=>`<option value="${g}" ${schedGrp===g?'selected':''}>${g==='ALL'?S.allMatches:g==='KO'?'Knockout':'Group '+g}</option>`).join('');}
 }
 window._sfg=function(g){schedGrp=g;renderSchedFilters();renderMatches(g);};
 window.setPGTab=function(v){
