@@ -225,7 +225,7 @@ body::after{content:'';position:fixed;inset:0;
 
 /* GROUP */
 .grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem}
-.gt-wrap{overflow-x:visible}
+.gt-wrap{overflow-x:auto}
 .grp-card{background:var(--card);border:1px solid var(--border2);border-radius:10px;overflow:hidden;position:relative}
 .grp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-primary)}
 .grp-hd{background:linear-gradient(135deg,rgba(139,21,56,0.3),rgba(20,20,20,0.98));padding:.55rem .9rem;display:flex;align-items:center;gap:.55rem;border-bottom:1px solid rgba(255,255,255,0.06)}
@@ -1463,7 +1463,7 @@ function renderGroups(grps){
     <div class="grp-card">
       <div class="grp-hd" style="--gc:${GRP_COLORS[g]||''}"><div class="grp-let">${g}</div><div class="grp-lbl">${S.grpLabel(g)}</div><div class="grp-r32-label">R32 With ${R32_WITH[g]||''}</div></div>
       <div class="gt-wrap"><table class="gt">
-        <thead><tr style="background:rgba(0,0,0,0.6)"><th style="color:#fff">${S.team}</th><th style="color:#fff">${S.pl}</th><th style="color:#fff">${S.won}</th><th style="color:#fff">${S.draw}</th><th style="color:#fff">${S.lost}</th><th style="color:#fff">GF</th><th style="color:#fff">GA</th><th style="color:#fff">GD</th><th style="color:#fff">Pts</th></tr></thead>
+        <thead><tr style="background:rgba(0,0,0,0.6)"><th style="color:#fff">${S.team}</th><th style="color:#fff">${S.pl}</th><th style="color:#fff">${S.won}</th><th style="color:#fff">${S.draw}</th><th style="color:#fff">${S.lost}</th><th style="color:#fff">GF</th><th style="color:#fff">GA</th><th style="color:#fff">GD</th><th style="color:#fff">Pts</th><th style="color:#fff"><span style="display:inline-block;width:7px;height:10px;background:#ffc800;border-radius:1px;vertical-align:middle;margin-right:2px;border:1px solid #a88000"></span>YC</th><th style="color:#fff"><span style="display:inline-block;width:7px;height:10px;background:#ff3232;border-radius:1px;vertical-align:middle;margin-right:2px;border:1px solid #aa1010"></span>RC</th></tr></thead>
         <tbody>${teams.map((t,i)=>`
           <tr class="${i<2?'row-q':i===2?'row-3':''}">
             <td><div class="gt-team"><span class="gt-rank">${i+1}</span>${fImg(t.name,20,15)}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tNameRanked(t.name)}</span></div></td>
@@ -1471,6 +1471,8 @@ function renderGroups(grps){
             <td>${t.gf}</td><td>${t.ga}</td>
             <td class="${t.gd>0?'gdp':t.gd<0?'gdn':'gdz'}">${t.gd>0?'+'+t.gd:t.gd}</td>
             <td class="pts-c">${t.pts}</td>
+            <td style="color:#ffc800;font-weight:600;font-size:.75rem">${t.yc||0}</td>
+            <td style="color:#ff4444;font-weight:600;font-size:.75rem">${t.rc||0}</td>
           </tr>`).join('')}
         </tbody>
       </table></div>
