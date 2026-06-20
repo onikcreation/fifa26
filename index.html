@@ -345,6 +345,11 @@ body::after{content:'';position:fixed;inset:0;
 .sr-name{font-size:.68rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sr-team{font-size:.54rem;color:var(--gray)}
 .sr-goals{font-family:"Google Sans",sans-serif;font-size:.88rem;color:var(--neon)}
+.sr-badges{display:flex;align-items:center;gap:.22rem;flex-shrink:0}
+.sr-ast{font-size:.65rem;color:rgba(255,255,255,.55);font-family:"Google Sans",sans-serif;display:flex;align-items:center;gap:.18rem}
+.sr-ast i{font-size:.55rem;color:rgba(255,255,255,.4)}
+.sr-crd{display:inline-flex;align-items:center;gap:.14rem;font-size:.65rem;font-family:"Google Sans",sans-serif}
+.sr-crd-rect{display:inline-block;width:6px;height:9px;border-radius:1px;flex-shrink:0}
 .team-row{display:flex;align-items:center;gap:.3rem;padding:.28rem .45rem;border-bottom:1px solid var(--border2)}
 .team-row:last-child{border-bottom:none}
 .team-row:hover{background:rgba(255,255,255,.03)}
@@ -1964,6 +1969,14 @@ function renderStats(grps){
   }}
   let assisters=Object.values(assistMap).sort((a,b)=>b.assists-a.assists);
 
+  // ── Player cards ──
+  const playerCardMap={};
+  function _addPC(cards,team){for(const c of(cards||[])){const k=`${c.name}||${team}`;if(!playerCardMap[k])playerCardMap[k]={yc:0,rc:0};if(c.type==='yellow')playerCardMap[k].yc++;else if(c.type==='yr'){playerCardMap[k].yc++;playerCardMap[k].rc++;}else if(c.type==='red')playerCardMap[k].rc++;}}
+  for(const m of MATCHES){const sc=scores[m.id]||{};_addPC(sc.cards1,m.t1);_addPC(sc.cards2,m.t2);}
+  for(const round of KO_ROUNDS){for(const m of round.matches){const sc=scores[m.id]||{};const t1=sc.t1||'',t2=sc.t2||'';if(t1)_addPC(sc.cards1,t1);if(t2)_addPC(sc.cards2,t2);}}
+  // Augment scorers with assists + cards
+  scorers=scorers.map(s=>{const ak=`${s.name}||${s.team}`;const ck=`${s.name}||${s.team}`;return{...s,assists:assistMap[ak]?.assists||0,yc:playerCardMap[ck]?.yc||0,rc:playerCardMap[ck]?.rc||0};});
+
   // ── Team goals ──
   const teamGoals={};
   for(const m of MATCHES){
@@ -2155,6 +2168,11 @@ function renderStats(grps){
             <div class="sr-rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</div>
             ${fImg(s.team,26,19)}
             <div class="sr-info"><div class="sr-name">${esc(s.name)}</div><div class="sr-team">${tNameRanked(s.team)}</div></div>
+            <div class="sr-badges">
+              ${s.assists>0?`<span class="sr-ast"><i class="fas fa-shoe-prints"></i>${s.assists}</span>`:''}
+              ${s.yc>0?`<span class="sr-crd"><span class="sr-crd-rect" style="background:#ffc800;border:1px solid #a88000"></span>${s.yc}</span>`:''}
+              ${s.rc>0?`<span class="sr-crd"><span class="sr-crd-rect" style="background:#ff3232;border:1px solid #aa1010"></span>${s.rc}</span>`:''}
+            </div>
             <div class="sr-goals">${s.goals}${s.pens>0?`<span style="font-size:.75rem;color:var(--orange);margin-left:3px">(${s.pens})</span>`:''}</div>
           </div>`).join('')}</div>
     </div>
