@@ -600,9 +600,6 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
 @media(max-width:380px){.sq-grid{grid-template-columns:1fr}}
 
 /* ══ FIFA RANKING PAGE ══ */
-.rank-meta{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem;font-size:.75rem;color:var(--text2)}
-.rank-meta span{display:flex;align-items:center;gap:.35rem}
-.rank-meta i{color:var(--neon);font-size:.7rem}
 .rank-search-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.9rem;flex-wrap:wrap}
 .rank-search{flex:1;min-width:0;padding:.5rem .9rem;background:rgba(20,20,20,0.95);border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:var(--text);font-family:"Google Sans",sans-serif;font-size:.82rem;outline:none}
 .rank-search:focus{border-color:var(--neon);box-shadow:0 0 8px rgba(212,175,55,0.2)}
@@ -774,11 +771,6 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
   <!-- FIFA RANKING -->
   <div id="p-ranking" class="panel">
     <div class="sec-title"><i class="fas fa-ranking-star"></i> FIFA World Ranking</div>
-    <div class="rank-meta">
-      <span><i class="fas fa-calendar-day"></i> June 10, 2026</span>
-      <span><i class="fas fa-globe"></i> <span id="rankTotal"></span> দেশ</span>
-      <span><i class="fas fa-trophy"></i> #1: <span id="rankTop"></span></span>
-    </div>
     <div class="rank-search-row">
       <input type="text" id="rankSearch" class="rank-search" placeholder="🔍 দেশের নাম খুঁজুন..." oninput="filterRanking()">
       <select class="mob-select rank-conf-select" id="rankConfFilter" onchange="filterRanking()">
@@ -2937,10 +2929,6 @@ const FIFA_RANKING=[
 ];
 
 function renderRanking(){
-  const el=document.getElementById('rankTotal');
-  const el2=document.getElementById('rankTop');
-  if(el)el.textContent=FIFA_RANKING.length;
-  if(el2&&FIFA_RANKING[0])el2.innerHTML=`<img src="https://flagcdn.com/20x15/${FIFA_RANKING[0].c}.png" style="width:18px;height:13px;object-fit:cover;border-radius:2px;vertical-align:middle;margin-right:3px">${FIFA_RANKING[0].n}`;
   window.filterRanking();
 }
 
