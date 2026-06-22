@@ -581,7 +581,6 @@ body.stadium-light-theme .ko-rname{background:#D4AF37;color:#041020}
         <button class="bbtn bbtn-save" id="bulkSaveBtn" onclick="window.batchSave()" disabled><i class="fas fa-floppy-disk"></i> সব Save করো</button>
       </div>
       <div class="sec-title">গ্রুপ পর্যায় স্কোর</div>
-      <div class="filters" id="gFilters"></div>
       <select class="mob-select" id="grpSelect" title="Group Filter" onchange="window._afg(this.value)"></select>
       <div class="pg-toggle-wrap">
         <div class="pg-toggle">
@@ -969,9 +968,6 @@ window.switchAdminTab=function(id,el){
 function renderGFilters(){
   const gs=['ALL','A','B','C','D','E','F','G','H','I','J','K','L'];
   const L=window._L||LABELS.bn;
-  document.getElementById('gFilters').innerHTML=gs.map(g=>
-    `<button class="fb ${activeGrp===g?'on':''}" onclick="window._afg('${g}')">${g==='ALL'?L.allMatches:'Group '+g}</button>`
-  ).join('');
   const sel=document.getElementById('grpSelect');
   if(sel)sel.innerHTML=gs.map(g=>`<option value="${g}" ${activeGrp===g?'selected':''}>${g==='ALL'?L.allMatches:'Group '+g}</option>`).join('');
 }
