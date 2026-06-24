@@ -2223,9 +2223,9 @@ function renderStats(grps){
             ${fImg(name,26,19)}
             <div class="sr-info" style="flex:1"><div class="sr-name">${tNameRanked(name)}</div></div>
             <div class="st-cards-wrap">
-              <span class="st-card-badge yellow"><span class="st-card-rect"></span> ${v.yellow}</span>
+              ${v.yellow>0?`<span class="st-card-badge yellow"><span class="st-card-rect"></span> ${v.yellow}</span>`:`<span style="color:var(--gray);font-size:.8rem">-</span>`}
               ${v.yr>0?`<span class="st-card-badge yr"><span class="st-card-rect"></span> ${v.yr}</span>`:''}
-              <span class="st-card-badge red"><span class="st-card-rect"></span> ${v.red}</span>
+              ${v.red>0?`<span class="st-card-badge red"><span class="st-card-rect"></span> ${v.red}</span>`:`<span style="color:var(--gray);font-size:.8rem">-</span>`}
             </div>
           </div>`).join('')}</div>
     </div>
