@@ -2060,7 +2060,7 @@ function renderStats(grps){
         const ms=Number(myScore),os=Number(opScore);
         result=ms>os?'W':ms<os?'L':'D';
       }
-      const row={m,opp,oppCode,myScore,opScore,result,done};
+      const row={m,opp:tNameRanked(opp),oppCode,myScore,opScore,result,done};
       if(done)played.push(row);else upcoming.push(row);
     }
     // KO matches — resolveKOSlot + b3map দিয়ে actual team বের করি
