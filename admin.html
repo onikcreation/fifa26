@@ -1283,6 +1283,13 @@ function resolveWinSlot(slot,wmap){
 }
 
 function renderKO(){
+  // Inject team datalist once
+  if(!document.getElementById('koTeamList')){
+    const dl=document.createElement('datalist');
+    dl.id='koTeamList';
+    dl.innerHTML=Object.entries(TEAMS).map(([k,v])=>`<option value="${k}">${v.en}</option>`).join('');
+    document.body.appendChild(dl);
+  }
   // Lock check: all 72 group matches must be marked past
   const totalGrp=MATCHES.length;
   const doneGrp=MATCHES.filter(m=>dbSc[m.id]?.past===true).length;
@@ -1334,13 +1341,13 @@ function renderKO(){
           </tr></thead>
           <tbody>
             <tr>
-              <td><input class="ko-ti" id="kt1_${m.id}" placeholder="${(window._L||LABELS.bn).team1}" value="${t1val}" style="${isAuto1?'color:var(--gold)':''}"></td>
+              <td><input class="ko-ti" list="koTeamList" id="kt1_${m.id}" placeholder="${(window._L||LABELS.bn).team1}" value="${t1val}" style="${isAuto1?'color:var(--gold)':''}"></td>
               <td><input class="ko-si" type="number" min="0" id="ks1_${m.id}" placeholder="-" value="${sc.s1!==undefined?sc.s1:''}"></td>
               <td><input class="ko-si ko-et" type="number" min="0" id="ket1_${m.id}" placeholder="-" value="${sc.et1!==undefined?sc.et1:''}"></td>
               <td><input class="ko-si ko-pen" type="number" min="0" id="kp1_${m.id}" placeholder="-" value="${sc.pen1!==undefined?sc.pen1:''}"></td>
             </tr>
             <tr>
-              <td><input class="ko-ti" id="kt2_${m.id}" placeholder="${(window._L||LABELS.bn).team2}" value="${t2val}" style="${isAuto2?'color:var(--gold)':''}"></td>
+              <td><input class="ko-ti" list="koTeamList" id="kt2_${m.id}" placeholder="${(window._L||LABELS.bn).team2}" value="${t2val}" style="${isAuto2?'color:var(--gold)':''}"></td>
               <td><input class="ko-si" type="number" min="0" id="ks2_${m.id}" placeholder="-" value="${sc.s2!==undefined?sc.s2:''}"></td>
               <td><input class="ko-si ko-et" type="number" min="0" id="ket2_${m.id}" placeholder="-" value="${sc.et2!==undefined?sc.et2:''}"></td>
               <td><input class="ko-si ko-pen" type="number" min="0" id="kp2_${m.id}" placeholder="-" value="${sc.pen2!==undefined?sc.pen2:''}"></td>
