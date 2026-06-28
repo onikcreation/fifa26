@@ -2186,7 +2186,9 @@ function renderStats(grps){
           oppDisplay=opp||'TBD';
         }
 
-        const row={m,opp:oppDisplay,oppCode:oppDisplayCode,myScore,opScore,result,done,round:round.name,scoreSuffix};
+        const etDisp=(sc.et1!==undefined&&sc.et2!==undefined)?`${isHome?sc.et1:sc.et2}–${isHome?sc.et2:sc.et1}`:null;
+        const penDisp=(sc.pen1!==undefined&&sc.pen2!==undefined)?`${isHome?sc.pen1:sc.pen2}–${isHome?sc.pen2:sc.pen1}`:null;
+        const row={m,opp:oppDisplay,oppCode:oppDisplayCode,myScore,opScore,result,done,round:round.name,etDisp,penDisp};
         if(done)played.push(row);else upcoming.push(row);
       }
     }
@@ -2201,7 +2203,7 @@ function renderStats(grps){
           ${row.round?`<span style="font-size:.6rem;opacity:.5;margin-left:3px">(${row.round})</span>`:''}
         </div>
         ${isDone
-          ?`<div class="mh-score" style="color:${resultColor[row.result]||'#fff'}">${row.result} ${row.myScore}–${row.opScore}${row.scoreSuffix?` <span style="font-size:.62em;opacity:.65">(${row.scoreSuffix})</span>`:''}</div>`
+          ?`<div class="mh-score" style="color:${resultColor[row.result]||'#fff'}">${row.result} ${row.myScore}–${row.opScore}${row.etDisp?` <span style="font-size:.62em;opacity:.7">&rsaquo; ${row.etDisp} <span style="opacity:.75">(e)</span></span>`:''} ${row.penDisp?`<span style="font-size:.62em;opacity:.7">&rsaquo; ${row.penDisp} <span style="opacity:.75">(p)</span></span>`:''}</div>`
           :`<div class="mh-score" style="color:var(--gray)">${S.upcomingScore}</div>`
         }
       </div>`;
