@@ -1620,7 +1620,7 @@ window.openGoalModal=function(id,isKO){
           <i class="fas fa-${scored?'futbol':'xmark'}"></i>
         </button>
         <input type="hidden" id="pg_${side}_${i}" value="${scored?'1':'0'}">
-        <div class="gn-wrap">
+        <div style="flex:1;display:flex;flex-direction:column;gap:.2rem;min-width:0">
           ${hasSquad?`<input class="gn-sq" list="${listId}" placeholder="স্কোয়াড থেকে বাছাই করুন..." id="pnsel_${side}_${i}" oninput="const t=document.getElementById('pn_${side}_${i}');t.value=this.value">
             <datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`:''}
           <input class="pso-name-in" placeholder="খেলোয়াড়ের নাম লিখুন" id="pn_${side}_${i}" value="${esc(name)}">
@@ -1739,7 +1739,7 @@ window.addPSO=function(side){
   d.innerHTML=`<div class="pso-entry" id="pe_${side}_${i}">
     <button type="button" class="pso-res-btn goal" onclick="togglePSOResult('${side}',${i},this)"><i class="fas fa-futbol"></i></button>
     <input type="hidden" id="pg_${side}_${i}" value="1">
-    <div class="gn-wrap">
+    <div style="flex:1;display:flex;flex-direction:column;gap:.2rem;min-width:0">
       ${hasSquad?`<input class="gn-sq" list="${listId}" placeholder="স্কোয়াড থেকে বাছাই করুন..." id="pnsel_${side}_${i}" oninput="const t=document.getElementById('pn_${side}_${i}');t.value=this.value">
         <datalist id="${listId}">${players.map(p=>`<option value="${esc(p.name)}">${p.no}. ${p.pos} · ${esc(p.club)}</option>`).join('')}</datalist>`:''}
       <input class="pso-name-in" placeholder="খেলোয়াড়ের নাম লিখুন" id="pn_${side}_${i}">
