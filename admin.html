@@ -1439,13 +1439,6 @@ window.saveKO=async function(id){
     if(p1!=='')data.pen1=Number(p1);
     if(p2!=='')data.pen2=Number(p2);
   }
-  // Validation
-  if(s1!==''&&s2!==''&&Number(s1)===Number(s2)){
-    if(et1===''||et2===''){toast('90 মিনিটে ড্র হয়েছে। অতিরিক্ত সময়ের স্কোর দিন।','err');return;}
-    if(et1!==''&&et2!==''&&(Number(s1)+Number(et1))===(Number(s2)+Number(et2))){
-      if(p1===''||p2===''){toast('অতিরিক্ত সময়েও ড্র। পেনাল্টি স্কোর দিন।','err');return;}
-    }
-  }
   if(p1!==''&&p2!==''&&Number(p1)===Number(p2)){toast('পেনাল্টিতে সমান স্কোর হতে পারে না।','err');return;}
   if(!Object.keys(data).length){toast('কিছু একটা দিন!','err');return;}
   try{

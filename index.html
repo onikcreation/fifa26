@@ -177,6 +177,11 @@ body::after{content:'';position:fixed;inset:0;
 .mc-vs{font-family:"Google Sans",sans-serif;font-size:1.1rem;color:rgba(212,175,55,0.35);letter-spacing:3px}
 .mc-sc{font-family:"Google Sans",sans-serif;font-size:2.7rem;line-height:1;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .mc-sc-sep{font-family:"Google Sans",sans-serif;font-size:2rem;color:rgba(212,175,55,0.5);margin:0 .1rem}
+.ko-sc-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ko-sc-main{display:flex;align-items:center}
+.ko-aet-row{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--neon);opacity:.75;font-style:italic;letter-spacing:.3px}
+.ko-aet-sc{font-style:normal;font-weight:700;font-size:.65rem;opacity:1}
+.ko-pen-row{font-size:.65rem;color:#ff9800;font-weight:600;background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.35);border-radius:5px;padding:2px 8px;display:flex;align-items:center;gap:4px;font-family:"Google Sans",sans-serif}
 /* Footer */
 .mc-footer{display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem;background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,0.06);margin-top:auto}
 .mc-footer-date{font-family:"Google Sans",sans-serif;font-size:.82rem;letter-spacing:.3px;color:var(--neon)}
@@ -1363,7 +1368,11 @@ function renderMatches(grp,grps=null){
       return`<div class="mc-flag-ph" style="font-size:.52rem;padding:.25rem .1rem;word-break:break-word;line-height:1.2">${esc(name)}</div>`;
     }
     const scoreHTML=done
-      ?`<div><span class="mc-sc">${sc.s1}</span><span class="mc-sc-sep">-</span><span class="mc-sc">${sc.s2}</span></div>${hasET?`<div style="font-size:.58rem;color:var(--gray);text-align:center;margin-top:2px">ET ${sc.et1}-${sc.et2}${hasPen?` · P ${sc.pen1}-${sc.pen2}`:''}</div>`:''}`
+      ?`<div class="ko-sc-wrap">
+          <div class="ko-sc-main"><span class="mc-sc">${sc.s1}</span><span class="mc-sc-sep">–</span><span class="mc-sc">${sc.s2}</span></div>
+          ${hasET?`<div class="ko-aet-row"><span>a.e.t.</span><span class="ko-aet-sc">${Number(sc.s1)+Number(sc.et1||0)} – ${Number(sc.s2)+Number(sc.et2||0)}</span></div>`:''}
+          ${hasPen?`<div class="ko-pen-row"><i class="fas fa-circle-dot" style="font-size:.55rem"></i> Pen <span>${sc.pen1} – ${sc.pen2}</span></div>`:''}
+        </div>`
       :`<span class="mc-vs">VS</span>`;
     const [yr,mo,dy]=m.date.split('-');
     const[dlText2,dlCls2]=dayLabel(m.date);
