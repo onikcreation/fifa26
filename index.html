@@ -340,6 +340,29 @@ body::after{content:'';position:fixed;inset:0;
 .sym-3rd-wrap{width:100%;padding-top:8px;border-top:1px solid var(--border2)}
 .sym-3rd-label{font-size:.6rem;letter-spacing:1px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:4px}
 
+/* Mobile bracket match card */
+.bk-match{background:#141414;border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;margin:2px 0}
+.bk-stbl{width:100%;border-collapse:collapse}
+.bk-stbl thead tr{border-bottom:1px solid rgba(255,255,255,.07)}
+.bk-stbl thead th{font-family:"Google Sans",sans-serif;font-size:.55rem;letter-spacing:.5px;text-align:center;padding:3px 4px 2px}
+.bk-stbl thead th:first-child{text-align:left;padding-left:7px}
+.bk-lbl-90{color:var(--neon)}.bk-lbl-et{color:var(--orange)}.bk-lbl-pen{color:#ff5555}
+.bk-stbl .bk-team{border-bottom:1px solid rgba(255,255,255,.05)}
+.bk-stbl .bk-team:last-child{border-bottom:none}
+.bk-stbl .bk-team.bk-win{background:rgba(139,21,56,.1)}
+.bk-tname{display:flex;align-items:center;gap:5px;padding:5px 7px;color:var(--text);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-stbl .bk-team.bk-win .bk-tname{color:#fff;font-weight:700}
+.bk-tname span.tbd{color:var(--gray);font-style:italic;font-size:.65rem}
+.bk-sc{font-family:"Google Sans",sans-serif;text-align:center;width:26px;padding:5px 3px;font-size:.85rem;vertical-align:middle}
+.bk-sc-90{color:rgba(255,255,255,.4)}.bk-stbl .bk-team.bk-win .bk-sc-90{color:var(--neon)}
+.bk-sc-et{color:var(--orange)}.bk-sc-pen{color:#ff5555}
+.bk-date{font-size:.58rem;color:rgba(255,255,255,.45);padding:3px 7px;background:rgba(0,0,0,.25);border-top:1px solid rgba(255,255,255,.05);font-family:"Google Sans",sans-serif;letter-spacing:.3px}
+/* Sym-match ET/Pen column additions */
+.sym-sc-hdr{display:flex;justify-content:flex-end;padding:0 8px 1px;gap:6px}
+.sym-sc-hdr-lbl{font-family:"Google Sans",sans-serif;font-size:.5rem;letter-spacing:.3px;text-align:right;min-width:16px}
+.sym-lbl-90{color:var(--neon)}.sym-lbl-et{color:var(--orange)}.sym-lbl-pen{color:#ff5555}
+.sym-et-val{font-family:"Google Sans",sans-serif;font-size:.82rem;color:var(--orange);min-width:16px;text-align:right}
+.sym-pen-val{font-family:"Google Sans",sans-serif;font-size:.82rem;color:#ff5555;min-width:16px;text-align:right}
 /* Mobile tabs */
 .bk-round-tabs{display:flex;gap:.3rem;flex-wrap:nowrap;overflow-x:auto;margin-bottom:.8rem;padding-bottom:.3rem;scrollbar-width:none}
 .bk-round-tabs::-webkit-scrollbar{display:none}
@@ -1783,23 +1806,29 @@ function buildMatch(m,grps={},b3map={},winnerMap={}){
   const auto1=!sc.t1&&TEAMS[t1];
   const auto2=!sc.t2&&TEAMS[t2];
 
-  // Score display
-  let scoreDisp='';
-  if(done){
-    scoreDisp=`${sc.s1}–${sc.s2}`;
-    if(et)scoreDisp+=` (ET: ${sc.et1}–${sc.et2})`;
-    if(pen)scoreDisp+=` (PSO: ${sc.pen1}–${sc.pen2})`;
-  }
-
   return`<div class="bk-match">
-    <div class="bk-team ${s1win?'bk-win':''}" style="${auto1?'opacity:.82':''}">
-      ${f1}<span class="bk-tname">${isTBDish(t1)?friendlySlot(t1):displayName(t1)}</span><span class="bk-sc">${done?sc.s1:''}</span>
-    </div>
-    <div class="bk-team ${s2win?'bk-win':''}" style="${auto2?'opacity:.82':''}">
-      ${f2}<span class="bk-tname">${isTBDish(t2)?friendlySlot(t2):displayName(t2)}</span><span class="bk-sc">${done?sc.s2:''}</span>
-    </div>
-    ${et?`<div class="bk-date" style="color:var(--gold)">ET: ${Number(sc.s1)+Number(sc.et1)}–${Number(sc.s2)+Number(sc.et2)}</div>`:''}
-    ${pen?`<div class="bk-date" style="color:var(--orange)">PSO: ${sc.pen1}–${sc.pen2}</div>`:''}
+    <table class="bk-stbl">
+      ${(et||pen)?`<thead><tr>
+        <th></th>
+        <th class="bk-lbl-90">90'</th>
+        ${et?`<th class="bk-lbl-et">ET</th>`:''}
+        ${pen?`<th class="bk-lbl-pen">P</th>`:''}
+      </tr></thead>`:''}
+      <tbody>
+        <tr class="bk-team${s1win?' bk-win':''}" style="${auto1?'opacity:.82':''}">
+          <td class="bk-tname">${f1}<span${isTBDish(t1)?' class="tbd"':''}>${isTBDish(t1)?friendlySlot(t1):displayName(t1)}</span></td>
+          <td class="bk-sc bk-sc-90">${done?sc.s1:''}</td>
+          ${et?`<td class="bk-sc bk-sc-et">${sc.et1}</td>`:''}
+          ${pen?`<td class="bk-sc bk-sc-pen">${sc.pen1}</td>`:''}
+        </tr>
+        <tr class="bk-team${s2win?' bk-win':''}" style="${auto2?'opacity:.82':''}">
+          <td class="bk-tname">${f2}<span${isTBDish(t2)?' class="tbd"':''}>${isTBDish(t2)?friendlySlot(t2):displayName(t2)}</span></td>
+          <td class="bk-sc bk-sc-90">${done?sc.s2:''}</td>
+          ${et?`<td class="bk-sc bk-sc-et">${sc.et2}</td>`:''}
+          ${pen?`<td class="bk-sc bk-sc-pen">${sc.pen2}</td>`:''}
+        </tr>
+      </tbody>
+    </table>
     <div class="bk-date">${fD(m.date)} · ${fT(m.time)}</div>
   </div>`;
 }
@@ -1849,16 +1878,23 @@ function renderBracket(grps={}){
         <span>${koNum(m)?`#${koNum(m)}`:''}</span>
         <span style="font-size:.55rem;color:rgba(255,255,255,.45)">${!compact&&m.date?fD(m.date):''}</span>
       </div>
+      ${done&&(hasET||hasPen)?`<div class="sym-sc-hdr">
+        <span class="sym-sc-hdr-lbl sym-lbl-90">90'</span>
+        ${hasET?`<span class="sym-sc-hdr-lbl sym-lbl-et">ET</span>`:''}
+        ${hasPen?`<span class="sym-sc-hdr-lbl sym-lbl-pen">P</span>`:''}
+      </div>`:''}
       <div class="sym-team sym-t1 ${w&&w===t1?'win':''}" style="${auto1?'opacity:.82':''}">
         ${symFlag(t1)}<span class="sym-tname ${isTBDish(t1)?'tbd':''}">${isTBDish(t1)?friendlySlot(t1):displayName(t1)}</span>
         <span class="sym-score">${s1}</span>
+        ${hasET?`<span class="sym-et-val">${sc.et1}</span>`:''}
+        ${hasPen?`<span class="sym-pen-val">${sc.pen1}</span>`:''}
       </div>
       <div class="sym-team sym-t2 ${w&&w===t2?'win':''}" style="${auto2?'opacity:.82':''}">
         ${symFlag(t2)}<span class="sym-tname ${isTBDish(t2)?'tbd':''}">${isTBDish(t2)?friendlySlot(t2):displayName(t2)}</span>
         <span class="sym-score">${s2}</span>
+        ${hasET?`<span class="sym-et-val">${sc.et2}</span>`:''}
+        ${hasPen?`<span class="sym-pen-val">${sc.pen2}</span>`:''}
       </div>
-      ${hasET?`<div class="sym-extra" style="color:var(--gold)">ET: ${Number(sc.s1)+Number(sc.et1)}–${Number(sc.s2)+Number(sc.et2)}</div>`:''}
-      ${hasPen?`<div class="sym-extra">PSO: ${sc.pen1}–${sc.pen2}</div>`:''}
       <div class="sym-date">${fT(m.time)}</div>
       ${m.stadium?`<div class="sym-stadium"><i class='fas fa-landmark'></i> ${STADIUM_NAME[m.stadium]||m.stadium}</div>`:''}
     </div>`;
