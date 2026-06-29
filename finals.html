@@ -139,6 +139,39 @@ body.stadium-light-theme::before{background-image:url('https://images.unsplash.c
 /* NO-FLAG PLACEHOLDER */
 .fc-flag-ph{width:52px;height:39px;border-radius:6px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.55rem;color:var(--gray);text-align:center;padding:2px}
 
+/* TROPHY SECTION */
+.trophy-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:700px){.trophy-grid{grid-template-columns:1fr}}
+.trophy-card{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--border2);transition:all .2s}
+.trophy-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.6);transform:translateY(-2px)}
+.trophy-card.current{border-color:rgba(212,175,55,.2)}
+.trophy-card-hdr{padding:.75rem 1rem;background:linear-gradient(135deg,rgba(139,21,56,.85) 0%,rgba(30,12,5,.95) 100%);border-bottom:1px solid rgba(212,175,55,.15);display:flex;align-items:center;gap:.75rem}
+.trophy-card.rimet .trophy-card-hdr{background:linear-gradient(135deg,rgba(20,30,60,.9) 0%,rgba(10,10,30,.95) 100%);border-bottom-color:rgba(192,192,192,.1)}
+.trophy-hdr-ic{font-size:1.3rem;color:var(--neon);filter:drop-shadow(0 0 8px rgba(212,175,55,.5));flex-shrink:0}
+.trophy-card.rimet .trophy-hdr-ic{color:rgba(192,192,192,.75);filter:none}
+.trophy-card-title{font-family:"Google Sans",sans-serif;font-size:.9rem;font-weight:700;color:#fff}
+.trophy-card-years{font-size:.62rem;color:rgba(255,255,255,.45);letter-spacing:.5px;margin-top:1px}
+.trophy-specs{padding:.6rem 1rem;display:flex;flex-direction:column}
+.trophy-spec{display:flex;align-items:baseline;gap:.5rem;padding:.32rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.trophy-spec:last-child{border-bottom:none}
+.trophy-spec-key{font-size:.62rem;color:var(--gray);letter-spacing:.3px;min-width:100px;flex-shrink:0}
+.trophy-spec-val{font-size:.73rem;color:var(--text2);flex:1;line-height:1.4}
+.trophy-spec-val.gold{color:var(--neon)}
+.trophy-spec-val.danger{color:#ff6b6b}
+.trophy-notes{padding:.5rem 1rem .75rem;background:rgba(0,0,0,.2);display:flex;flex-direction:column;gap:.3rem}
+.trophy-note-item{display:flex;gap:.45rem;font-size:.65rem;color:rgba(255,255,255,.45);line-height:1.5}
+.trophy-note-item i{color:var(--neon);font-size:.45rem;margin-top:4px;flex-shrink:0}
+.trophy-card.rimet .trophy-note-item i{color:rgba(192,192,192,.5)}
+/* Fact cards */
+.trophy-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:2.5rem}
+@media(max-width:700px){.trophy-facts{grid-template-columns:1fr}}
+.trophy-fact-card{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:.85rem 1rem;display:flex;gap:.7rem;align-items:flex-start;transition:all .2s;position:relative;overflow:hidden}
+.trophy-fact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-primary)}
+.trophy-fact-card:hover{border-color:rgba(212,175,55,.25);transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,0,0,.5)}
+.trophy-fact-ic{width:34px;height:34px;border-radius:9px;background:rgba(139,21,56,.18);border:1px solid rgba(212,175,55,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--neon);font-size:.9rem}
+.trophy-fact-body{flex:1;min-width:0}
+.trophy-fact-title{font-family:"Google Sans",sans-serif;font-size:.78rem;font-weight:700;color:#fff;margin-bottom:4px}
+.trophy-fact-text{font-size:.65rem;color:rgba(255,255,255,.5);line-height:1.55}
 /* FOOTER */
 .page-footer{text-align:center;padding:2rem 1rem;font-size:.72rem;color:var(--gray);border-top:1px solid var(--border2);margin-top:1rem}
 .page-footer a{color:var(--neon);text-decoration:none}
@@ -189,6 +222,87 @@ body.stadium-light-theme::before{background-image:url('https://images.unsplash.c
     <div class="stat-card">
       <div class="stat-n">1930</div>
       <div class="stat-l">প্রথম ফাইনাল<br>FIRST FINAL</div>
+    </div>
+  </div>
+
+  <!-- TROPHY SECTION -->
+  <div class="sec-title"><i class="fas fa-trophy"></i> বিশ্বকাপ ট্রফির ইতিহাস</div>
+  <div class="trophy-grid">
+
+    <!-- Current Trophy -->
+    <div class="trophy-card current">
+      <div class="trophy-card-hdr">
+        <i class="fas fa-trophy trophy-hdr-ic"></i>
+        <div>
+          <div class="trophy-card-title">বর্তমান ট্রফি (FIFA World Cup Trophy)</div>
+          <div class="trophy-card-years">১৯৭৪ সাল থেকে বর্তমান</div>
+        </div>
+      </div>
+      <div class="trophy-specs">
+        <div class="trophy-spec"><span class="trophy-spec-key">ডিজাইনার</span><span class="trophy-spec-val gold">Silvio Gazzaniga (ইতালি)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">নির্মাতা</span><span class="trophy-spec-val">GDE Bertoni, Paderno Dugnano, Italy</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">উচ্চতা</span><span class="trophy-spec-val">৩৬.৮ সেমি (১৪.৫ ইঞ্চি)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">ওজন</span><span class="trophy-spec-val">৬.১৭৫ কেজি (১৩.৬১ পাউন্ড)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">উপাদান</span><span class="trophy-spec-val gold">১৮ ক্যারেট সোনা + ম্যালাকাইট বেস</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">আনুমানিক মূল্য</span><span class="trophy-spec-val">$713,000</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">সংরক্ষণ</span><span class="trophy-spec-val">FIFA World Football Museum, জুরিখ</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">বর্তমান ধারক</span><span class="trophy-spec-val gold">আর্জেন্টিনা (২০২২)</span></div>
+      </div>
+      <div class="trophy-notes">
+        <div class="trophy-note-item"><i class="fas fa-circle"></i> ডিজাইনে দুইজন মানুষ পৃথিবীকে ধরে তুলে ধরার দৃশ্য ফুটিয়ে তোলা হয়েছে।</div>
+        <div class="trophy-note-item"><i class="fas fa-circle"></i> ট্রফিটি ভেতরে ফাঁকা — নির্মাতা প্রতিষ্ঠান GDE Bertoni নিজেই এটি নিশ্চিত করেছে।</div>
+      </div>
+    </div>
+
+    <!-- Jules Rimet Trophy -->
+    <div class="trophy-card rimet">
+      <div class="trophy-card-hdr">
+        <i class="fas fa-medal trophy-hdr-ic"></i>
+        <div>
+          <div class="trophy-card-title">জুলে রিমে ট্রফি (Jules Rimet Trophy)</div>
+          <div class="trophy-card-years">১৯৩০ – ১৯৭০</div>
+        </div>
+      </div>
+      <div class="trophy-specs">
+        <div class="trophy-spec"><span class="trophy-spec-key">মূল নাম</span><span class="trophy-spec-val">"Victory" (বিজয়)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">নামকরণ</span><span class="trophy-spec-val">১৯৪৬ — FIFA সভাপতি Jules Rimet-এর সম্মানে</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">উচ্চতা</span><span class="trophy-spec-val">৩৫ সেমি (১৪ ইঞ্চি)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">ওজন</span><span class="trophy-spec-val">৩.৮ কেজি (৮.৪ পাউন্ড)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">উপাদান</span><span class="trophy-spec-val">গোল্ড-প্লেটেড সিলভার + ল্যাপিস লাজুলি</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">ডিজাইন</span><span class="trophy-spec-val">Nike — গ্রিক বিজয়ের দেবী</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">স্থায়ী মালিকানা</span><span class="trophy-spec-val">ব্রাজিল (১৯৭০ সালে তৃতীয়বার জয়ের পর)</span></div>
+        <div class="trophy-spec"><span class="trophy-spec-key">বর্তমান অবস্থা</span><span class="trophy-spec-val danger">১৯৮৩ সালে চুরি — আজও উদ্ধার হয়নি</span></div>
+      </div>
+      <div class="trophy-notes">
+        <div class="trophy-note-item"><i class="fas fa-circle"></i> WWII-তে নাৎসিদের হাত থেকে বাঁচাতে ইতালির Ottorino Barassi জুতার বাক্সে লুকিয়ে রাখেন।</div>
+        <div class="trophy-note-item"><i class="fas fa-circle"></i> ১৯৬৬ সালে চুরির পর "Pickles" নামের একটি কুকুর লন্ডনের ঝোপে ট্রফিটি খুঁজে পায়।</div>
+      </div>
+    </div>
+
+  </div><!-- /trophy-grid -->
+
+  <!-- TROPHY FACTS -->
+  <div class="trophy-facts">
+    <div class="trophy-fact-card">
+      <div class="trophy-fact-ic"><i class="fas fa-hand"></i></div>
+      <div class="trophy-fact-body">
+        <div class="trophy-fact-title">স্পর্শের বিশেষ নিয়ম</div>
+        <div class="trophy-fact-text">শুধুমাত্র বিজয়ী দলের খেলোয়াড় ও ম্যানেজার, রাষ্ট্রপ্রধান এবং FIFA কর্মকর্তারা খালি হাতে ট্রফিটি স্পর্শ করতে পারেন।</div>
+      </div>
+    </div>
+    <div class="trophy-fact-card">
+      <div class="trophy-fact-ic"><i class="fas fa-copy"></i></div>
+      <div class="trophy-fact-body">
+        <div class="trophy-fact-title">রেপ্লিকা নিলাম</div>
+        <div class="trophy-fact-text">১৯৯৭ সালে জুলে রিমে ট্রফির একটি রেপ্লিকা £254,500-এ নিলামে বিক্রি হয়। এটি বর্তমানে ইংল্যান্ডের National Football Museum-এ প্রদর্শিত।</div>
+      </div>
+    </div>
+    <div class="trophy-fact-card">
+      <div class="trophy-fact-ic"><i class="fas fa-building-columns"></i></div>
+      <div class="trophy-fact-body">
+        <div class="trophy-fact-title">স্থায়ী আবাস</div>
+        <div class="trophy-fact-text">বর্তমান ট্রফি FIFA World Football Museum, জুরিখ-এ সংরক্ষিত। বিশ্বকাপ ফাইনাল ও বিশেষ অনুষ্ঠান ছাড়া এটি জাদুঘরের বাইরে যায় না।</div>
+      </div>
     </div>
   </div>
 
@@ -259,7 +373,7 @@ const FINALS=[
   {year:1962,num:7,winner:'Brazil',wc:'br',runnerUp:'Czechoslovakia',rc:'cz',ft:'3–1',host:'Chile',hc:'cl',venue:'Estadio Nacional',city:'Santiago',att:'68,679'},
   {year:1958,num:6,winner:'Brazil',wc:'br',runnerUp:'Sweden',rc:'se',ft:'5–2',host:'Sweden',hc:'se',venue:'Råsunda Stadium',city:'Solna',att:'49,737'},
   {year:1954,num:5,winner:'West Germany',wc:'de',runnerUp:'Hungary',rc:'hu',ft:'3–2',host:'Switzerland',hc:'ch',venue:'Wankdorf Stadium',city:'Bern',att:'62,500'},
-  {year:1950,num:4,winner:'Uruguay',wc:'uy',runnerUp:'Brazil',rc:'br',ft:'2–1',host:'Brazil',hc:'br',venue:'Maracanã Stadium',city:'Rio de Janeiro',att:'173,850',note:'Final round decisive match'},
+  {year:1950,num:4,winner:'Uruguay',wc:'uy',runnerUp:'Brazil',rc:'br',ft:'2–1',host:'Brazil',hc:'br',venue:'Maracanã Stadium',city:'Rio de Janeiro',att:'173,850'},
   {year:1938,num:3,winner:'Italy',wc:'it',runnerUp:'Hungary',rc:'hu',ft:'4–2',host:'France',hc:'fr',venue:'Stade Olym. de Colombes',city:'Colombes',att:'45,000'},
   {year:1934,num:2,winner:'Italy',wc:'it',runnerUp:'Czechoslovakia',rc:'cz',ft:'2–1',et:true,host:'Italy',hc:'it',venue:'Stadio Nazionale PNF',city:'Rome',att:'55,000',homeWin:true},
   {year:1930,num:1,winner:'Uruguay',wc:'uy',runnerUp:'Argentina',rc:'ar',ft:'4–2',host:'Uruguay',hc:'uy',venue:'Estadio Centenario',city:'Montevideo',att:'68,346',homeWin:true},
