@@ -713,8 +713,7 @@ body.stadium-light-theme .mc-grp-badge{background:#D4AF37;color:#041020}
     </div>
     <div class="hdr-right">
       <a href="https://onikcreation.com/" target="_blank" rel="noopener"><img src="BrandLogo.jpeg" alt="Onik Creation" class="hdr-brand-logo"></a>
-      <button type="button" class="icon-btn icon-btn-sm" onclick="window._reload&&window._reload()" title="রিফ্রেশ"><i class="fas fa-rotate-right"></i></button>
-      <a href="admin.html" class="admin-btn"><i class="fas fa-lock"></i> Admin</a>
+<a href="admin.html" class="admin-btn"><i class="fas fa-lock"></i> Admin</a>
     </div>
   </div>
 </header>
@@ -1205,7 +1204,6 @@ onValue(ref(db,'scores'),snap=>{
   window._scoresLoaded=true;
   renderAll();hideLoader();
 });
-window._reload=function(){location.reload();};
 
 function calcGroups(){
   const t={};
