@@ -37,16 +37,17 @@ body.stadium-light-theme{background:linear-gradient(135deg,#041020,#071535)}
 body.stadium-light-theme::before{background-image:url('https://images.unsplash.com/photo-1629217855633-79a6925d6c47?w=1920&q=80')!important;background-size:cover!important;background-position:center!important;opacity:.22!important}
 
 /* HEADER */
-.hdr{position:relative;z-index:50;background:rgba(10,10,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(212,175,55,0.15);padding:0 1rem}
+.hdr{position:relative;z-index:50;background:rgba(10,10,10,0.95);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(212,175,55,0.15);padding:0 1rem}
 .hdr-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:1rem;padding:.8rem 0}
-.hdr-logo img{height:46px;width:auto;display:block;filter:drop-shadow(0 0 10px rgba(212,175,55,.35))}
+.hdr-logo{display:flex;align-items:center;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(212,175,55,0.35))}
+.hdr-logo img{height:46px;width:auto;display:block}
 .hdr-text{flex:1;min-width:0}
-.hdr-title{font-family:"Google Sans",sans-serif;font-size:clamp(1.1rem,2.5vw,1.8rem);letter-spacing:3px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.hdr-title{font-family:"Google Sans",sans-serif;font-size:clamp(1.2rem,3vw,2rem);letter-spacing:3px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
 .hdr-sub{font-size:.68rem;color:var(--gray);letter-spacing:1px;margin-top:1px}
 .hdr-right{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.hdr-brand-logo{height:34px;width:auto;display:block;border-radius:6px;opacity:.85;transition:opacity .2s;flex-shrink:0}.hdr-brand-logo:hover{opacity:1}
 .admin-btn{font-size:.65rem;letter-spacing:1px;padding:.3rem .7rem;background:rgba(139,21,56,0.15);border:1px solid rgba(212,175,55,0.25);border-radius:6px;color:var(--neon);text-decoration:none;transition:all .2s;white-space:nowrap}
 .admin-btn:hover{background:rgba(139,21,56,0.3);box-shadow:0 0 10px rgba(139,21,56,0.4)}
-.hdr-brand-logo{height:34px;border-radius:6px;opacity:.85}
 
 /* MAIN */
 .wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:1.5rem 1rem 3rem}
